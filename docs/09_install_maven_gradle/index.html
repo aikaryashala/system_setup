@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en" data-theme="">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Step 9 — Java build tools: Maven and Gradle · system_setup</title>
+<meta name="description" content="Install Maven and Gradle on Ubuntu for Java projects that have outgrown javac.">
+<link rel="stylesheet" href="../assets/style.css">
+<script>
+(function(){try{var t=localStorage.getItem('system-setup-theme');if(t){document.documentElement.setAttribute('data-theme',t);}}catch(e){}}());
+</script>
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <div class="inner">
+    <a class="brand" href="../"><span class="mark">&gt;_</span> system_setup</a>
+    <nav class="header-nav">
+      <a href="../scripts/">Scripts</a>
+      <a href="https://github.com/aikaryashala/system_setup">GitHub</a>
+      <button class="theme-toggle" type="button" aria-label="Switch theme">☽</button>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+<div class="prose">
+
+  <p class="breadcrumb"><a href="../">system_setup</a> / Step 9</p>
+
+  <p class="eyebrow">Step 9 · Ubuntu · Independent</p>
+  <h1>Java build tools: Maven and Gradle</h1>
+  <p class="lede">
+    <code>javac</code> is fine until your project needs a third-party library, a
+    test framework, or more than a handful of files. Then you want a build tool.
+    These are the two you will meet.
+  </p>
+
+  <div class="callout note">
+    <div class="callout-title">This step stands alone — but it needs a JDK</div>
+    <p>
+      <a href="../05_install_java/">Step 5</a> gives you <code>javac</code>,
+      <code>java</code> and <code>jshell</code>, which is everything you need to
+      compile and run source files. Come here when a project has a
+      <code>pom.xml</code> or a <code>build.gradle</code>. Install step 5 first —
+      both of these are useless without a JDK. This step is not part of the
+      <code>install_all.sh</code> run.
+    </p>
+  </div>
+
+  <h2 id="run">Run this</h2>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>curl -fsSL https://aikaryashala.com/system_setup/scripts/install_maven_gradle.sh | bash</code></pre>
+  </div>
+
+  <p>Only want one of them?</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>curl -fsSL https://aikaryashala.com/system_setup/scripts/install_maven_gradle.sh | SKIP_GRADLE=1 bash
+<span class="prompt">$ </span>curl -fsSL https://aikaryashala.com/system_setup/scripts/install_maven_gradle.sh | SKIP_MAVEN=1 bash</code></pre>
+  </div>
+
+  <h2 id="which">Which one?</h2>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th></th><th>Maven</th><th>Gradle</th></tr></thead>
+      <tbody>
+        <tr><td>Configuration</td><td><code>pom.xml</code> — XML</td><td><code>build.gradle.kts</code> — Kotlin or Groovy code</td></tr>
+        <tr><td>Style</td><td>Declarative, rigid, very predictable</td><td>Programmable, flexible, more to learn</td></tr>
+        <tr><td>Speed</td><td>Steady</td><td>Faster on repeat builds — it caches aggressively</td></tr>
+        <tr><td>Best when</td><td>You want convention and no surprises</td><td>You have a big project, or an Android one</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p class="muted">
+    If you have no preference and no existing project, start with Maven. Its
+    rigidity is a feature while you are learning.
+  </p>
+
+  <div class="callout note">
+    <div class="callout-title">Where these come from</div>
+    <p>
+      Maven comes from Ubuntu's own packages. Gradle does not — Ubuntu's build
+      is usually several major versions behind, so the script asks
+      <code>services.gradle.org</code> what the current release is and installs
+      that into <code>/opt/gradle</code>, with a stable <code>current</code>
+      symlink so later upgrades do not touch your <code>PATH</code>.
+    </p>
+  </div>
+
+  <h2 id="maven">A Maven project</h2>
+
+  <p>Maven expects a fixed directory layout and describes the build in <code>pom.xml</code>.</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>mvn archetype:generate \
+    -DgroupId=com.example \
+    -DartifactId=myapp \
+    -DarchetypeArtifactId=maven-archetype-quickstart \
+    -DinteractiveMode=false
+
+<span class="prompt">$ </span>cd myapp
+<span class="prompt">$ </span>mvn compile
+<span class="prompt">$ </span>mvn test
+<span class="prompt">$ </span>mvn package
+<span class="prompt">$ </span>java -cp target/myapp-1.0-SNAPSHOT.jar com.example.App</code></pre>
+  </div>
+
+  <ul class="cmd-list">
+    <li><code>mvn compile</code><span>Compile the main sources</span></li>
+    <li><code>mvn test</code><span>Compile and run the tests</span></li>
+    <li><code>mvn package</code><span>Build the <code>.jar</code></span></li>
+    <li><code>mvn clean</code><span>Delete <code>target/</code> and start fresh</span></li>
+    <li><code>mvn dependency:tree</code><span>Show what depends on what</span></li>
+  </ul>
+
+  <div class="callout note">
+    <div class="callout-title">The first Maven build is slow</div>
+    <p>
+      Maven downloads its own plugins on first use, into <code>~/.m2</code>.
+      Expect a few minutes and a lot of scrolling once. Later builds are fast.
+    </p>
+  </div>
+
+  <h2 id="gradle">A Gradle project</h2>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>mkdir myapp &amp;&amp; cd myapp
+<span class="prompt">$ </span>gradle init --type java-application --dsl kotlin \
+    --test-framework junit-jupiter --project-name myapp --package com.example
+
+<span class="prompt">$ </span>./gradlew build
+<span class="prompt">$ </span>./gradlew run
+<span class="prompt">$ </span>./gradlew test</code></pre>
+  </div>
+
+  <div class="callout tip">
+    <div class="callout-title">Use <code>./gradlew</code>, not <code>gradle</code></div>
+    <p>
+      <code>gradle init</code> generates a <em>wrapper</em> script,
+      <code>gradlew</code>, pinned to the exact Gradle version the project needs.
+      Using it means everyone building the project gets the same Gradle, whatever
+      they have installed. Commit it; call <code>gradle</code> directly only when
+      creating a project.
+    </p>
+  </div>
+
+  <h2 id="adding">Adding a library</h2>
+
+  <p>This is the reason to reach for a build tool at all. In Maven:</p>
+
+  <div class="codeblock" data-label="pom.xml">
+<pre><code>&lt;dependencies&gt;
+  &lt;dependency&gt;
+    &lt;groupId&gt;com.google.code.gson&lt;/groupId&gt;
+    &lt;artifactId&gt;gson&lt;/artifactId&gt;
+    &lt;version&gt;2.11.0&lt;/version&gt;
+  &lt;/dependency&gt;
+&lt;/dependencies&gt;</code></pre>
+  </div>
+
+  <p>And in Gradle:</p>
+
+  <div class="codeblock" data-label="build.gradle.kts">
+<pre><code>dependencies {
+    implementation("com.google.code.gson:gson:2.11.0")
+}</code></pre>
+  </div>
+
+  <p>
+    Either way the tool downloads the library and everything it depends on, and
+    puts it on the classpath for you — the job you would otherwise be doing by
+    hand with <code>javac -cp</code>.
+  </p>
+
+  <h2 id="verify">Check it worked</h2>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>mvn -version
+<span class="prompt">$ </span>gradle --version
+<span class="prompt">$ </span>echo $JAVA_HOME</code></pre>
+  </div>
+
+  <div class="callout warn">
+    <div class="callout-title">“JAVA_HOME is not set”</div>
+    <p>
+      Both tools need a JDK. Run <a href="../05_install_java/">step 5</a>, then
+      <code>source ~/.bashrc</code> so <code>JAVA_HOME</code> is set in your
+      current shell.
+    </p>
+  </div>
+
+  <nav class="page-nav">
+    <a href="../"><span class="dir">Back</span><span class="title">All steps</span></a>
+    <a class="next" href="../05_install_java/"><span class="dir">Needs</span><span class="title">Step 5: the JDK →</span></a>
+  </nav>
+
+</div>
+</main>
+
+<footer class="site-footer">
+  <div class="inner">
+    <span>system_setup — <a href="https://aikaryashala.com">aikaryashala</a></span>
+    <span class="spacer"><a href="https://github.com/aikaryashala/system_setup">Source on GitHub</a></span>
+  </div>
+</footer>
+
+<script src="../assets/site.js"></script>
+</body>
+</html>

@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Step 5 — Java: JDK, Maven and Gradle · system_setup</title>
-<meta name="description" content="Install a Temurin JDK on Ubuntu with javac, java, jshell and jar, plus Maven and Gradle.">
+<title>Step 5 — Java: javac, java and jshell · system_setup</title>
+<meta name="description" content="Install a Temurin JDK on Ubuntu and use javac, java and jshell to compile and run Java source files.">
 <link rel="stylesheet" href="../assets/style.css">
 <script>
 (function(){try{var t=localStorage.getItem('system-setup-theme');if(t){document.documentElement.setAttribute('data-theme',t);}}catch(e){}}());
@@ -31,11 +31,11 @@
   <p class="breadcrumb"><a href="../">system_setup</a> / Step 5</p>
 
   <p class="eyebrow">Step 5 · Ubuntu</p>
-  <h1>Java: JDK, Maven and Gradle</h1>
+  <h1>Java: javac, java and jshell</h1>
   <p class="lede">
-    The JDK — Java Development Kit — is the compiler, the runtime, and an
-    interactive prompt for trying ideas out. This step installs the Temurin build
-    of OpenJDK, plus the two build tools you will meet in real projects.
+    A current Temurin JDK, and the three commands you need to actually use it:
+    <strong>javac</strong> to compile, <strong>java</strong> to run, and
+    <strong>jshell</strong> to try an idea without writing a file at all.
   </p>
 
   <h2 id="run">Run this</h2>
@@ -51,17 +51,25 @@
 <span class="prompt">$ </span>java -version</code></pre>
   </div>
 
+  <p>
+    It also writes two sample files into <code>~/java-samples</code> for the
+    exercise below.
+  </p>
+
   <h2 id="whats-installed">What gets installed</h2>
 
   <ul class="cmd-list">
     <li><code>javac</code><span>The compiler. Turns <code>.java</code> source into <code>.class</code> bytecode.</span></li>
     <li><code>java</code><span>The runtime. Executes bytecode — and, these days, single source files directly.</span></li>
     <li><code>jshell</code><span>An interactive Java prompt. Type an expression, see the result.</span></li>
-    <li><code>jar</code><span>Bundle classes into a single distributable <code>.jar</code>.</span></li>
-    <li><code>javap</code><span>Disassemble a class file and show its bytecode.</span></li>
-    <li><code>mvn</code><span>Maven: the long-established build tool. XML configuration, very predictable.</span></li>
-    <li><code>gradle</code><span>Gradle: the newer one. Faster incremental builds, script-based configuration.</span></li>
   </ul>
+
+  <p class="muted">
+    <code>jar</code> and <code>javap</code> come along inside the same JDK
+    package. Maven and Gradle do not — they are
+    <a href="../09_install_maven_gradle/">step 9</a>, installed separately when a
+    project actually needs a build tool.
+  </p>
 
   <div class="callout note">
     <div class="callout-title">Why Temurin rather than Ubuntu's openjdk</div>
@@ -93,132 +101,169 @@
 <span class="out">hello</span>
 <span class="out">jshell&gt; </span>"abc".toUpperCase()
 <span class="out">$4 ==&gt; "ABC"</span>
+<span class="out">jshell&gt; </span>int[] nums = {12, 7, 3, 21}
+<span class="out">nums ==&gt; int[4] { 12, 7, 3, 21 }</span>
+<span class="out">jshell&gt; </span>java.util.Arrays.stream(nums).sum()
+<span class="out">$6 ==&gt; 43</span>
 <span class="out">jshell&gt; </span>/exit</code></pre>
   </div>
 
   <p>
     Useful commands inside jshell: <code>/list</code> shows what you have typed,
     <code>/vars</code> the variables you have defined, <code>/imports</code> what
-    is already imported, and <code>/exit</code> leaves.
+    is already imported, <code>/open File.java</code> loads a file, and
+    <code>/exit</code> leaves.
   </p>
 
-  <h2 id="hello">Compile a program</h2>
+  <h2 id="samples">The two sample files</h2>
 
-  <p>Create <code>Hello.java</code>:</p>
+  <p>
+    One class calling another is where <code>javac</code> stops being trivial, so
+    the exercise uses two files. Both land in <code>~/java-samples</code>, and are
+    downloadable here: <a href="../examples/Report.java">Report.java</a> and
+    <a href="../examples/Stats.java">Stats.java</a>.
+  </p>
 
-  <div class="codeblock" data-label="Hello.java">
-<pre><code>public class Hello {
-    public static void main(String[] args) {
-        String who = args.length &gt; 0 ? args[0] : "world";
-        System.out.println("Hello, " + who + "!");
-        System.out.println("Running on Java " + System.getProperty("java.version"));
+  <div class="codeblock" data-label="Stats.java — the class">
+<pre><code>public class Stats {
+
+    /** The average. Returns 0 for an empty array. */
+    public static double mean(int[] numbers) {
+        if (numbers.length == 0) {
+            return 0;
+        }
+        int total = 0;
+        for (int n : numbers) {
+            total += n;
+        }
+        return (double) total / numbers.length;
+    }
+
+    /** The largest value. */
+    public static int max(int[] numbers) {
+        int best = numbers[0];
+        for (int n : numbers) {
+            if (n &gt; best) {
+                best = n;
+            }
+        }
+        return best;
+    }
+
+    /** The smallest value. */
+    public static int min(int[] numbers) {
+        int worst = numbers[0];
+        for (int n : numbers) {
+            if (n &lt; worst) {
+                worst = n;
+            }
+        }
+        return worst;
+    }
+
+    /** How far apart the largest and smallest values are. */
+    public static int spread(int[] numbers) {
+        return max(numbers) - min(numbers);
     }
 }</code></pre>
   </div>
 
+  <div class="codeblock" data-label="Report.java — the program">
+<pre><code>public class Report {
+
+    public static void main(String[] args) {
+        int[] readings = parse(args);
+
+        System.out.println("--- readings ---");
+        System.out.printf("  count: %d%n", readings.length);
+        System.out.printf("   mean: %.2f%n", Stats.mean(readings));
+        System.out.printf("    max: %d%n", Stats.max(readings));
+        System.out.printf("    min: %d%n", Stats.min(readings));
+        System.out.printf(" spread: %d%n", Stats.spread(readings));
+    }
+
+    /** Use the numbers given on the command line, or a default set. */
+    private static int[] parse(String[] args) {
+        if (args.length == 0) {
+            return new int[] {12, 7, 3, 21, 9, 15};
+        }
+
+        int[] numbers = new int[args.length];
+        for (int i = 0; i &lt; args.length; i++) {
+            numbers[i] = Integer.parseInt(args[i]);
+        }
+        return numbers;
+    }
+}</code></pre>
+  </div>
+
+  <h2 id="compile">Compile and run them</h2>
+
   <div class="codeblock" data-label="ubuntu terminal">
-<pre><code><span class="prompt">$ </span>javac Hello.java
-<span class="prompt">$ </span>java Hello
-<span class="out">Hello, world!</span>
-<span class="out">Running on Java 25.0.1</span>
-<span class="prompt">$ </span>java Hello Ubuntu
-<span class="out">Hello, Ubuntu!</span></code></pre>
+<pre><code><span class="prompt">$ </span>cd ~/java-samples
+<span class="prompt">$ </span>javac Report.java
+<span class="prompt">$ </span>java Report
+<span class="out">--- readings ---</span>
+<span class="out">  count: 6</span>
+<span class="out">   mean: 11.17</span>
+<span class="out">    max: 21</span>
+<span class="out">    min: 3</span>
+<span class="out"> spread: 18</span>
+
+<span class="prompt">$ </span>java Report 4 8 15 16 23 42
+<span class="out">--- readings ---</span>
+<span class="out">  count: 6</span>
+<span class="out">   mean: 18.00</span>
+<span class="out">    max: 42</span>
+<span class="out">    min: 4</span>
+<span class="out"> spread: 38</span></code></pre>
   </div>
 
   <div class="callout tip">
-    <div class="callout-title">You can skip the compile step</div>
+    <div class="callout-title">You only compiled one file</div>
     <p>
-      Modern Java runs a single source file directly — it compiles in memory and
-      leaves no <code>.class</code> file behind. Ideal while learning:
+      <code>javac Report.java</code> produced <em>both</em>
+      <code>Report.class</code> and <code>Stats.class</code>. javac follows the
+      references it finds and compiles what it needs, as long as the source is in
+      the same directory. Run <code>ls *.class</code> to see both.
     </p>
-    <div class="codeblock">
-<pre><code><span class="prompt">$ </span>java Hello.java</code></pre>
-    </div>
   </div>
+
+  <h3>Skip the compile step entirely</h3>
+
+  <p>
+    Modern Java runs source files directly — it compiles in memory and leaves no
+    <code>.class</code> file behind. Ideal while learning:
+  </p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>java Report.java
+<span class="prompt">$ </span>java Report.java 4 8 15 16</code></pre>
+  </div>
+
+  <h3>Load them into jshell</h3>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>jshell
+<span class="out">jshell&gt; </span>/open Stats.java
+<span class="out">jshell&gt; </span>int[] nums = {12, 7, 3, 21, 9, 15}
+<span class="out">jshell&gt; </span>Stats.mean(nums)
+<span class="out">$3 ==&gt; 11.166666666666666</span>
+<span class="out">jshell&gt; </span>Stats.spread(nums)
+<span class="out">$4 ==&gt; 18</span></code></pre>
+  </div>
+
+  <p>
+    This is the fastest way to poke at one method without writing a
+    <code>main</code> around it.
+  </p>
 
   <div class="callout warn">
     <div class="callout-title">The file name must match the class name</div>
     <p>
-      A <code>public class Hello</code> has to live in a file called
-      <code>Hello.java</code> — same spelling, same capitalisation. Getting this
+      A <code>public class Report</code> has to live in a file called
+      <code>Report.java</code> — same spelling, same capitalisation. Getting this
       wrong is the first error nearly everyone hits.
-    </p>
-  </div>
-
-  <h3>Looking at the bytecode</h3>
-
-  <p>
-    Java compiles to bytecode rather than machine code. The same hex tools from
-    <a href="../03_install_c/">step 3</a> work here, and <code>javap</code> makes
-    the result readable:
-  </p>
-
-  <div class="codeblock" data-label="ubuntu terminal">
-<pre><code><span class="comment"># every class file starts with the magic number 0xCAFEBABE</span>
-<span class="prompt">$ </span>xxd -l 16 Hello.class
-<span class="out">00000000: cafe babe 0000 0045 001d 0a00 0200 03...  .......E........</span>
-
-<span class="comment"># the class as the JVM sees it</span>
-<span class="prompt">$ </span>javap Hello
-
-<span class="comment"># the actual bytecode instructions</span>
-<span class="prompt">$ </span>javap -c Hello</code></pre>
-  </div>
-
-  <h2 id="maven">A Maven project</h2>
-
-  <p>Maven expects a fixed directory layout and describes the build in <code>pom.xml</code>.</p>
-
-  <div class="codeblock" data-label="ubuntu terminal">
-<pre><code><span class="prompt">$ </span>mvn archetype:generate \
-    -DgroupId=com.example \
-    -DartifactId=myapp \
-    -DarchetypeArtifactId=maven-archetype-quickstart \
-    -DinteractiveMode=false
-
-<span class="prompt">$ </span>cd myapp
-<span class="prompt">$ </span>mvn compile
-<span class="prompt">$ </span>mvn test
-<span class="prompt">$ </span>mvn package
-<span class="prompt">$ </span>java -cp target/myapp-1.0-SNAPSHOT.jar com.example.App</code></pre>
-  </div>
-
-  <ul class="cmd-list">
-    <li><code>mvn compile</code><span>Compile the main sources</span></li>
-    <li><code>mvn test</code><span>Compile and run the tests</span></li>
-    <li><code>mvn package</code><span>Build the <code>.jar</code></span></li>
-    <li><code>mvn clean</code><span>Delete <code>target/</code> and start fresh</span></li>
-    <li><code>mvn dependency:tree</code><span>Show what depends on what</span></li>
-  </ul>
-
-  <div class="callout note">
-    <div class="callout-title">The first Maven build is slow</div>
-    <p>
-      Maven downloads its own plugins on first use, into <code>~/.m2</code>.
-      Expect a few minutes and a lot of scrolling once. Later builds are fast.
-    </p>
-  </div>
-
-  <h2 id="gradle">A Gradle project</h2>
-
-  <div class="codeblock" data-label="ubuntu terminal">
-<pre><code><span class="prompt">$ </span>mkdir myapp &amp;&amp; cd myapp
-<span class="prompt">$ </span>gradle init --type java-application --dsl kotlin \
-    --test-framework junit-jupiter --project-name myapp --package com.example
-
-<span class="prompt">$ </span>./gradlew build
-<span class="prompt">$ </span>./gradlew run
-<span class="prompt">$ </span>./gradlew test</code></pre>
-  </div>
-
-  <div class="callout tip">
-    <div class="callout-title">Use <code>./gradlew</code>, not <code>gradle</code></div>
-    <p>
-      <code>gradle init</code> generates a <em>wrapper</em> script,
-      <code>gradlew</code>, pinned to the exact Gradle version the project needs.
-      Using it means everyone building the project gets the same Gradle, whatever
-      they have installed. Commit it; call <code>gradle</code> directly only when
-      creating a project.
     </p>
   </div>
 
@@ -247,21 +292,21 @@
   <div class="codeblock" data-label="ubuntu terminal">
 <pre><code><span class="prompt">$ </span>java -version
 <span class="prompt">$ </span>javac -version
-<span class="prompt">$ </span>mvn -version
-<span class="prompt">$ </span>gradle --version
-<span class="prompt">$ </span>echo $JAVA_HOME</code></pre>
+<span class="prompt">$ </span>echo $JAVA_HOME
+<span class="prompt">$ </span>ls ~/java-samples</code></pre>
   </div>
 
-  <h2 id="done">That is everything</h2>
+  <h2 id="done">That is the main sequence</h2>
 
   <p>
-    Ubuntu is running, the essential commands are in place, and you have working
-    toolchains for C, Python and Java. Re-run any step at any time — the scripts
-    are safe to repeat, and will pick up newer versions when they exist.
+    Ubuntu is running, and you have the core commands plus working toolchains for
+    C, Python and Java. The remaining steps are optional extras — including
+    <a href="../09_install_maven_gradle/">Maven and Gradle</a> for when a Java
+    project needs a real build tool.
   </p>
 
   <nav class="page-nav">
-    <a href="../04_install_py/"><span class="dir">Step 4</span><span class="title">← Python with uv</span></a>
+    <a href="../04_install_py/"><span class="dir">Step 4</span><span class="title">← Python and pdb</span></a>
     <a class="next" href="../"><span class="dir">Finished</span><span class="title">Back to all steps →</span></a>
   </nav>
 

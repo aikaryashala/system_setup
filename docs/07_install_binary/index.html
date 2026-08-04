@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="en" data-theme="">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Step 7 — Reading binaries: hex, objdump, valgrind · system_setup</title>
+<meta name="description" content="Install the tools that work on a compiled file: xxd, hexyl, hexdump, od, objdump, readelf, nm, strings, valgrind, strace, make and cmake.">
+<link rel="stylesheet" href="../assets/style.css">
+<script>
+(function(){try{var t=localStorage.getItem('system-setup-theme');if(t){document.documentElement.setAttribute('data-theme',t);}}catch(e){}}());
+</script>
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <div class="inner">
+    <a class="brand" href="../"><span class="mark">&gt;_</span> system_setup</a>
+    <nav class="header-nav">
+      <a href="../scripts/">Scripts</a>
+      <a href="https://github.com/aikaryashala/system_setup">GitHub</a>
+      <button class="theme-toggle" type="button" aria-label="Switch theme">☽</button>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+<div class="prose">
+
+  <p class="breadcrumb"><a href="../">system_setup</a> / Step 7</p>
+
+  <p class="eyebrow">Step 7 · Ubuntu · Independent</p>
+  <h1>Reading binaries</h1>
+  <p class="lede">
+    A compiled program is just a file. These tools let you read that file as
+    what it is — bytes, sections, symbols, instructions — rather than as what it
+    does. It is the fastest way to understand what compiling actually produced.
+  </p>
+
+  <div class="callout note">
+    <div class="callout-title">This step stands alone</div>
+    <p>
+      It pairs naturally with <a href="../03_install_c/">step 3</a>, since having
+      a compiler gives you binaries of your own to take apart. But it does not
+      require it — every one of these tools works on programs already on your
+      machine. It is not part of the <code>install_all.sh</code> run.
+    </p>
+  </div>
+
+  <h2 id="run">Run this</h2>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>curl -fsSL https://aikaryashala.com/system_setup/scripts/install_binary.sh | bash</code></pre>
+  </div>
+
+  <p>
+    The script finishes by compiling a small program — or falling back to
+    <code>/bin/ls</code> if you have not installed clang — and showing you its
+    first bytes, its size breakdown and its ELF header.
+  </p>
+
+  <h2 id="whats-installed">What gets installed</h2>
+
+  <h3>Reading a file as bytes</h3>
+  <ul class="cmd-list">
+    <li><code>xxd</code><span>The classic hex dump. <code>xxd -r</code> turns hex back into binary.</span></li>
+    <li><code>hexyl</code><span>A colourised hex viewer that groups bytes by what they are. Easiest to read.</span></li>
+    <li><code>hexdump</code><span>The traditional tool; <code>hexdump -C</code> is the canonical view.</span></li>
+    <li><code>od</code><span>Octal dump. On every Unix ever made, so worth knowing.</span></li>
+  </ul>
+
+  <h3>Reading structure and symbols</h3>
+  <ul class="cmd-list">
+    <li><code>strings</code><span>Pull the readable text out of a binary.</span></li>
+    <li><code>objdump</code><span><code>objdump -d</code> disassembles: machine code back to assembly.</span></li>
+    <li><code>readelf</code><span>Explain the structure of a Linux executable, section by section.</span></li>
+    <li><code>nm</code><span>List the symbols — function and variable names — inside an object file.</span></li>
+    <li><code>size</code><span>How much of the binary is code, initialised data, and zeroed data.</span></li>
+  </ul>
+
+  <h3>Watching a program run</h3>
+  <ul class="cmd-list">
+    <li><code>valgrind</code><span>Find memory leaks, and reads or writes past the end of an allocation.</span></li>
+    <li><code>strace</code><span>Show every system call — every time the program asks the kernel for something.</span></li>
+    <li><code>ltrace</code><span>The same idea, for calls into shared libraries.</span></li>
+  </ul>
+
+  <h3>Building more than one file</h3>
+  <ul class="cmd-list">
+    <li><code>make</code><span>Runs a <code>Makefile</code>, rebuilding only what changed.</span></li>
+    <li><code>cmake</code> <code>ninja</code><span>For projects that outgrow a handwritten Makefile.</span></li>
+    <li><code>clang-format</code> <code>clang-tidy</code><span>Format code consistently; catch bugs without running the program.</span></li>
+  </ul>
+
+  <h2 id="hex">Look at the bytes</h2>
+
+  <p>
+    Compile anything — or just use a program you already have — and look at it:
+  </p>
+
+  <h3>xxd — the classic</h3>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>xxd -l 64 hello
+<span class="out">00000000: 7f45 4c46 0201 0100 0000 0000 0000 0000  .ELF............</span>
+<span class="out">00000010: 0300 3e00 0100 0000 4010 0000 0000 0000  ..>.....@.......</span>
+<span class="out">00000020: 4000 0000 0000 0000 7834 0000 0000 0000  @.......x4......</span>
+<span class="out">00000030: 0000 0000 4000 3800 0d00 4000 1e00 1d00  ....@.8...@.....</span></code></pre>
+  </div>
+
+  <p>Three columns: the offset into the file, the bytes in hexadecimal, and those same bytes as text where they happen to be printable.</p>
+
+  <p>
+    Those first four bytes — <code>7f 45 4c 46</code> — are the magic number
+    <code>0x7F</code> followed by <code>"ELF"</code>. That is how Linux recognises
+    an executable. Every file format has a marker like this;
+    <code>file</code> works by reading them.
+  </p>
+
+  <h4>xxd options you will actually use</h4>
+  <ul class="cmd-list">
+    <li><code>xxd -l 64 f</code><span>Only the first 64 bytes</span></li>
+    <li><code>xxd -s 512 -l 64 f</code><span>64 bytes starting at offset 512</span></li>
+    <li><code>xxd -b f</code><span>Binary — actual ones and zeroes — instead of hex</span></li>
+    <li><code>xxd -c 8 f</code><span>8 bytes per line instead of 16</span></li>
+    <li><code>xxd -g 1 f</code><span>Group by single bytes, not pairs</span></li>
+    <li><code>xxd -r dump.txt &gt; f</code><span>Reverse: rebuild the binary from a hex dump</span></li>
+  </ul>
+
+  <h3>hexyl — the readable one</h3>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>hexyl -n 64 hello</code></pre>
+  </div>
+
+  <p>
+    Same information, but colour-coded by category: null bytes, ASCII text,
+    printable punctuation and non-ASCII each get their own colour. When you are
+    hunting for structure in an unfamiliar file, this is the one to reach for.
+  </p>
+
+  <h3>hexdump and od — the traditional pair</h3>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="comment"># hexdump -C is the canonical side-by-side view</span>
+<span class="prompt">$ </span>hexdump -C -n 64 hello
+
+<span class="comment"># od: hex bytes with hex offsets and printable characters</span>
+<span class="prompt">$ </span>od -A x -t x1z -N 64 hello
+
+<span class="comment"># od can also show other bases - here, octal</span>
+<span class="prompt">$ </span>od -A o -t o1 -N 32 hello</code></pre>
+  </div>
+
+  <p>
+    <code>od</code> is worth knowing because it is guaranteed present on any Unix
+    system, however minimal — including containers where <code>xxd</code> is not.
+  </p>
+
+  <h2 id="structure">Reading structure, not just bytes</h2>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="comment"># what kind of file is this?</span>
+<span class="prompt">$ </span>file hello
+
+<span class="comment"># the readable text hiding inside the binary</span>
+<span class="prompt">$ </span>strings hello | head
+
+<span class="comment"># how big are the code and data sections?</span>
+<span class="prompt">$ </span>size hello
+
+<span class="comment"># the ELF header, explained field by field</span>
+<span class="prompt">$ </span>readelf -h hello
+
+<span class="comment"># every section in the file</span>
+<span class="prompt">$ </span>readelf -S hello
+
+<span class="comment"># function and variable names</span>
+<span class="prompt">$ </span>nm hello
+
+<span class="comment"># disassemble main back into assembly</span>
+<span class="prompt">$ </span>objdump -d --disassemble=main hello
+
+<span class="comment"># assembly interleaved with the C it came from (needs -g)</span>
+<span class="prompt">$ </span>objdump -S hello | less</code></pre>
+  </div>
+
+  <div class="callout tip">
+    <div class="callout-title">The exercise that makes this click</div>
+    <p>
+      Compile the same file twice — once with <code>-O0</code> and once with
+      <code>-O2</code> — then run
+      <code>objdump -d --disassemble=main</code> on each and put the output side
+      by side. Seeing what the optimiser did to your loop teaches more about how
+      C works than any amount of reading.
+    </p>
+  </div>
+
+  <h2 id="runtime">Watching a program run</h2>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="comment"># find memory leaks and invalid accesses, without recompiling</span>
+<span class="prompt">$ </span>valgrind --leak-check=full ./hello
+
+<span class="comment"># every system call the program makes</span>
+<span class="prompt">$ </span>strace ./hello
+
+<span class="comment"># just the file-related ones</span>
+<span class="prompt">$ </span>strace -e trace=openat,read,write ./hello
+
+<span class="comment"># calls into shared libraries instead</span>
+<span class="prompt">$ </span>ltrace ./hello</code></pre>
+  </div>
+
+  <p>
+    <code>strace</code> is the tool that answers “why can't it find that file?”
+    — you see the exact path it tried and the error it got back.
+  </p>
+
+  <h2 id="make">A Makefile, once one file is not enough</h2>
+
+  <div class="codeblock" data-label="Makefile">
+<pre><code>CC      = clang
+CFLAGS  = -g -O0 -Wall -Wextra -std=c17
+TARGET  = hello
+
+$(TARGET): hello.c
+	$(CC) $(CFLAGS) -o $(TARGET) hello.c
+
+debug: CFLAGS += -fsanitize=address
+debug: clean $(TARGET)
+
+clean:
+	rm -f $(TARGET)
+
+.PHONY: debug clean</code></pre>
+  </div>
+
+  <div class="callout warn">
+    <div class="callout-title">Makefiles demand real tab characters</div>
+    <p>
+      The indented lines under each rule must begin with a tab, not spaces. This
+      is the single most common reason a Makefile fails with
+      <em>“missing separator”</em>.
+    </p>
+  </div>
+
+  <p>Then <code>make</code> to build, <code>make debug</code> for the sanitizer build, <code>make clean</code> to start over.</p>
+
+  <h2 id="verify">Check it worked</h2>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>xxd -l 16 /bin/ls
+<span class="prompt">$ </span>readelf -h /bin/ls | head -6
+<span class="prompt">$ </span>objdump --version | head -1
+<span class="prompt">$ </span>valgrind --version</code></pre>
+  </div>
+
+  <nav class="page-nav">
+    <a href="../"><span class="dir">Back</span><span class="title">All steps</span></a>
+    <a class="next" href="../03_install_c/"><span class="dir">Pairs with</span><span class="title">Step 3: clang and lldb →</span></a>
+  </nav>
+
+</div>
+</main>
+
+<footer class="site-footer">
+  <div class="inner">
+    <span>system_setup — <a href="https://aikaryashala.com">aikaryashala</a></span>
+    <span class="spacer"><a href="https://github.com/aikaryashala/system_setup">Source on GitHub</a></span>
+  </div>
+</footer>
+
+<script src="../assets/site.js"></script>
+</body>
+</html>

@@ -2,8 +2,12 @@
 #
 # install_cmds.sh - Step 2 of https://aikaryashala.com/system_setup
 #
-# The essential command line tools every other step assumes are present:
-# fetching, editing, searching, archiving, and looking at the network.
+# The core command line tools: fetching a file, reaching another machine,
+# editing text, and looking around the filesystem.
+#
+# This list is deliberately short. The wider set of everyday tools - search,
+# archives, terminal multiplexing, JSON - lives in step 6 and is installed
+# separately.
 #
 # Run inside Ubuntu:
 #   curl -fsSL https://aikaryashala.com/system_setup/scripts/install_cmds.sh | bash
@@ -38,116 +42,61 @@ _bootstrap_common
 
 # ---------------------------------------------------------------------------
 
-# Fetching things and talking to servers.
+# Fetching things, and reaching other machines.
 PKGS_NETWORK=(
     ca-certificates     # the trusted certificate bundle, needed for https
     curl                # fetch a URL
-    wget                # fetch a URL, good at large downloads
     openssh-client      # ssh, scp, ssh-keygen
-    rsync               # copy directories efficiently, locally or over ssh
     iproute2            # ip addr, ip route
     iputils-ping        # ping
     dnsutils            # dig, nslookup
-    netcat-openbsd      # nc: raw tcp/udp connections
-    traceroute          # see the hops between you and a host
 )
 
-# Version control and package sources.
+# Version control.
 PKGS_SOURCE=(
     git
-    gnupg               # verify signatures on third-party apt repositories
-    software-properties-common
-    lsb-release
 )
 
-# Editing and reading files.
+# Reading and editing files.
 PKGS_EDIT=(
-    vim
-    nano                # the friendlier editor; good default for git commits
+    nano                # the friendlier editor; a good default for git commits
+    vim                 # the powerful one
     less                # page through long output
     file                # identify what a file actually is
-    dos2unix            # fix Windows line endings, common when using WSL
 )
 
-# Archives.
-PKGS_ARCHIVE=(
-    zip
-    unzip
-    xz-utils
-    tar
-)
-
-# Working in the terminal.
-PKGS_TERMINAL=(
-    tmux                # keep sessions alive, split the terminal
+# Looking around, and archives.
+PKGS_SYSTEM=(
     tree                # show a directory as a tree
     htop                # interactive process viewer
-    ncdu                # find what is using your disk
-    procps              # ps, top, watch, free
-    man-db              # the manual pages
-    bc                  # calculator
-    time                # measure how long a command takes
-)
-
-# Searching, faster and friendlier than the classics.
-PKGS_SEARCH=(
-    ripgrep             # rg: search file contents
-    fd-find             # fd: find files by name
-    fzf                 # fuzzy-pick from any list
-    bat                 # cat with syntax highlighting
-    jq                  # read and reshape JSON
+    zip
+    unzip
 )
 
 install_packages() {
-    banner "Installing essential command line tools"
+    banner "Installing the core command line tools"
     apt_install "${PKGS_NETWORK[@]}"
     apt_install "${PKGS_SOURCE[@]}"
     apt_install "${PKGS_EDIT[@]}"
-    apt_install "${PKGS_ARCHIVE[@]}"
-    apt_install "${PKGS_TERMINAL[@]}"
-    apt_install "${PKGS_SEARCH[@]}"
-
-    # Only useful inside WSL: wslview opens Windows apps from the Linux shell.
-    if is_wsl; then
-        apt_install_optional wslu
-    fi
-}
-
-# Ubuntu ships bat and fd under different names because those names were already
-# taken by other packages. Put the expected names on PATH.
-fix_renamed_commands() {
-    banner "Making 'bat' and 'fd' available under their usual names"
-    ensure_local_bin_on_path
-
-    if have batcat && ! have bat; then
-        ln -sf "$(command -v batcat)" "$HOME/.local/bin/bat"
-        ok "bat -> batcat"
-    else
-        skip "bat"
-    fi
-
-    if have fdfind && ! have fd; then
-        ln -sf "$(command -v fdfind)" "$HOME/.local/bin/fd"
-        ok "fd -> fdfind"
-    else
-        skip "fd"
-    fi
+    apt_install "${PKGS_SYSTEM[@]}"
 }
 
 summary() {
     banner "Installed"
-    verify "git"      git --version
-    verify "curl"     curl --version
-    verify "vim"      vim --version
-    verify "tmux"     tmux -V
-    verify "jq"       jq --version
-    verify "ripgrep"  rg --version
-    verify "fzf"      fzf --version
-    verify_present "fd"   fd
-    verify_present "bat"  bat
-    verify_present "tree" tree
-    verify_present "htop" htop
-    verify_present "ssh"  ssh
+    verify "git"   git --version
+    verify "curl"  curl --version
+    verify "vim"   vim --version
+    verify "tree"  tree --version
+    verify_present "nano"  nano
+    verify_present "less"  less
+    verify_present "file"  file
+    verify_present "htop"  htop
+    verify_present "ssh"   ssh
+    verify_present "ip"    ip
+    verify_present "ping"  ping
+    verify_present "dig"   dig
+    verify_present "zip"   zip
+    verify_present "unzip" unzip
 }
 
 main() {
@@ -156,7 +105,6 @@ main() {
     require_sudo
 
     install_packages
-    fix_renamed_commands
     summary
 
     finish "Next step - the C toolchain (clang and lldb):

@@ -200,9 +200,22 @@ verify() {
         return 1
     fi
     esc="$(printf '\033')"
-    out="$("$@" 2>&1 \
+
+    # Prefer stdout. Tools that warn on stderr - jemalloc notices, locale
+    # complaints, JVM deprecation messages - would otherwise have their noise
+    # printed here instead of the version.
+    out="$("$@" 2>/dev/null \
         | sed "s/${esc}\[[0-9;]*m//g" \
         | grep -m 1 '[[:alnum:]]')" || true
+
+    # But `java -version` and friends print the version to stderr and nothing to
+    # stdout, so fall back rather than showing an empty column.
+    if [ -z "$out" ]; then
+        out="$("$@" 2>&1 \
+            | sed "s/${esc}\[[0-9;]*m//g" \
+            | grep -m 1 '[[:alnum:]]')" || true
+    fi
+
     printf '  %s%-14s%s %s\n' "$C_BOLD" "$label" "$C_RESET" "${out:-installed}"
 }
 

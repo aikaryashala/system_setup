@@ -2,20 +2,19 @@
 #
 # install_py.sh - Step 4 of https://aikaryashala.com/system_setup
 #
-# Installs uv, and then installs Python with uv.
+# Python 3, so you can run a script, and pdb so you can stop that script
+# mid-flight and look at what it is doing.
 #
-# uv is a single fast binary that replaces pip, venv, virtualenv, pyenv, pipx
-# and poetry. It also downloads and manages Python interpreters, so we never
-# touch the system Python that Ubuntu itself depends on.
+# pdb is part of Python itself - there is nothing extra to install for it. This
+# step is deliberately just the interpreter and the debugger.
+#
+# Managing packages, projects and multiple Python versions is step 8, which
+# installs uv. You do not need any of that to run and debug a script.
 #
 # Run inside Ubuntu:
 #   curl -fsSL https://aikaryashala.com/system_setup/scripts/install_py.sh | bash
 #
 # Safe to run more than once.
-#
-# Optional environment variables:
-#   PYTHON_VERSION=3.14   which Python uv should install and pin as the default
-#   UV_TOOLS="ruff"       command line tools to install globally with uv
 
 # shellcheck source-path=SCRIPTDIR
 set -euo pipefail
@@ -43,77 +42,97 @@ _bootstrap_common
 
 # ---------------------------------------------------------------------------
 
-PYTHON_VERSION="${PYTHON_VERSION:-3.14}"
-UV_TOOLS="${UV_TOOLS:-ruff}"
-
-install_prerequisites() {
-    banner "Checking prerequisites"
-    apt_install ca-certificates curl
-}
-
-install_uv() {
-    banner "Installing uv"
-
-    if have uv; then
-        skip "uv is already installed ($(uv --version))"
-        log "Updating uv to the latest release"
-        uv self update 2>/dev/null || warn "Could not self-update uv; keeping the installed version"
-    else
-        # The official installer places uv and uvx in ~/.local/bin. No sudo, and
-        # nothing lands in system directories.
-        curl -LsSf https://astral.sh/uv/install.sh | env UV_NO_MODIFY_PATH=1 sh \
-            || die "The uv installer failed. Check your network connection."
-        ok "uv installed"
-    fi
-
-    # The installer writes to ~/.local/bin, which is not on PATH on a fresh
-    # Ubuntu until that directory exists at login. Fix it for this shell and for
-    # every future one.
-    ensure_local_bin_on_path
-
-    have uv || die "uv was installed but is not on PATH. Open a new terminal and re-run this script."
-
-    # Shell completion for uv itself. Single quotes on purpose - these lines are
-    # written verbatim into ~/.bashrc and evaluated there, not here.
-    # shellcheck disable=SC2016
-    add_to_rc "uv-completion" \
-        'command -v uv >/dev/null 2>&1 && eval "$(uv generate-shell-completion bash)"' \
-        'command -v uvx >/dev/null 2>&1 && eval "$(uvx --generate-shell-completion bash)"'
-}
+PKGS_PYTHON=(
+    python3             # the interpreter, and the standard library that holds pdb
+)
 
 install_python() {
-    banner "Installing Python $PYTHON_VERSION with uv"
-
-    # uv downloads a standalone build; it does not touch /usr/bin/python3.
-    if uv python install "$PYTHON_VERSION"; then
-        ok "Python $PYTHON_VERSION installed"
-    else
-        warn "Could not install Python $PYTHON_VERSION - installing the latest version uv offers instead"
-        uv python install || die "uv could not install any Python interpreter."
-    fi
-
-    log "Python interpreters uv now knows about:"
-    uv python list --only-installed || true
+    banner "Installing Python 3"
+    apt_install "${PKGS_PYTHON[@]}"
 }
 
-install_tools() {
-    [ -z "$UV_TOOLS" ] && return 0
+# Two files, because the interesting debugger skill is stepping from one file
+# into another. Written to the current directory so the reader can keep using
+# them after this script finishes.
+write_samples() {
+    banner "Writing two sample files to work with"
 
-    banner "Installing Python command line tools"
-    # uv tool install is the replacement for pipx: each tool gets its own
-    # isolated environment, and its executables are linked into ~/.local/bin.
-    local tool
-    for tool in $UV_TOOLS; do
-        if uv tool install --quiet "$tool"; then
-            ok "$tool"
-        else
-            warn "Could not install $tool"
-        fi
-    done
+    local dest="${SAMPLE_DIR:-$HOME/python-samples}"
+    mkdir -p "$dest"
+
+    cat >"$dest/stats.py" <<'EOF'
+"""stats.py - a small module for report.py to import."""
+
+
+def mean(numbers):
+    """The average. Raises ZeroDivisionError on an empty list."""
+    return sum(numbers) / len(numbers)
+
+
+def median(numbers):
+    """The middle value once the numbers are in order."""
+    ordered = sorted(numbers)
+    middle = len(ordered) // 2
+
+    if len(ordered) % 2 == 1:
+        return ordered[middle]
+    return (ordered[middle - 1] + ordered[middle]) / 2
+
+
+def spread(numbers):
+    """How far apart the largest and smallest values are."""
+    return max(numbers) - min(numbers)
+
+
+def summarise(numbers):
+    """Everything above, in one dictionary."""
+    return {
+        "count": len(numbers),
+        "mean": mean(numbers),
+        "median": median(numbers),
+        "spread": spread(numbers),
+    }
+EOF
+
+    cat >"$dest/report.py" <<'EOF'
+"""report.py - the program to run under the debugger.
+
+    python3 report.py                      # run it - it crashes on purpose
+    python3 -m pdb report.py               # walk through it a line at a time
+    python3 -m pdb -c continue report.py   # let it crash, then inspect it
+"""
+
+import stats
+
+READINGS = [12, 7, 3, 21, 9, 15]
+
+
+def show(title, numbers):
+    summary = stats.summarise(numbers)
+    print(f"--- {title} ---")
+    for key, value in summary.items():
+        print(f"{key:>7}: {value}")
+
+
+def main():
+    show("readings", READINGS)
+
+    # This one is empty, and mean() divides by len(numbers).
+    missing = []
+    show("missing", missing)
+
+
+if __name__ == "__main__":
+    main()
+EOF
+
+    ok "$dest/stats.py"
+    ok "$dest/report.py"
+    SAMPLE_DEST="$dest"
 }
 
 smoke_test() {
-    banner "Checking that Python runs"
+    banner "Checking Python and the debugger"
 
     local dir
     dir="$(mktemp -d)"
@@ -122,25 +141,42 @@ smoke_test() {
 
     cat >"$dir/check.py" <<'EOF'
 import sys
-print(f"uv-managed Python {sys.version.split()[0]} works")
+
+total = 0
+for n in range(1, 5):
+    total += n
+
+print(f"python works: {sys.version.split()[0]}, total={total}")
 EOF
 
-    if uv run --python "$PYTHON_VERSION" --no-project "$dir/check.py" 2>"$dir/err"; then
-        ok "uv run executed a script successfully"
+    if python3 "$dir/check.py" >"$dir/out" 2>&1 && grep -q "python works" "$dir/out"; then
+        ok "python3 ran a script"
     else
-        warn "uv run failed:"
-        cat "$dir/err" >&2
+        warn "python3 could not run a test script:"
+        head -n 5 "$dir/out" >&2
+        VERIFY_FAILED=1
+        return 0
+    fi
+
+    # Drive pdb non-interactively with -c commands. Using stdin would not work
+    # here: when this script is piped from curl, stdin is already spoken for.
+    if python3 -m pdb -c "break 5" -c continue -c "print(total)" -c quit \
+            "$dir/check.py" >"$dir/pdb_out" 2>&1 \
+        && grep -q "check.py(5)" "$dir/pdb_out"; then
+        ok "pdb stopped the program at a breakpoint"
+    else
+        warn "pdb did not stop where expected. It printed:"
+        head -n 8 "$dir/pdb_out" >&2
         VERIFY_FAILED=1
     fi
 }
 
 summary() {
     banner "Installed"
-    verify "uv"     uv --version
-    verify "uvx"    uvx --version
-    verify_present "ruff" ruff
-    printf '  %s%-14s%s %s\n' "$C_BOLD" "python" "$C_RESET" \
-        "$(uv run --python "$PYTHON_VERSION" --no-project python -V 2>/dev/null || echo 'managed by uv')"
+    verify "python3" python3 --version
+    printf '  %s%-14s%s %s\n' "$C_BOLD" "pdb" "$C_RESET" \
+        "$(python3 -c 'import pdb; print(pdb.__file__)' 2>/dev/null || echo 'NOT FOUND')"
+    printf '  %s%-14s%s %s\n' "$C_BOLD" "samples" "$C_RESET" "${SAMPLE_DEST:-not written}"
 }
 
 main() {
@@ -148,21 +184,20 @@ main() {
     require_apt
     require_sudo
 
-    install_prerequisites
-    install_uv
     install_python
-    install_tools
+    write_samples
     smoke_test
     summary
 
-    finish "Start a project - no pip, no venv, no activate:
+    finish "Two sample files are waiting in ${SAMPLE_DEST:-~/python-samples}:
 
-  uv init myproject          # create a project
-  cd myproject
-  uv add requests            # add a dependency
-  uv run main.py             # run it, in the right environment automatically
-  uv run python              # an interactive interpreter
-  uvx ruff check .           # run a tool without installing it
+  cd ${SAMPLE_DEST:-~/python-samples}
+  python3 report.py                      # run it - it crashes on purpose
+  python3 -m pdb report.py               # walk through it a line at a time
+  python3 -m pdb -c continue report.py   # let it crash, then inspect it
+
+Inside pdb: 'n' next line, 's' step into a call, 'l' list source,
+'p NAME' print a value, 'w' show the call stack, 'c' continue, 'q' quit.
 
 Next step - the Java toolchain:
 

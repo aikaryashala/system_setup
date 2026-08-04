@@ -27,14 +27,23 @@ username and password. Everything from here on runs *inside* Ubuntu.
 ### Steps 2–5 — toolchains (run inside Ubuntu)
 
 ```bash
-# Everything at once
+# Steps 2–5, all at once
 curl -fsSL https://aikaryashala.com/system_setup/scripts/install_all.sh | bash
 
 # …or one step at a time
-curl -fsSL https://aikaryashala.com/system_setup/scripts/install_cmds.sh | bash   # essential commands
-curl -fsSL https://aikaryashala.com/system_setup/scripts/install_c.sh    | bash   # clang + lldb + hex tools
-curl -fsSL https://aikaryashala.com/system_setup/scripts/install_py.sh   | bash   # python3 + uv
-curl -fsSL https://aikaryashala.com/system_setup/scripts/install_java.sh | bash   # JDK + maven + gradle
+curl -fsSL https://aikaryashala.com/system_setup/scripts/install_cmds.sh | bash   # core commands
+curl -fsSL https://aikaryashala.com/system_setup/scripts/install_c.sh    | bash   # clang + lldb
+curl -fsSL https://aikaryashala.com/system_setup/scripts/install_py.sh   | bash   # python3 + pdb
+curl -fsSL https://aikaryashala.com/system_setup/scripts/install_java.sh | bash   # JDK: javac java jshell
+```
+
+### Steps 6–9 — optional extras, in any order, at any time
+
+```bash
+curl -fsSL https://aikaryashala.com/system_setup/scripts/install_more_cmds.sh    | bash  # rg fd fzf bat jq tmux …
+curl -fsSL https://aikaryashala.com/system_setup/scripts/install_binary.sh       | bash  # xxd objdump valgrind make …
+curl -fsSL https://aikaryashala.com/system_setup/scripts/install_uv.sh           | bash  # uv uvx ruff
+curl -fsSL https://aikaryashala.com/system_setup/scripts/install_maven_gradle.sh | bash  # mvn gradle
 ```
 
 Prefer to read before you run? Every script is plain text — open the URL in a
@@ -44,22 +53,37 @@ browser first, or clone this repo and run the files locally.
 
 ## What gets installed
 
+Steps 1–5 are the main sequence and run in order.
+
 | Step | Page | Installs |
 | --- | --- | --- |
 | 1 | [Install Ubuntu](docs/01_install_ubuntu) | WSL2, Ubuntu, virtualization features |
-| 2 | [Essential commands](docs/02_install_cmds) | `git` `curl` `wget` `vim` `tmux` `jq` `tree` `ripgrep` `fd` `fzf` `bat` `htop` `unzip` `rsync` `ssh` and friends |
-| 3 | [C toolchain](docs/03_install_c) | `clang` `lldb` `lld` `make` `cmake` `ninja` `valgrind` + binary inspection: `xxd` `hexdump` `od` `hexyl` `objdump` `readelf` `nm` `strings` `strace` `ltrace` |
-| 4 | [Python toolchain](docs/04_install_py) | [`uv`](https://docs.astral.sh/uv/) and a `uv`-managed Python 3, plus `ruff` |
-| 5 | [Java toolchain](docs/05_install_java) | Temurin JDK (LTS), `javac` `java` `jshell` `jar`, Maven, Gradle |
+| 2 | [Core commands](docs/02_install_cmds) | `curl` `ssh` `ip` `ping` `dig` `git` `nano` `vim` `less` `file` `tree` `zip` `unzip` `htop` |
+| 3 | [C: clang and lldb](docs/03_install_c) | `clang` `lldb` `lld` — compile, and debug the compiled program |
+| 4 | [Python and pdb](docs/04_install_py) | `python3` and `pdb` — run a script, and trace it line by line |
+| 5 | [Java: javac and jshell](docs/05_install_java) | Temurin JDK (LTS), `javac` `java` `jshell` `jar` `javap` |
+
+Steps 6–9 are **independent extras**. Nothing in steps 1–5 needs them, no script
+in the main sequence links to them, and `install_all.sh` does not run them unless
+asked. Install any of them at any time.
+
+| Step | Page | Installs |
+| --- | --- | --- |
+| 6 | [The wider toolkit](docs/06_install_more_cmds) | `ripgrep` `fd` `fzf` `bat` `jq` `tmux` `wget` `rsync` `nc` `traceroute` `ncdu` `tar` `xz` `man` `bc` `time` `dos2unix` `gnupg` |
+| 7 | [Reading binaries](docs/07_install_binary) | `xxd` `hexyl` `hexdump` `od` `objdump` `readelf` `nm` `strings` `size` `valgrind` `strace` `ltrace` `make` `cmake` `ninja` `clang-format` `clang-tidy` |
+| 8 | [Python packages with uv](docs/08_install_uv) | [`uv`](https://docs.astral.sh/uv/), `uvx`, a uv-managed Python, plus `ruff` |
+| 9 | [Java build tools](docs/09_install_maven_gradle) | Maven, Gradle — needs the JDK from step 5 |
 
 ### Tooling choices, and why
 
 - **`clang` + `lldb`** rather than `gcc` + `gdb`. Clang's diagnostics are far
   friendlier to a beginner, and LLDB pairs with it naturally.
-- **`uv` for Python — always.** `uv` replaces `pip`, `venv`, `virtualenv`,
-  `pyenv`, `pipx`, and `poetry` in one fast binary. It also installs and manages
-  the Python interpreter itself, so there is no reason to touch the system
-  Python. Every Python example in this project uses `uv`; none use `pip`.
+- **`python3` + `pdb` first, `uv` when you need packages.** Step 4 is just the
+  interpreter and the debugger that ships inside it — enough to write, run and
+  trace a program with nothing installed. When a project needs a library,
+  step 8's `uv` replaces `pip`, `venv`, `virtualenv`, `pyenv`, `pipx` and
+  `poetry` in one fast binary, and manages interpreters too. No example in this
+  project uses `pip`.
 - **Temurin JDK** from the Adoptium APT repository, because Ubuntu's packaged JDK
   lags behind and the repo gives you clean upgrades.
 
@@ -84,12 +108,20 @@ browser first, or clone this repo and run the files locally.
     │   ├── install_c.sh             # step 3
     │   ├── install_py.sh            # step 4
     │   ├── install_java.sh          # step 5
+    │   ├── install_more_cmds.sh     # step 6  (independent)
+    │   ├── install_binary.sh        # step 7  (independent)
+    │   ├── install_uv.sh            # step 8  (independent)
+    │   ├── install_maven_gradle.sh  # step 9  (independent)
     │   └── install_all.sh           # steps 2–5, in order
     ├── 01_install_ubuntu/index.html
     ├── 02_install_cmds/index.html
     ├── 03_install_c/index.html
     ├── 04_install_py/index.html
-    └── 05_install_java/index.html
+    ├── 05_install_java/index.html
+    ├── 06_install_more_cmds/index.html
+    ├── 07_install_binary/index.html
+    ├── 08_install_uv/index.html
+    └── 09_install_maven_gradle/index.html
 ```
 
 The numbered directories are both the site's URL structure and the intended

@@ -23,11 +23,18 @@ The numbered directories under `docs/` are the install order *and* the URL
 structure. They must stay aligned:
 
 ```
-01_install_ubuntu   →  install_ubuntu_wsl.ps1
-02_install_cmds     →  install_cmds.sh
-03_install_c        →  install_c.sh
-04_install_py       →  install_py.sh
-05_install_java     →  install_java.sh
+main sequence, runs in order
+  01_install_ubuntu   →  install_ubuntu_wsl.ps1
+  02_install_cmds     →  install_cmds.sh
+  03_install_c        →  install_c.sh
+  04_install_py       →  install_py.sh
+  05_install_java     →  install_java.sh
+
+independent extras
+  06_install_more_cmds  →  install_more_cmds.sh
+  07_install_binary     →  install_binary.sh
+  08_install_uv         →  install_uv.sh
+  09_install_maven_gradle → install_maven_gradle.sh
 ```
 
 Adding a step means adding all three: the numbered page directory, the script in
@@ -35,15 +42,57 @@ Adding a step means adding all three: the numbered page directory, the script in
 Renumbering is disruptive — it changes public URLs — so append rather than insert
 unless there is a real reason.
 
+### Steps 6 to 9 are independent — keep them that way
+
+They exist so the main sequence stays short. Two rules follow, and both are easy
+to break by accident:
+
+- **No script in the main sequence may link to steps 6 to 9.** The `finish`
+  message of `install_cmds.sh` points at step 3, `install_c.sh` at step 4,
+  `install_py.sh` at step 5, and `install_java.sh` ends the sequence. Do not add
+  "and then install the extras" to any of them.
+- **`install_all.sh` must not run them by default.** Its `STEPS` default stays
+  `cmds c py java`. The extras are reachable by name
+  (`STEPS="more_cmds binary uv maven_gradle"`) for people who want them.
+
+Linking to them **from the website UI is fine and expected** — the landing page
+carries cards for both, and step 2 and step 3 each point at where their moved
+tools went. The restriction is about the scripted install chain, not navigation.
+
+### What belongs where
+
+- **Step 2** is the irreducible set: `curl ssh ip ping dig git nano vim less
+  file tree zip unzip htop`. Anything else that is a general-purpose command
+  belongs in step 6.
+- **Step 3** is the compile/debug loop only: `clang`, `lldb`, and what those two
+  need to function. A tool that operates on the *output* of compiling — hex
+  viewers, `objdump`, `valgrind`, `strace`, `make` — belongs in step 7.
+- **Step 4** is `python3` and `pdb` — running a script and tracing it. Anything
+  involving packages, environments or extra interpreter versions is step 8.
+- **Step 5** is `javac`, `java` and `jshell` — compiling and running source
+  files. Build tools (Maven, Gradle) are step 9.
+
+Each of steps 3, 4 and 5 ships **two sample files** that the installer writes to
+the user's home directory, because the interesting debugging skill is following
+execution from one file into another. Keep the copy in the script and the copy in
+`docs/examples/` identical.
+
+Note that `binutils` arrives as a dependency of `clang`, so `objdump`, `nm` and
+`readelf` exist after step 3 even though step 7 is what documents them. That is
+unavoidable — do not try to work around it.
+
 ## Non-negotiable conventions
 
-### Python: `uv`, never anything else
+### Python: system `python3` for running, `uv` for everything else
 
-`uv` is the only Python package and interpreter manager used in this project.
-This applies to scripts, website examples, documentation, and any code written
-here. Do not introduce, suggest, or write examples using `pip`, `pip3`,
-`virtualenv`, `python -m venv`, `pyenv`, `pipx`, `poetry`, `pipenv`, or `conda` —
-including "you could also…" asides.
+Step 4 uses Ubuntu's `python3` deliberately — running and debugging a script
+needs no package manager, and pdb is in the standard library.
+
+The moment packages, environments or interpreter versions enter the picture, it
+is `uv` and only `uv` (step 8). Do not introduce, suggest, or write examples
+using `pip`, `pip3`, `virtualenv`, `python -m venv`, `pyenv`, `pipx`, `poetry`,
+`pipenv`, or `conda` — including "you could also…" asides. Never install
+packages into the system `python3`; modern Ubuntu refuses anyway.
 
 | Instead of | Use |
 | --- | --- |

@@ -2,7 +2,7 @@
  *
  *   clang -g -O0 -Wall -Wextra -o hello hello.c
  *   ./hello
- *   xxd -l 64 hello
+ *   lldb ./hello
  */
 
 #include <stdio.h>

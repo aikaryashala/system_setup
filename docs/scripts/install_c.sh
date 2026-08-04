@@ -2,9 +2,12 @@
 #
 # install_c.sh - Step 3 of https://aikaryashala.com/system_setup
 #
-# A C toolchain built around clang (compiler) and lldb (debugger), plus the
-# tools for looking at a compiled program as raw bytes: xxd, hexdump, od, hexyl,
-# objdump, readelf, nm, strings.
+# The two tools you need to write C: clang to compile it, lldb to debug the
+# program that comes out.
+#
+# Everything else that works on a compiled file - reading it as hex, taking it
+# apart, checking it for memory errors, build systems - is step 7, installed
+# separately.
 #
 # Run inside Ubuntu:
 #   curl -fsSL https://aikaryashala.com/system_setup/scripts/install_c.sh | bash
@@ -37,63 +40,18 @@ _bootstrap_common
 
 # ---------------------------------------------------------------------------
 
-# The compiler and its immediate friends.
-PKGS_COMPILER=(
-    clang               # the C and C++ compiler
+# The compiler, the debugger, and the bare minimum for them to work. apt pulls
+# in the assembler and linker clang needs as dependencies.
+PKGS_C=(
+    clang               # the C compiler
     lld                 # LLVM's linker, much faster than the default
-    llvm                # llvm-objdump, llvm-nm, llvm-readelf and friends
-    libc6-dev           # the C standard library headers
-    build-essential     # make, the C library, and the headers clang expects
-    pkg-config          # locate the compiler flags for a library
-)
-
-# Debugging and inspecting a running program.
-PKGS_DEBUG=(
     lldb                # the debugger
-    valgrind            # find memory leaks and invalid reads/writes
-    strace              # trace the system calls a program makes
-    ltrace              # trace the library calls a program makes
+    libc6-dev           # the C standard library headers
 )
 
-# Reading a compiled file as bytes rather than as a program.
-PKGS_BINARY=(
-    binutils            # objdump, readelf, nm, strings, size, ar, ranlib
-    coreutils           # od, the POSIX octal/hex dump
-    file                # identify a file from its magic bytes
-)
-
-# Package names for the hex viewers moved around between Ubuntu releases: xxd
-# split out of vim-common, and hexdump moved from bsdmainutils to bsdextrautils.
-# Offer every spelling and take whichever the release actually has.
-PKGS_BINARY_OPTIONAL=(
-    xxd                 # the classic hex dump, and hex -> binary with -r
-    vim-common          # older home of xxd
-    bsdextrautils       # hexdump
-    bsdmainutils        # older home of hexdump
-    hexyl               # colourised hex viewer, much easier to read than xxd
-)
-
-# Build systems.
-PKGS_TOOLING=(
-    cmake
-    ninja-build
-)
-
-# Code quality. Useful, but not required in order to compile anything.
-PKGS_TOOLING_OPTIONAL=(
-    clang-format        # format C source consistently
-    clang-tidy          # static analysis, catches bugs before you run them
-    clang-tools         # scan-build and friends
-)
-
-install_compiler() {
-    banner "Installing the C compiler and linker"
-    apt_install "${PKGS_COMPILER[@]}"
-}
-
-install_debuggers() {
-    banner "Installing debuggers"
-    apt_install "${PKGS_DEBUG[@]}"
+install_toolchain() {
+    banner "Installing clang and lldb"
+    apt_install "${PKGS_C[@]}"
 }
 
 # -fsanitize=address is the single most useful flag a C beginner can learn, and
@@ -117,22 +75,10 @@ install_sanitizer_runtime() {
     apt_install_optional "libclang-rt-${major}-dev"
 }
 
-install_binary_tools() {
-    banner "Installing tools for viewing files in hex and binary"
-    apt_install "${PKGS_BINARY[@]}"
-    apt_install_optional "${PKGS_BINARY_OPTIONAL[@]}"
-}
-
-install_tooling() {
-    banner "Installing build tools and static analysis"
-    apt_install "${PKGS_TOOLING[@]}"
-    apt_install_optional "${PKGS_TOOLING_OPTIONAL[@]}"
-}
-
 # Prove the toolchain actually works end to end, rather than only checking that
-# binaries exist.
+# the binaries exist.
 smoke_test() {
-    banner "Compiling a test program"
+    banner "Compiling and debugging a test program"
     local dir
     dir="$(mktemp -d)"
     # shellcheck disable=SC2064
@@ -162,9 +108,29 @@ EOF
         VERIFY_FAILED=1
     fi
 
+    # Drive lldb non-interactively: set a breakpoint, run, and confirm it
+    # stopped where it was asked to. This checks the debugger can actually read
+    # the debug information clang produced, not merely that it is installed.
+    lldb --batch -o "breakpoint set --name main" -o run -o quit "$dir/hello" \
+        >"$dir/lldb_out" 2>&1 || true
+
+    if grep -q "stop reason = breakpoint" "$dir/lldb_out"; then
+        ok "lldb stopped at a breakpoint in main"
+    elif grep -qE "personality set failed|ptrace|Operation not permitted" "$dir/lldb_out"; then
+        # Starting a process under a debugger needs ptrace, which container
+        # runtimes block by default. The debugger is installed and working - the
+        # sandbox simply will not let it take control of another process.
+        warn "lldb is installed but this environment forbids debugging"
+        warn "(no ptrace permission - normal inside a container)."
+        warn "It will work normally on a real Ubuntu or WSL machine."
+    else
+        warn "lldb did not stop at a breakpoint as expected. It printed:"
+        head -n 5 "$dir/lldb_out" >&2
+        VERIFY_FAILED=1
+    fi
+
     # The guide tells people to use -fsanitize=address, so prove it links and
-    # actually catches something. This is the check that would have caught the
-    # missing libclang-rt package.
+    # actually catches something.
     cat >"$dir/overflow.c" <<'EOF'
 int main(void) {
     int numbers[4] = {1, 2, 3, 4};
@@ -182,11 +148,11 @@ EOF
         return 0
     fi
 
-    # The program is expected to abort, so ignore its exit status and judge by
-    # what it printed. Capture to a file rather than piping, so the output can
-    # be shown if this ever fails.
-    "$dir/overflow" >"$dir/asan_out" 2>&1
-    local status=$?
+    # `|| status=$?` rather than a bare call: this program is meant to die, and
+    # under `set -e` a bare call would abort the whole script before we could
+    # look at how it died.
+    local status=0
+    "$dir/overflow" >"$dir/asan_out" 2>&1 || status=$?
 
     if grep -q "AddressSanitizer" "$dir/asan_out"; then
         ok "AddressSanitizer works and caught a buffer overflow"
@@ -204,32 +170,12 @@ EOF
         head -n 5 "$dir/asan_out" >&2
         VERIFY_FAILED=1
     fi
-
-    # Show the reader what a hex dump of a real binary looks like.
-    if have xxd; then
-        printf '\n%sThe first 64 bytes of that binary, in hex:%s\n' "$C_DIM" "$C_RESET"
-        xxd -l 64 "$dir/hello" || true
-        printf '%sThose first four bytes - 7f 45 4c 46 - are .ELF, the marker\n' "$C_DIM"
-        printf 'that tells Linux this file is an executable program.%s\n' "$C_RESET"
-    fi
 }
 
 summary() {
     banner "Installed"
-    verify "clang"       clang --version
-    verify "lldb"        lldb --version
-    verify "make"        make --version
-    verify "cmake"       cmake --version
-    verify "valgrind"    valgrind --version
-    verify "objdump"     objdump --version
-    verify_present "xxd"      xxd
-    verify_present "hexdump"  hexdump
-    verify_present "od"       od
-    verify_present "hexyl"    hexyl
-    verify_present "readelf"  readelf
-    verify_present "nm"       nm
-    verify_present "strings"  strings
-    verify_present "strace"   strace
+    verify "clang" clang --version
+    verify "lldb"  lldb --version
 }
 
 main() {
@@ -237,11 +183,8 @@ main() {
     require_apt
     require_sudo
 
-    install_compiler
-    install_debuggers
+    install_toolchain
     install_sanitizer_runtime
-    install_binary_tools
-    install_tooling
     smoke_test
     summary
 
@@ -250,7 +193,6 @@ main() {
   clang -g -O0 -Wall -Wextra -o hello hello.c   # compile with debug info
   ./hello                                       # run it
   lldb ./hello                                  # debug it
-  xxd hello | head                              # look at it as bytes
 
 Next step - Python and uv:
 

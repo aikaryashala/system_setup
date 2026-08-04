@@ -11,6 +11,10 @@
 #
 # Safe to run more than once.
 #
+# Steps 6 to 9 are independent extras and are deliberately NOT part of this
+# run. Ask for them by name if you want them:
+#   STEPS="more_cmds binary uv maven_gradle" bash install_all.sh
+#
 # Optional environment variables:
 #   STEPS="cmds c py java"   run only some of the steps, in this order
 
@@ -48,11 +52,15 @@ RAN_STEPS=()
 
 step_label() {
     case "$1" in
-        cmds) echo "Essential command line tools" ;;
-        c)    echo "C toolchain: clang, lldb, hex viewers" ;;
-        py)   echo "Python toolchain: uv" ;;
-        java) echo "Java toolchain: JDK, Maven, Gradle" ;;
-        *)    echo "$1" ;;
+        cmds)      echo "Core command line tools" ;;
+        c)         echo "C toolchain: clang and lldb" ;;
+        py)        echo "Python 3 and the pdb debugger" ;;
+        java)      echo "Java: JDK, javac, java, jshell" ;;
+        more_cmds) echo "The wider command line toolkit" ;;
+        binary)    echo "Binary, analysis and build tools" ;;
+        uv)           echo "uv: Python packages, projects and versions" ;;
+        maven_gradle) echo "Java build tools: Maven and Gradle" ;;
+        *)         echo "$1" ;;
     esac
 }
 

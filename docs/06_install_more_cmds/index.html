@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en" data-theme="">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Step 6 — The wider command line toolkit · system_setup</title>
+<meta name="description" content="Install ripgrep, fd, fzf, bat, jq, tmux, wget, rsync and the rest of the everyday Ubuntu command line toolkit.">
+<link rel="stylesheet" href="../assets/style.css">
+<script>
+(function(){try{var t=localStorage.getItem('system-setup-theme');if(t){document.documentElement.setAttribute('data-theme',t);}}catch(e){}}());
+</script>
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <div class="inner">
+    <a class="brand" href="../"><span class="mark">&gt;_</span> system_setup</a>
+    <nav class="header-nav">
+      <a href="../scripts/">Scripts</a>
+      <a href="https://github.com/aikaryashala/system_setup">GitHub</a>
+      <button class="theme-toggle" type="button" aria-label="Switch theme">☽</button>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+<div class="prose">
+
+  <p class="breadcrumb"><a href="../">system_setup</a> / Step 6</p>
+
+  <p class="eyebrow">Step 6 · Ubuntu · Independent</p>
+  <h1>The wider command line toolkit</h1>
+  <p class="lede">
+    Search that is fast enough to use without thinking, JSON you can actually
+    read, a terminal that survives disconnection, and the remaining network and
+    archive utilities.
+  </p>
+
+  <div class="callout note">
+    <div class="callout-title">This step stands alone</div>
+    <p>
+      Nothing in steps 1 to 5 needs anything here, and nothing here needs them.
+      Install it whenever you like — before the language toolchains, after, or
+      never. It is not part of the <code>install_all.sh</code> run.
+    </p>
+  </div>
+
+  <h2 id="run">Run this</h2>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>curl -fsSL https://aikaryashala.com/system_setup/scripts/install_more_cmds.sh | bash</code></pre>
+  </div>
+
+  <h2 id="whats-installed">What gets installed</h2>
+
+  <h3>Searching</h3>
+  <ul class="cmd-list">
+    <li><code>rg</code><span>ripgrep: search file contents across a whole project, fast, skipping ignored files.</span></li>
+    <li><code>fd</code><span>Find files by name, with sane defaults.</span></li>
+    <li><code>fzf</code><span>Fuzzy-pick from any list. Press <kbd>Ctrl</kbd>+<kbd>R</kbd> to search your command history.</span></li>
+    <li><code>bat</code><span>Like <code>cat</code>, but with syntax highlighting and line numbers.</span></li>
+    <li><code>jq</code><span>Read, filter and reshape JSON.</span></li>
+  </ul>
+
+  <h3>Networking</h3>
+  <ul class="cmd-list">
+    <li><code>wget</code><span>Fetch URLs; better than curl at large or resumable downloads.</span></li>
+    <li><code>rsync</code><span>Copy directories efficiently — only what changed, locally or over ssh.</span></li>
+    <li><code>nc</code><span>Netcat: open a raw TCP connection. Invaluable for testing a port.</span></li>
+    <li><code>traceroute</code><span>See the hops between you and a host.</span></li>
+  </ul>
+
+  <h3>Working in the terminal</h3>
+  <ul class="cmd-list">
+    <li><code>tmux</code><span>Split the terminal, and keep sessions alive when you disconnect.</span></li>
+    <li><code>ncdu</code><span>What is using my disk. Navigable, unlike <code>du</code>.</span></li>
+    <li><code>ps</code> <code>top</code> <code>watch</code> <code>free</code><span>From <code>procps</code>: the classic process and memory tools.</span></li>
+    <li><code>man</code><span>The manual pages, for when you want the real answer.</span></li>
+    <li><code>bc</code><span>A calculator that lives in the terminal.</span></li>
+    <li><code>time</code><span>Measure how long a command takes.</span></li>
+  </ul>
+
+  <h3>Archives and text</h3>
+  <ul class="cmd-list">
+    <li><code>tar</code> <code>xz</code><span>The archive formats most Linux software ships in.</span></li>
+    <li><code>dos2unix</code><span>Strip Windows line endings — a common annoyance when files come from the C: drive.</span></li>
+    <li><code>gnupg</code><span>Verify signatures — used when adding third-party package repositories.</span></li>
+  </ul>
+
+  <div class="callout note">
+    <div class="callout-title">Why bat and fd need a fix-up</div>
+    <p>
+      Ubuntu ships these as <code>batcat</code> and <code>fdfind</code>, because
+      the names <code>bat</code> and <code>fd</code> were already taken by other
+      packages. The script creates links in <code>~/.local/bin</code> so the
+      normal names work, and makes sure that directory is on your
+      <code>PATH</code>.
+    </p>
+  </div>
+
+  <h2 id="try">Try them</h2>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="comment"># search every file under the current directory for a word</span>
+<span class="prompt">$ </span>rg "TODO"
+
+<span class="comment"># find files by name, anywhere below here</span>
+<span class="prompt">$ </span>fd "\.c$"
+
+<span class="comment"># look at a file with syntax highlighting</span>
+<span class="prompt">$ </span>bat hello.c
+
+<span class="comment"># pull one field out of a JSON response</span>
+<span class="prompt">$ </span>curl -s https://api.github.com/repos/aikaryashala/system_setup | jq -r .full_name
+
+<span class="comment"># copy a folder to another machine, resuming if it breaks</span>
+<span class="prompt">$ </span>rsync -avP ./project/ user@host:~/project/
+
+<span class="comment"># how long did that take?</span>
+<span class="prompt">$ </span>/usr/bin/time -v ./slow-program</code></pre>
+  </div>
+
+  <h3>tmux in sixty seconds</h3>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>tmux                    <span class="comment"># start a session</span>
+<span class="prompt">$ </span>tmux attach             <span class="comment"># come back to it later</span></code></pre>
+  </div>
+
+  <p>
+    Inside tmux, every shortcut starts with <kbd>Ctrl</kbd>+<kbd>B</kbd>. Then:
+    <kbd>%</kbd> splits left/right, <kbd>"</kbd> splits top/bottom, arrow keys
+    move between panes, and <kbd>d</kbd> detaches — leaving everything running.
+  </p>
+
+  <h2 id="verify">Check it worked</h2>
+
+  <p>
+    The script adds <code>~/.local/bin</code> to your <code>PATH</code> for
+    <code>bat</code> and <code>fd</code>, so load that change before checking:
+  </p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>source ~/.bashrc
+<span class="prompt">$ </span>rg --version &amp;&amp; jq --version &amp;&amp; bat --version &amp;&amp; fd --version</code></pre>
+  </div>
+
+  <div class="callout warn">
+    <div class="callout-title">“command not found” right after installing</div>
+    <p>
+      Your shell caches where commands live. Run <code>source ~/.bashrc</code>,
+      or just close and reopen the terminal.
+    </p>
+  </div>
+
+  <nav class="page-nav">
+    <a href="../"><span class="dir">Back</span><span class="title">All steps</span></a>
+    <a class="next" href="../scripts/"><span class="dir">Reference</span><span class="title">All scripts →</span></a>
+  </nav>
+
+</div>
+</main>
+
+<footer class="site-footer">
+  <div class="inner">
+    <span>system_setup — <a href="https://aikaryashala.com">aikaryashala</a></span>
+    <span class="spacer"><a href="https://github.com/aikaryashala/system_setup">Source on GitHub</a></span>
+  </div>
+</footer>
+
+<script src="../assets/site.js"></script>
+</body>
+</html>

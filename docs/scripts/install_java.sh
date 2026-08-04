@@ -2,11 +2,11 @@
 #
 # install_java.sh - Step 5 of https://aikaryashala.com/system_setup
 #
-# Installs a Temurin JDK (the OpenJDK build from Eclipse Adoptium), plus Maven
-# and Gradle for building larger projects.
+# A Temurin JDK (the OpenJDK build from Eclipse Adoptium): javac to compile,
+# java to run, and jshell for trying an idea out without writing a file.
 #
-# The JDK gives you javac (compiler), java (runtime), jshell (an interactive
-# Java prompt, ideal for trying things out) and jar (packaging).
+# Maven and Gradle are step 9, installed separately. You do not need a build
+# tool to compile and run Java source files.
 #
 # Run inside Ubuntu:
 #   curl -fsSL https://aikaryashala.com/system_setup/scripts/install_java.sh | bash
@@ -15,8 +15,6 @@
 #
 # Optional environment variables:
 #   JDK_VERSION=25        which Temurin LTS release to install
-#   SKIP_GRADLE=1         do not install Gradle
-#   SKIP_MAVEN=1          do not install Maven
 
 # shellcheck source-path=SCRIPTDIR
 set -euo pipefail
@@ -48,11 +46,10 @@ JDK_VERSION="${JDK_VERSION:-25}"        # current long term support release
 JDK_FALLBACK_VERSION="21"               # previous LTS, available everywhere
 ADOPTIUM_KEYRING="/etc/apt/keyrings/adoptium.gpg"
 ADOPTIUM_LIST="/etc/apt/sources.list.d/adoptium.list"
-GRADLE_ROOT="/opt/gradle"
 
 install_prerequisites() {
     banner "Checking prerequisites"
-    apt_install ca-certificates curl gnupg unzip
+    apt_install ca-certificates curl gnupg
 }
 
 # Adoptium publishes a Debian repository. Ubuntu's own openjdk packages lag
@@ -137,54 +134,97 @@ configure_java_home() {
     ok "JAVA_HOME=$java_home"
 }
 
-install_maven() {
-    [ "${SKIP_MAVEN:-0}" = "1" ] && return 0
-    banner "Installing Maven"
-    apt_install maven
+# Two files, because one class calling another is where javac stops being
+# trivial: compiling Report.java pulls in Stats.java automatically.
+write_samples() {
+    banner "Writing two sample files to work with"
+
+    local dest="${SAMPLE_DIR:-$HOME/java-samples}"
+    mkdir -p "$dest"
+
+    cat >"$dest/Stats.java" <<'EOF'
+/* Stats.java - a small class for Report.java to use. */
+public class Stats {
+
+    /** The average. Returns 0 for an empty array. */
+    public static double mean(int[] numbers) {
+        if (numbers.length == 0) {
+            return 0;
+        }
+        int total = 0;
+        for (int n : numbers) {
+            total += n;
+        }
+        return (double) total / numbers.length;
+    }
+
+    /** The largest value. */
+    public static int max(int[] numbers) {
+        int best = numbers[0];
+        for (int n : numbers) {
+            if (n > best) {
+                best = n;
+            }
+        }
+        return best;
+    }
+
+    /** The smallest value. */
+    public static int min(int[] numbers) {
+        int worst = numbers[0];
+        for (int n : numbers) {
+            if (n < worst) {
+                worst = n;
+            }
+        }
+        return worst;
+    }
+
+    /** How far apart the largest and smallest values are. */
+    public static int spread(int[] numbers) {
+        return max(numbers) - min(numbers);
+    }
 }
+EOF
 
-install_gradle() {
-    [ "${SKIP_GRADLE:-0}" = "1" ] && return 0
-    banner "Installing Gradle"
+    cat >"$dest/Report.java" <<'EOF'
+/* Report.java - the program that uses Stats.java.
+ *
+ *   javac Report.java          # javac finds and compiles Stats.java too
+ *   java Report
+ *   java Report 4 8 15 16 23 42
+ */
+public class Report {
 
-    # Ubuntu's gradle package is usually several major versions behind, so take
-    # the current release straight from Gradle. Their version endpoint tells us
-    # what that is, which avoids hard-coding a version that will go stale.
-    local meta version url
-    meta="$(curl -fsSL https://services.gradle.org/versions/current 2>/dev/null || true)"
+    public static void main(String[] args) {
+        int[] readings = parse(args);
 
-    if [ -n "$meta" ] && have jq; then
-        version="$(printf '%s' "$meta" | jq -r '.version // empty')"
-        url="$(printf '%s' "$meta" | jq -r '.downloadUrl // empty')"
-    fi
+        System.out.println("--- readings ---");
+        System.out.printf("  count: %d%n", readings.length);
+        System.out.printf("   mean: %.2f%n", Stats.mean(readings));
+        System.out.printf("    max: %d%n", Stats.max(readings));
+        System.out.printf("    min: %d%n", Stats.min(readings));
+        System.out.printf(" spread: %d%n", Stats.spread(readings));
+    }
 
-    if [ -z "${version:-}" ] || [ -z "${url:-}" ]; then
-        warn "Could not reach services.gradle.org - installing Ubuntu's gradle package instead"
-        apt_install_optional gradle
-        return 0
-    fi
+    /** Use the numbers given on the command line, or a default set. */
+    private static int[] parse(String[] args) {
+        if (args.length == 0) {
+            return new int[] {12, 7, 3, 21, 9, 15};
+        }
 
-    if [ -d "$GRADLE_ROOT/gradle-$version" ]; then
-        skip "Gradle $version is already installed"
-    else
-        local tmp
-        tmp="$(mktemp -d)"
-        # shellcheck disable=SC2064
-        trap "rm -rf '$tmp'" RETURN
+        int[] numbers = new int[args.length];
+        for (int i = 0; i < args.length; i++) {
+            numbers[i] = Integer.parseInt(args[i]);
+        }
+        return numbers;
+    }
+}
+EOF
 
-        log "Downloading Gradle $version"
-        curl -fsSL -o "$tmp/gradle.zip" "$url" || die "Could not download Gradle from $url"
-
-        $SUDO install -d -m 0755 "$GRADLE_ROOT"
-        $SUDO unzip -q -o "$tmp/gradle.zip" -d "$GRADLE_ROOT" || die "Could not unpack Gradle."
-        ok "Gradle $version unpacked into $GRADLE_ROOT/gradle-$version"
-    fi
-
-    # A stable symlink means upgrading Gradle later does not require touching
-    # anyone's PATH.
-    $SUDO ln -sfn "$GRADLE_ROOT/gradle-$version" "$GRADLE_ROOT/current"
-    $SUDO ln -sfn "$GRADLE_ROOT/current/bin/gradle" /usr/local/bin/gradle
-    ok "gradle is on PATH via /usr/local/bin/gradle"
+    ok "$dest/Stats.java"
+    ok "$dest/Report.java"
+    SAMPLE_DEST="$dest"
 }
 
 smoke_test() {
@@ -209,6 +249,28 @@ EOF
         warn "Java could not compile and run a test program:"
         cat "$dir/err" >&2
         VERIFY_FAILED=1
+        return 0
+    fi
+
+    # jshell evaluates from stdin. Feed it a here-doc rather than a pipe from
+    # this script's own stdin, which is already spoken for when curl-piped.
+    if jshell -q -s /dev/stdin >"$dir/jshell_out" 2>&1 <<'EOF'
+int x = 21;
+System.out.println("jshell says " + (x * 2));
+/exit
+EOF
+    then
+        if grep -q "jshell says 42" "$dir/jshell_out"; then
+            ok "jshell evaluated an expression"
+        else
+            warn "jshell ran but did not produce the expected result:"
+            head -n 5 "$dir/jshell_out" >&2
+            VERIFY_FAILED=1
+        fi
+    else
+        warn "jshell could not start:"
+        head -n 5 "$dir/jshell_out" >&2
+        VERIFY_FAILED=1
     fi
 }
 
@@ -216,11 +278,11 @@ summary() {
     banner "Installed"
     verify "java"    java -version
     verify "javac"   javac -version
-    verify "maven"   mvn -version
-    verify "gradle"  gradle --version
     verify_present "jshell" jshell
     verify_present "jar"    jar
+    verify_present "javap"  javap
     printf '  %s%-14s%s %s\n' "$C_BOLD" "JAVA_HOME" "$C_RESET" "${JAVA_HOME:-not set}"
+    printf '  %s%-14s%s %s\n' "$C_BOLD" "samples" "$C_RESET" "${SAMPLE_DEST:-not written}"
 }
 
 main() {
@@ -232,21 +294,20 @@ main() {
     add_adoptium_repo
     install_jdk
     configure_java_home
-    install_maven
-    install_gradle
+    write_samples
     smoke_test
     summary
 
-    finish "Try it out:
+    finish "Two sample files are waiting in ${SAMPLE_DEST:-~/java-samples}:
 
-  jshell                                  # an interactive Java prompt
-  javac Hello.java && java Hello          # compile and run a single file
-  java Hello.java                         # or run the source directly
-  mvn archetype:generate                  # start a Maven project
-  gradle init                             # start a Gradle project
+  cd ${SAMPLE_DEST:-~/java-samples}
+  javac Report.java             # compiles Stats.java too, automatically
+  java Report                   # run it
+  java Report 4 8 15 16 23 42   # run it with your own numbers
+  jshell                        # or try an idea with no file at all
 
-That was the last step. Everything from https://aikaryashala.com/system_setup is
-now installed."
+That is the last step of the main sequence. Everything from
+https://aikaryashala.com/system_setup steps 1 to 5 is now installed."
 }
 
 main "$@"

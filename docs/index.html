@@ -56,30 +56,71 @@
 
     <li><a class="step-card platform-ubuntu" href="02_install_cmds/">
       <span class="num">STEP 2</span>
-      <h3>Essential commands</h3>
-      <p>The everyday tools: fetching files, editing them, searching them, and seeing what your machine is doing.</p>
-      <span class="tools">git curl vim tmux jq rg fd fzf bat</span>
+      <h3>Core commands</h3>
+      <p>The small set you cannot work without: fetching a file, reaching another machine, editing text, looking around.</p>
+      <span class="tools">git curl ssh vim nano less file tree htop</span>
     </a></li>
 
     <li><a class="step-card platform-ubuntu" href="03_install_c/">
       <span class="num">STEP 3</span>
       <h3>C: clang and lldb</h3>
-      <p>Compile C with clang, debug it with lldb, and read the compiled result byte by byte in hexadecimal.</p>
-      <span class="tools">clang lldb xxd hexyl objdump readelf</span>
+      <p>Compile C with clang, then stop the running program under lldb and look at what it is actually doing.</p>
+      <span class="tools">clang lldb lld</span>
     </a></li>
 
     <li><a class="step-card platform-ubuntu" href="04_install_py/">
       <span class="num">STEP 4</span>
-      <h3>Python with uv</h3>
-      <p>One fast tool that installs Python itself, manages dependencies, and runs your code. No pip, no venv.</p>
-      <span class="tools">uv uvx python3 ruff</span>
+      <h3>Python and pdb</h3>
+      <p>Run a script, then stop it mid-flight and trace it line by line with the debugger built into Python.</p>
+      <span class="tools">python3 pdb trace</span>
     </a></li>
 
     <li><a class="step-card platform-ubuntu" href="05_install_java/">
       <span class="num">STEP 5</span>
-      <h3>Java toolchain</h3>
-      <p>A current Temurin JDK, plus Maven and Gradle for when a single file stops being enough.</p>
-      <span class="tools">java javac jshell mvn gradle</span>
+      <h3>Java: javac and jshell</h3>
+      <p>A current Temurin JDK. Compile and run source files, or try an idea in jshell with no file at all.</p>
+      <span class="tools">java javac jshell</span>
+    </a></li>
+
+  </ul>
+
+  <div class="prose">
+    <h2 id="extras">Optional extras</h2>
+    <p>
+      These four stand on their own. Nothing in steps 1 to 5 needs them, and
+      they are not part of the install-everything command below. Add them
+      whenever you want what they contain.
+    </p>
+  </div>
+
+  <ul class="steps">
+
+    <li><a class="step-card platform-ubuntu" href="06_install_more_cmds/">
+      <span class="num">STEP 6</span>
+      <h3>The wider toolkit</h3>
+      <p>Fast search, readable JSON, a terminal that survives disconnection, and the remaining network and archive tools.</p>
+      <span class="tools">rg fd fzf bat jq tmux wget rsync</span>
+    </a></li>
+
+    <li><a class="step-card platform-ubuntu" href="07_install_binary/">
+      <span class="num">STEP 7</span>
+      <h3>Reading binaries</h3>
+      <p>Take a compiled program apart: read it as hex, disassemble it, check it for memory errors, watch its system calls.</p>
+      <span class="tools">xxd hexyl objdump readelf nm valgrind strace make</span>
+    </a></li>
+
+    <li><a class="step-card platform-ubuntu" href="08_install_uv/">
+      <span class="num">STEP 8</span>
+      <h3>Python packages with uv</h3>
+      <p>One fast tool for libraries, projects and Python versions. Replaces pip, venv, pyenv, pipx and poetry.</p>
+      <span class="tools">uv uvx ruff</span>
+    </a></li>
+
+    <li><a class="step-card platform-ubuntu" href="09_install_maven_gradle/">
+      <span class="num">STEP 9</span>
+      <h3>Java build tools</h3>
+      <p>Maven and Gradle, for Java projects that need a third-party library, a test framework, or more than a few files.</p>
+      <span class="tools">mvn gradle gradlew</span>
     </a></li>
 
   </ul>
@@ -91,10 +132,15 @@
     <p>
       Once step 1 is done and you have an Ubuntu terminal open, this single
       command runs steps 2 through 5 back to back. It takes a few minutes.
+      Steps 6 to 9 are not included — ask for them by name if you want them.
     </p>
 
     <div class="codeblock" data-label="ubuntu terminal">
-<pre><code><span class="prompt">$ </span>curl -fsSL https://aikaryashala.com/system_setup/scripts/install_all.sh | bash</code></pre>
+<pre><code><span class="comment"># steps 2 to 5</span>
+<span class="prompt">$ </span>curl -fsSL https://aikaryashala.com/system_setup/scripts/install_all.sh | bash
+
+<span class="comment"># the optional extras, if you want them</span>
+<span class="prompt">$ </span>curl -fsSL https://aikaryashala.com/system_setup/scripts/install_all.sh | STEPS="more_cmds binary uv maven_gradle" bash</code></pre>
     </div>
 
     <div class="callout note">
@@ -122,24 +168,29 @@
             <td>Real Linux, running next to Windows, sharing your files.</td>
           </tr>
           <tr>
-            <td>C</td>
+            <td>C <span class="muted">(step 3)</span></td>
             <td><code>clang</code>, <code>lldb</code></td>
             <td>Clang explains its errors better than any other C compiler, and LLDB is its matching debugger.</td>
           </tr>
           <tr>
-            <td>Binary inspection</td>
+            <td>Binary inspection <span class="muted">(step 7)</span></td>
             <td><code>xxd</code>, <code>hexyl</code>, <code>hexdump</code>, <code>od</code>, <code>objdump</code>, <code>readelf</code></td>
             <td>Seeing a program as bytes is how you learn what compiling actually produced.</td>
           </tr>
           <tr>
-            <td>Python</td>
+            <td>Python <span class="muted">(step 4)</span></td>
+            <td><code>python3</code>, <code>pdb</code></td>
+            <td>The interpreter, and the debugger that ships inside it. Enough to write, run and trace a program.</td>
+          </tr>
+          <tr>
+            <td>Python packages <span class="muted">(step 8)</span></td>
             <td><code>uv</code></td>
             <td>Replaces pip, venv, pyenv, pipx and poetry with one tool that is also far faster.</td>
           </tr>
           <tr>
-            <td>Java</td>
-            <td><code>Temurin JDK</code>, <code>Maven</code>, <code>Gradle</code></td>
-            <td>The mainstream OpenJDK build, kept current, with both major build tools.</td>
+            <td>Java <span class="muted">(step 5)</span></td>
+            <td><code>Temurin JDK</code>, <code>javac</code>, <code>java</code>, <code>jshell</code></td>
+            <td>The mainstream OpenJDK build, kept current. Maven and Gradle are step 9.</td>
           </tr>
         </tbody>
       </table>

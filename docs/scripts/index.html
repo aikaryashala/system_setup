@@ -53,31 +53,55 @@
           <td><a href="install_cmds.sh"><code>install_cmds.sh</code></a></td>
           <td><a href="../02_install_cmds/">2</a></td>
           <td>Ubuntu</td>
-          <td>Essential command line tools</td>
+          <td>Core command line tools</td>
         </tr>
         <tr>
           <td><a href="install_c.sh"><code>install_c.sh</code></a></td>
           <td><a href="../03_install_c/">3</a></td>
           <td>Ubuntu</td>
-          <td>clang, lldb, and the hex and binary viewers</td>
+          <td>clang and lldb — compile and debug</td>
         </tr>
         <tr>
           <td><a href="install_py.sh"><code>install_py.sh</code></a></td>
           <td><a href="../04_install_py/">4</a></td>
           <td>Ubuntu</td>
-          <td>uv, and a uv-managed Python</td>
+          <td>Python 3 and the pdb debugger</td>
         </tr>
         <tr>
           <td><a href="install_java.sh"><code>install_java.sh</code></a></td>
           <td><a href="../05_install_java/">5</a></td>
           <td>Ubuntu</td>
-          <td>Temurin JDK, Maven, Gradle</td>
+          <td>Temurin JDK — javac, java, jshell</td>
+        </tr>
+        <tr>
+          <td><a href="install_more_cmds.sh"><code>install_more_cmds.sh</code></a></td>
+          <td><a href="../06_install_more_cmds/">6</a></td>
+          <td>Ubuntu</td>
+          <td>The wider toolkit — independent of steps 1–5</td>
+        </tr>
+        <tr>
+          <td><a href="install_binary.sh"><code>install_binary.sh</code></a></td>
+          <td><a href="../07_install_binary/">7</a></td>
+          <td>Ubuntu</td>
+          <td>Hex, disassembly, valgrind, make — independent of steps 1–5</td>
+        </tr>
+        <tr>
+          <td><a href="install_uv.sh"><code>install_uv.sh</code></a></td>
+          <td><a href="../08_install_uv/">8</a></td>
+          <td>Ubuntu</td>
+          <td>uv: packages, projects, Python versions — independent of steps 1–5</td>
+        </tr>
+        <tr>
+          <td><a href="install_maven_gradle.sh"><code>install_maven_gradle.sh</code></a></td>
+          <td><a href="../09_install_maven_gradle/">9</a></td>
+          <td>Ubuntu</td>
+          <td>Maven and Gradle — independent, but needs the JDK from step 5</td>
         </tr>
         <tr>
           <td><a href="install_all.sh"><code>install_all.sh</code></a></td>
           <td>2–5</td>
           <td>Ubuntu</td>
-          <td>Runs the four Ubuntu installers in order</td>
+          <td>Runs steps 2 to 5 in order. Does <em>not</em> include 6 to 9.</td>
         </tr>
         <tr>
           <td><a href="common.sh"><code>common.sh</code></a></td>
@@ -128,11 +152,11 @@
     <table>
       <thead><tr><th>Variable</th><th>Script</th><th>Default</th><th>Effect</th></tr></thead>
       <tbody>
-        <tr><td><code>PYTHON_VERSION</code></td><td><code>install_py.sh</code></td><td><code>3.14</code></td><td>Which Python uv installs</td></tr>
-        <tr><td><code>UV_TOOLS</code></td><td><code>install_py.sh</code></td><td><code>ruff</code></td><td>Tools installed with <code>uv tool install</code></td></tr>
+        <tr><td><code>PYTHON_VERSION</code></td><td><code>install_uv.sh</code></td><td><code>3.14</code></td><td>Which Python uv installs</td></tr>
+        <tr><td><code>UV_TOOLS</code></td><td><code>install_uv.sh</code></td><td><code>ruff</code></td><td>Tools installed with <code>uv tool install</code></td></tr>
         <tr><td><code>JDK_VERSION</code></td><td><code>install_java.sh</code></td><td><code>25</code></td><td>Which Temurin LTS to install</td></tr>
-        <tr><td><code>SKIP_MAVEN</code> / <code>SKIP_GRADLE</code></td><td><code>install_java.sh</code></td><td>unset</td><td>Set to <code>1</code> to leave that build tool out</td></tr>
-        <tr><td><code>STEPS</code></td><td><code>install_all.sh</code></td><td><code>cmds c py java</code></td><td>Which steps to run, in order</td></tr>
+        <tr><td><code>SKIP_MAVEN</code> / <code>SKIP_GRADLE</code></td><td><code>install_maven_gradle.sh</code></td><td>unset</td><td>Set to <code>1</code> to leave that build tool out</td></tr>
+        <tr><td><code>STEPS</code></td><td><code>install_all.sh</code></td><td><code>cmds c py java</code></td><td>Which steps to run, in order. Also accepts <code>more_cmds</code>, <code>binary</code>, <code>uv</code> and <code>maven_gradle</code>.</td></tr>
         <tr><td><code>WSL_DISTRO</code></td><td><code>install_ubuntu_wsl.ps1</code></td><td><code>Ubuntu</code></td><td>Which distribution to install</td></tr>
         <tr><td><code>SYSTEM_SETUP_BASE_URL</code></td><td>all</td><td>this site</td><td>Where scripts fetch each other from — point it at a fork</td></tr>
       </tbody>
@@ -142,7 +166,7 @@
   <p>For example, to install Python 3.12 and skip Gradle:</p>
 
   <div class="codeblock" data-label="ubuntu terminal">
-<pre><code><span class="prompt">$ </span>curl -fsSL https://aikaryashala.com/system_setup/scripts/install_py.sh | PYTHON_VERSION=3.12 bash
+<pre><code><span class="prompt">$ </span>curl -fsSL https://aikaryashala.com/system_setup/scripts/install_uv.sh | PYTHON_VERSION=3.12 bash
 <span class="prompt">$ </span>curl -fsSL https://aikaryashala.com/system_setup/scripts/install_java.sh | SKIP_GRADLE=1 bash</code></pre>
   </div>
 
@@ -154,9 +178,13 @@
     <li><a href="../examples/hello.c"><code>hello.c</code></a><span>The C program from step 3</span></li>
     <li><a href="../examples/overflow.c"><code>overflow.c</code></a><span>A deliberate buffer overflow, for the sanitizer demo</span></li>
     <li><a href="../examples/hello.py"><code>hello.py</code></a><span>The Python script from step 4</span></li>
-    <li><a href="../examples/fetch.py"><code>fetch.py</code></a><span>A uv script with inline dependencies</span></li>
-    <li><a href="../examples/Hello.java"><code>Hello.java</code></a><span>The Java program from step 5</span></li>
-    <li><a href="../examples/Makefile"><code>Makefile</code></a><span>The Makefile from step 3</span></li>
+    <li><a href="../examples/fetch.py"><code>fetch.py</code></a><span>A uv script with inline dependencies (step 8)</span></li>
+    <li><a href="../examples/report.py"><code>report.py</code></a><span>The program to run under pdb (step 4)</span></li>
+    <li><a href="../examples/stats.py"><code>stats.py</code></a><span>The module report.py steps into (step 4)</span></li>
+    <li><a href="../examples/Report.java"><code>Report.java</code></a><span>The Java program from step 5</span></li>
+    <li><a href="../examples/Stats.java"><code>Stats.java</code></a><span>The class Report.java calls (step 5)</span></li>
+    <li><a href="../examples/Hello.java"><code>Hello.java</code></a><span>A one-file Java example</span></li>
+    <li><a href="../examples/Makefile"><code>Makefile</code></a><span>The Makefile from step 7</span></li>
   </ul>
 
   <nav class="page-nav">
