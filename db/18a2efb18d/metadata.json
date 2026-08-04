@@ -1,0 +1,57 @@
+{
+  "cli_version": "0.9.0",
+  "checkpoint_id": "db18a2efb18d",
+  "strategy": "manual-commit",
+  "branch": "main",
+  "checkpoints_count": 11,
+  "files_touched": [
+    ".github/workflows/shellcheck.yml",
+    "CLAUDE.md",
+    "README.md",
+    "docs/.nojekyll",
+    "docs/00_all_scripts/install_cmds.sh",
+    "docs/01_install_ubuntu/index.html",
+    "docs/02_install_c/index.html",
+    "docs/02_install_cmds/index.html",
+    "docs/03_install_c/index.html",
+    "docs/03_install_py/index.html",
+    "docs/04_install_java/index.html",
+    "docs/04_install_py/index.html",
+    "docs/05_install_cmds/index.html",
+    "docs/05_install_java/index.html",
+    "docs/assets/site.js",
+    "docs/assets/style.css",
+    "docs/examples/Hello.java",
+    "docs/examples/Makefile",
+    "docs/examples/fetch.py",
+    "docs/examples/hello.c",
+    "docs/examples/hello.py",
+    "docs/examples/overflow.c",
+    "docs/index.html",
+    "docs/scripts/common.sh",
+    "docs/scripts/index.html",
+    "docs/scripts/install_all.sh",
+    "docs/scripts/install_c.sh",
+    "docs/scripts/install_cmds.sh",
+    "docs/scripts/install_java.sh",
+    "docs/scripts/install_py.sh",
+    "docs/scripts/install_ubuntu_wsl.ps1",
+    "tools/check_links.sh"
+  ],
+  "sessions": [
+    {
+      "metadata": "/db/18a2efb18d/0/metadata.json",
+      "transcript": "/db/18a2efb18d/0/full.jsonl",
+      "compact_transcript": "/db/18a2efb18d/0/transcript.jsonl",
+      "content_hash": "/db/18a2efb18d/0/content_hash.txt",
+      "prompt": "/db/18a2efb18d/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 243,
+    "cache_creation_tokens": 309273,
+    "cache_read_tokens": 18331221,
+    "output_tokens": 131813,
+    "api_call_count": 129
+  }
+}

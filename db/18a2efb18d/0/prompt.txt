@@ -1,0 +1,100 @@
+I am starting a new project, the structure is in place and it can be extented as needed. I want to use this for setup scripts and a website under https://aikaryashala.com/system_setup using github pages. So anyone visiting the website will use the scripts inside this project and install. The main first task is to install ubuntu using WSL in windows. Then the essential list of commands that needs to be installed. To install C and debugging related things using compiler: clang and debugger: lldb and related commands to view files in binary format like hex format. similarly for python3 version and it's latest package manager 'uv' instead of the old package managers, use this in every examples as well. Similarly to install tools to run Java code as well. First plan and show me the plan, and don't wait for approval, just start creating them. Write the README.md first. Also write a CLAUDE.md file as well in this project
+
+---
+
+first rename 00_all_scripts/ to scripts/ and change in files where it is refferred. Then lint locally using shellcheck after it's installation
+
+---
+
+start a docker
+
+---
+
+<task-notification>
+<task-id>bc694d0lq</task-id>
+<summary>Monitor event: "install failures and milestones in the container run"</summary>
+<event>Summary
+Everything installed. Load the new settings into this terminal with:
+INSTALL_ALL_EXIT=0
+======================= INDEPENDENT VERIFICATION =======================</event>
+</task-notification>
+
+---
+
+<task-notification>
+<task-id>b1ec2ekpq</task-id>
+<summary>Monitor event: "progress and failures in the double-run container test"</summary>
+<event>############ RUN 1 ############</event>
+</task-notification>
+
+---
+
+<task-notification>
+<task-id>b1ec2ekpq</task-id>
+<summary>Monitor event: "progress and failures in the double-run container test"</summary>
+<event>run1 exit=0
+############ RUN 2 (idempotency) ############</event>
+</task-notification>
+
+---
+
+<task-notification>
+<task-id>b1ec2ekpq</task-id>
+<summary>Monitor event: "progress and failures in the double-run container test"</summary>
+<event>run2 exit=0
+===== RUN 1: version summaries =====
+===== RUN 2: version summaries =====
+===== RUN 2: skipped vs newly installed =====
+warn lines : 0
+clang: error: linker command failed with exit code 1 (use -v to see invocation)</event>
+</task-notification>
+
+---
+
+<task-notification>
+<task-id>b75lqvo0g</task-id>
+<tool-use-id>toolu_018fuiuEz3DiHXtiCMYfoMV1</tool-use-id>
+<output-file>/private/tmp/claude-501/-Users-rohinibarla-src-github-com-aikaryashala-system-setup/dfc71054-8be9-4d23-95ae-1184daf517b5/tasks/b75lqvo0g.output</output-file>
+<status>completed</status>
+<summary>Background command "Run installers twice in container via mounted harness" completed (exit code 0)</summary>
+</task-notification>
+
+---
+
+<task-notification>
+<task-id>bl9yo8fk0</task-id>
+<tool-use-id>toolu_01UqSH3bP8rn3RSaTXii1nnt</tool-use-id>
+<output-file>/private/tmp/claude-501/-Users-rohinibarla-src-github-com-aikaryashala-system-setup/dfc71054-8be9-4d23-95ae-1184daf517b5/tasks/bl9yo8fk0.output</output-file>
+<status>completed</status>
+<summary>Background command "Verify asan and gradle version fixes in container" completed (exit code 0)</summary>
+</task-notification>
+
+---
+
+<task-notification>
+<task-id>bzbsivrvl</task-id>
+<tool-use-id>REDACTED</tool-use-id>
+<output-file>/private/tmp/claude-501/-Users-rohinibarla-src-github-com-aikaryashala-system-setup/dfc71054-8be9-4d23-95ae-1184daf517b5/tasks/bzbsivrvl.output</output-file>
+<status>completed</status>
+<summary>Background command "Get full sanitizer install and smoke test output" completed (exit code 0)</summary>
+</task-notification>
+
+---
+
+<task-notification>
+<task-id>ba2gjj248</task-id>
+<tool-use-id>REDACTED</tool-use-id>
+<output-file>/private/tmp/claude-501/-Users-rohinibarla-src-github-com-aikaryashala-system-setup/dfc71054-8be9-4d23-95ae-1184daf517b5/tasks/ba2gjj248.output</output-file>
+<status>completed</status>
+<summary>Background command "Re-run C installer with instrumented sanitizer check" completed (exit code 0)</summary>
+</task-notification>
+
+---
+
+<task-notification>
+<task-id>bthzdvo88</task-id>
+<tool-use-id>REDACTED</tool-use-id>
+<output-file>/private/tmp/claude-501/-Users-rohinibarla-src-github-com-aikaryashala-system-setup/dfc71054-8be9-4d23-95ae-1184daf517b5/tasks/bthzdvo88.output</output-file>
+<status>completed</status>
+<summary>Background command "Run C installer on emulated amd64" completed (exit code 0)</summary>
+</task-notification>
