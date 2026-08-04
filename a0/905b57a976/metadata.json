@@ -1,0 +1,53 @@
+{
+  "cli_version": "0.9.0",
+  "checkpoint_id": "a0905b57a976",
+  "strategy": "manual-commit",
+  "branch": "main",
+  "checkpoints_count": 6,
+  "files_touched": [
+    "CLAUDE.md",
+    "README.md",
+    "docs/02_install_cmds/index.html",
+    "docs/03_install_c/index.html",
+    "docs/04_install_py/index.html",
+    "docs/05_install_java/index.html",
+    "docs/06_install_more_cmds/index.html",
+    "docs/07_install_binary/index.html",
+    "docs/08_install_uv/index.html",
+    "docs/09_install_maven_gradle/index.html",
+    "docs/examples/Makefile",
+    "docs/examples/Report.java",
+    "docs/examples/Stats.java",
+    "docs/examples/hello.c",
+    "docs/examples/report.py",
+    "docs/examples/stats.py",
+    "docs/index.html",
+    "docs/scripts/common.sh",
+    "docs/scripts/index.html",
+    "docs/scripts/install_all.sh",
+    "docs/scripts/install_binary.sh",
+    "docs/scripts/install_c.sh",
+    "docs/scripts/install_cmds.sh",
+    "docs/scripts/install_java.sh",
+    "docs/scripts/install_maven_gradle.sh",
+    "docs/scripts/install_more_cmds.sh",
+    "docs/scripts/install_py.sh",
+    "docs/scripts/install_uv.sh"
+  ],
+  "sessions": [
+    {
+      "metadata": "/a0/905b57a976/0/metadata.json",
+      "transcript": "/a0/905b57a976/0/full.jsonl",
+      "compact_transcript": "/a0/905b57a976/0/transcript.jsonl",
+      "content_hash": "/a0/905b57a976/0/content_hash.txt",
+      "prompt": "/a0/905b57a976/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 383,
+    "cache_creation_tokens": 448066,
+    "cache_read_tokens": 39871812,
+    "output_tokens": 240344,
+    "api_call_count": 204
+  }
+}
