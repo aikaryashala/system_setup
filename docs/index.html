@@ -132,15 +132,21 @@
     <p>
       Once step 1 is done and you have an Ubuntu terminal open, this single
       command runs steps 2 through 5 back to back. It takes a few minutes.
-      Steps 6 to 9 are not included — ask for them by name if you want them.
     </p>
 
-    <div class="codeblock" data-label="ubuntu terminal">
-<pre><code><span class="comment"># steps 2 to 5</span>
-<span class="prompt">$ </span>curl -fsSL https://aikaryashala.com/system_setup/scripts/install_all.sh | bash
+    <div class="codeblock" data-label="ubuntu terminal — steps 2 to 5">
+<pre><code><span class="prompt">$ </span>curl -fsSL https://aikaryashala.com/system_setup/scripts/install_all.sh | bash</code></pre>
+    </div>
 
-<span class="comment"># the optional extras, if you want them</span>
-<span class="prompt">$ </span>curl -fsSL https://aikaryashala.com/system_setup/scripts/install_all.sh | STEPS="more_cmds binary uv maven_gradle" bash</code></pre>
+    <p>
+      That is everything most people need. The extras below are
+      <strong>optional</strong> — skip this second command entirely unless you
+      want what steps 6 to 9 contain, and you can always come back and run it
+      later.
+    </p>
+
+    <div class="codeblock" data-label="ubuntu terminal — optional extras">
+<pre><code><span class="prompt">$ </span>curl -fsSL https://aikaryashala.com/system_setup/scripts/install_all.sh | STEPS="more_cmds binary uv maven_gradle" bash</code></pre>
     </div>
 
     <div class="callout note">

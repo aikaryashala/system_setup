@@ -252,23 +252,22 @@ EOF
         return 0
     fi
 
-    # jshell evaluates from stdin. Feed it a here-doc rather than a pipe from
-    # this script's own stdin, which is already spoken for when curl-piped.
-    if jshell -q -s /dev/stdin >"$dir/jshell_out" 2>&1 <<'EOF'
+    # jshell runs a script file given as an argument. Use a real file rather
+    # than stdin: this script's own stdin is already spoken for when curl-piped.
+    # Note -q is a "feedback" option and jshell rejects more than one of those,
+    # so do not add -s alongside it.
+    cat >"$dir/check.jsh" <<'EOF'
 int x = 21;
 System.out.println("jshell says " + (x * 2));
 /exit
 EOF
-    then
-        if grep -q "jshell says 42" "$dir/jshell_out"; then
-            ok "jshell evaluated an expression"
-        else
-            warn "jshell ran but did not produce the expected result:"
-            head -n 5 "$dir/jshell_out" >&2
-            VERIFY_FAILED=1
-        fi
+
+    jshell -q "$dir/check.jsh" >"$dir/jshell_out" 2>&1 || true
+
+    if grep -q "jshell says 42" "$dir/jshell_out"; then
+        ok "jshell evaluated an expression"
     else
-        warn "jshell could not start:"
+        warn "jshell did not produce the expected result. It printed:"
         head -n 5 "$dir/jshell_out" >&2
         VERIFY_FAILED=1
     fi

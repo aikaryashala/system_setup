@@ -194,7 +194,7 @@ main() {
   ./hello                                       # run it
   lldb ./hello                                  # debug it
 
-Next step - Python and uv:
+Next step - Python and the pdb debugger:
 
   curl -fsSL $SYSTEM_SETUP_BASE_URL/install_py.sh | bash
 

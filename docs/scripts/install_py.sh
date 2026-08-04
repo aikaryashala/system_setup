@@ -160,10 +160,16 @@ EOF
 
     # Drive pdb non-interactively with -c commands. Using stdin would not work
     # here: when this script is piped from curl, stdin is already spoken for.
-    if python3 -m pdb -c "break 5" -c continue -c "print(total)" -c quit \
-            "$dir/check.py" >"$dir/pdb_out" 2>&1 \
-        && grep -q "check.py(5)" "$dir/pdb_out"; then
-        ok "pdb stopped the program at a breakpoint"
+    #
+    # Break on line 7 - after the loop has finished - and print the total from
+    # inside the debugger. If that reads 10, pdb stopped at the right line AND
+    # could see the program's state, which is the whole point. Do not assert on
+    # pdb's "> file(line)" banner: it is not printed when driven this way.
+    python3 -m pdb -c "break 7" -c continue -c "print(f'PDBTOTAL={total}')" -c quit \
+        "$dir/check.py" >"$dir/pdb_out" 2>&1 || true
+
+    if grep -q "PDBTOTAL=10" "$dir/pdb_out"; then
+        ok "pdb stopped at a breakpoint and read the program's state"
     else
         warn "pdb did not stop where expected. It printed:"
         head -n 8 "$dir/pdb_out" >&2
