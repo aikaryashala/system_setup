@@ -1,0 +1,7 @@
+<task-notification>
+<task-id>be0h3rlo1</task-id>
+<tool-use-id>REDACTED</tool-use-id>
+<output-file>/private/tmp/claude-501/-Users-rohinibarla-src-github-com-aikaryashala-system-setup/dfc71054-8be9-4d23-95ae-1184daf517b5/tasks/be0h3rlo1.output</output-file>
+<status>completed</status>
+<summary>Background command "Full nine-step container verification with ptrace enabled" completed (exit code 0)</summary>
+</task-notification>
