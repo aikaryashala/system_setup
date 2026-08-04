@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en" data-theme="">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Step 2 — Essential command line tools · system_setup</title>
+<meta name="description" content="Install the essential Ubuntu command line tools: git, curl, vim, tmux, jq, ripgrep, fd, fzf, bat and more.">
+<link rel="stylesheet" href="../assets/style.css">
+<script>
+(function(){try{var t=localStorage.getItem('system-setup-theme');if(t){document.documentElement.setAttribute('data-theme',t);}}catch(e){}}());
+</script>
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <div class="inner">
+    <a class="brand" href="../"><span class="mark">&gt;_</span> system_setup</a>
+    <nav class="header-nav">
+      <a href="../scripts/">Scripts</a>
+      <a href="https://github.com/aikaryashala/system_setup">GitHub</a>
+      <button class="theme-toggle" type="button" aria-label="Switch theme">☽</button>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+<div class="prose">
+
+  <p class="breadcrumb"><a href="../">system_setup</a> / Step 2</p>
+
+  <p class="eyebrow">Step 2 · Ubuntu</p>
+  <h1>Essential commands</h1>
+  <p class="lede">
+    A fresh Ubuntu install is deliberately minimal. This step adds the tools you
+    will reach for daily — and the ones every later step quietly depends on.
+  </p>
+
+  <h2 id="run">Run this</h2>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>curl -fsSL https://aikaryashala.com/system_setup/scripts/install_cmds.sh | bash</code></pre>
+  </div>
+
+  <p>
+    It will ask for your Linux password once, at the start — installing software
+    system-wide needs administrator rights. Re-running it later is safe; anything
+    already installed is skipped.
+  </p>
+
+  <h2 id="whats-installed">What gets installed</h2>
+
+  <h3>Fetching and networking</h3>
+  <ul class="cmd-list">
+    <li><code>curl</code><span>Fetch a URL. The workhorse behind every install command on this site.</span></li>
+    <li><code>wget</code><span>Also fetches URLs; better at large or resumable downloads.</span></li>
+    <li><code>ssh</code><span>Log in to another machine securely. <code>ssh-keygen</code> creates your keys.</span></li>
+    <li><code>rsync</code><span>Copy directories efficiently — only what changed, locally or over ssh.</span></li>
+    <li><code>ping</code><span>Is that host reachable at all?</span></li>
+    <li><code>dig</code><span>Ask DNS what a name resolves to.</span></li>
+    <li><code>ip</code><span><code>ip addr</code> shows your addresses, <code>ip route</code> shows where traffic goes.</span></li>
+    <li><code>nc</code><span>Netcat: open a raw TCP connection. Invaluable for testing a port.</span></li>
+  </ul>
+
+  <h3>Version control</h3>
+  <ul class="cmd-list">
+    <li><code>git</code><span>Track changes, and clone anything from GitHub.</span></li>
+    <li><code>gnupg</code><span>Verify signatures — used when adding third-party package repositories.</span></li>
+  </ul>
+
+  <h3>Editing and reading</h3>
+  <ul class="cmd-list">
+    <li><code>nano</code><span>A simple editor. Arrow keys work, <kbd>Ctrl</kbd>+<kbd>O</kbd> saves, <kbd>Ctrl</kbd>+<kbd>X</kbd> exits.</span></li>
+    <li><code>vim</code><span>The powerful one. <code>:q!</code> gets you out.</span></li>
+    <li><code>less</code><span>Page through long output. <kbd>Space</kbd> scrolls, <kbd>/</kbd> searches, <kbd>q</kbd> quits.</span></li>
+    <li><code>bat</code><span>Like <code>cat</code>, but with syntax highlighting and line numbers.</span></li>
+    <li><code>file</code><span>Tell me what this file actually is, regardless of its extension.</span></li>
+    <li><code>dos2unix</code><span>Strip Windows line endings — a common annoyance when files come from the C: drive.</span></li>
+  </ul>
+
+  <h3>Searching</h3>
+  <ul class="cmd-list">
+    <li><code>rg</code><span>ripgrep: search file contents across a whole project, fast, skipping ignored files.</span></li>
+    <li><code>fd</code><span>Find files by name, with sane defaults.</span></li>
+    <li><code>fzf</code><span>Fuzzy-pick from any list. Press <kbd>Ctrl</kbd>+<kbd>R</kbd> to search your command history.</span></li>
+    <li><code>jq</code><span>Read, filter and reshape JSON.</span></li>
+  </ul>
+
+  <h3>Working in the terminal</h3>
+  <ul class="cmd-list">
+    <li><code>tmux</code><span>Split the terminal, and keep sessions alive when you disconnect.</span></li>
+    <li><code>tree</code><span>Show a directory as a tree.</span></li>
+    <li><code>htop</code><span>What is using my CPU and memory, right now.</span></li>
+    <li><code>ncdu</code><span>What is using my disk. Navigable, unlike <code>du</code>.</span></li>
+    <li><code>zip</code> <code>unzip</code> <code>tar</code><span>Archives, in every format you will meet.</span></li>
+  </ul>
+
+  <div class="callout note">
+    <div class="callout-title">Why bat and fd need a fix-up</div>
+    <p>
+      Ubuntu ships these as <code>batcat</code> and <code>fdfind</code>, because
+      the names <code>bat</code> and <code>fd</code> were already taken by other
+      packages. The script creates links in <code>~/.local/bin</code> so the
+      normal names work, and makes sure that directory is on your
+      <code>PATH</code>.
+    </p>
+  </div>
+
+  <h2 id="try">Try them</h2>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="comment"># search every file under the current directory for a word</span>
+<span class="prompt">$ </span>rg "TODO"
+
+<span class="comment"># find files by name, anywhere below here</span>
+<span class="prompt">$ </span>fd "\.c$"
+
+<span class="comment"># look at a file with syntax highlighting</span>
+<span class="prompt">$ </span>bat hello.c
+
+<span class="comment"># pull one field out of a JSON response</span>
+<span class="prompt">$ </span>curl -s https://api.github.com/repos/aikaryashala/system_setup | jq -r .full_name
+
+<span class="comment"># what is this file, really?</span>
+<span class="prompt">$ </span>file /bin/ls
+<span class="out">/bin/ls: ELF 64-bit LSB pie executable, x86-64, dynamically linked</span></code></pre>
+  </div>
+
+  <h2 id="git-setup">Set up git</h2>
+
+  <p>
+    The script installs git but deliberately does not configure your identity —
+    that part is yours. Run these once, with your own name and email:
+  </p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>git config --global user.name "Your Name"
+<span class="prompt">$ </span>git config --global user.email "you@example.com"
+<span class="prompt">$ </span>git config --global init.defaultBranch main
+<span class="prompt">$ </span>git config --global core.editor nano</code></pre>
+  </div>
+
+  <p>To connect to GitHub over SSH, create a key and add the public half to your account:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>ssh-keygen -t ed25519 -C "you@example.com"
+<span class="prompt">$ </span>cat ~/.ssh/id_ed25519.pub</code></pre>
+  </div>
+
+  <p>
+    Copy that output into
+    <a href="https://github.com/settings/keys">GitHub → Settings → SSH keys</a>,
+    then check it works with <code>ssh -T git@github.com</code>.
+  </p>
+
+  <h2 id="verify">Check it worked</h2>
+
+  <p>
+    The script prints a version summary when it finishes. To confirm by hand,
+    open a fresh terminal — or reload your shell settings — and run:
+  </p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>source ~/.bashrc
+<span class="prompt">$ </span>git --version &amp;&amp; rg --version &amp;&amp; jq --version &amp;&amp; bat --version</code></pre>
+  </div>
+
+  <div class="callout warn">
+    <div class="callout-title">“command not found” right after installing</div>
+    <p>
+      Your shell caches where commands live, and the script adds
+      <code>~/.local/bin</code> to your <code>PATH</code>. Run
+      <code>source ~/.bashrc</code>, or just close and reopen the terminal.
+    </p>
+  </div>
+
+  <h2 id="next">Next</h2>
+  <p>With the basics in place, step 3 sets up C: a compiler, a debugger, and the tools for reading binaries.</p>
+
+  <nav class="page-nav">
+    <a href="../01_install_ubuntu/"><span class="dir">Step 1</span><span class="title">← Install Ubuntu</span></a>
+    <a class="next" href="../03_install_c/"><span class="dir">Step 3</span><span class="title">C: clang and lldb →</span></a>
+  </nav>
+
+</div>
+</main>
+
+<footer class="site-footer">
+  <div class="inner">
+    <span>system_setup — <a href="https://aikaryashala.com">aikaryashala</a></span>
+    <span class="spacer"><a href="https://github.com/aikaryashala/system_setup">Source on GitHub</a></span>
+  </div>
+</footer>
+
+<script src="../assets/site.js"></script>
+</body>
+</html>

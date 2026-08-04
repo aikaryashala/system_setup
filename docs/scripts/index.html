@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en" data-theme="">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>All scripts · system_setup</title>
+<meta name="description" content="Every install script in system_setup, readable in your browser before you run it.">
+<link rel="stylesheet" href="../assets/style.css">
+<script>
+(function(){try{var t=localStorage.getItem('system-setup-theme');if(t){document.documentElement.setAttribute('data-theme',t);}}catch(e){}}());
+</script>
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <div class="inner">
+    <a class="brand" href="../"><span class="mark">&gt;_</span> system_setup</a>
+    <nav class="header-nav">
+      <a href="./">Scripts</a>
+      <a href="https://github.com/aikaryashala/system_setup">GitHub</a>
+      <button class="theme-toggle" type="button" aria-label="Switch theme">☽</button>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+<div class="prose">
+
+  <p class="breadcrumb"><a href="../">system_setup</a> / Scripts</p>
+
+  <p class="eyebrow">Reference</p>
+  <h1>All scripts</h1>
+  <p class="lede">
+    Every installer, in plain text. Click any of them to read the exact code
+    before you run it — that is the whole point of this page.
+  </p>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Script</th><th>Step</th><th>Runs on</th><th>What it does</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><a href="install_ubuntu_wsl.ps1"><code>install_ubuntu_wsl.ps1</code></a></td>
+          <td><a href="../01_install_ubuntu/">1</a></td>
+          <td>Windows</td>
+          <td>Enables WSL 2 and installs Ubuntu</td>
+        </tr>
+        <tr>
+          <td><a href="install_cmds.sh"><code>install_cmds.sh</code></a></td>
+          <td><a href="../02_install_cmds/">2</a></td>
+          <td>Ubuntu</td>
+          <td>Essential command line tools</td>
+        </tr>
+        <tr>
+          <td><a href="install_c.sh"><code>install_c.sh</code></a></td>
+          <td><a href="../03_install_c/">3</a></td>
+          <td>Ubuntu</td>
+          <td>clang, lldb, and the hex and binary viewers</td>
+        </tr>
+        <tr>
+          <td><a href="install_py.sh"><code>install_py.sh</code></a></td>
+          <td><a href="../04_install_py/">4</a></td>
+          <td>Ubuntu</td>
+          <td>uv, and a uv-managed Python</td>
+        </tr>
+        <tr>
+          <td><a href="install_java.sh"><code>install_java.sh</code></a></td>
+          <td><a href="../05_install_java/">5</a></td>
+          <td>Ubuntu</td>
+          <td>Temurin JDK, Maven, Gradle</td>
+        </tr>
+        <tr>
+          <td><a href="install_all.sh"><code>install_all.sh</code></a></td>
+          <td>2–5</td>
+          <td>Ubuntu</td>
+          <td>Runs the four Ubuntu installers in order</td>
+        </tr>
+        <tr>
+          <td><a href="common.sh"><code>common.sh</code></a></td>
+          <td>—</td>
+          <td>Ubuntu</td>
+          <td>Shared helpers the others load. Not run on its own.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2 id="running">Ways to run them</h2>
+
+  <h3>Straight from here</h3>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>curl -fsSL https://aikaryashala.com/system_setup/scripts/install_c.sh | bash</code></pre>
+  </div>
+
+  <h3>Download first, read, then run</h3>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>curl -fsSLO https://aikaryashala.com/system_setup/scripts/install_c.sh
+<span class="prompt">$ </span>less install_c.sh
+<span class="prompt">$ </span>bash install_c.sh</code></pre>
+  </div>
+
+  <h3>From a clone of the repository</h3>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>git clone https://github.com/aikaryashala/system_setup.git
+<span class="prompt">$ </span>cd system_setup/docs/scripts
+<span class="prompt">$ </span>./install_c.sh</code></pre>
+  </div>
+
+  <h2 id="behaviour">How they behave</h2>
+
+  <ul>
+    <li><strong>Idempotent.</strong> Re-running one is safe. Anything already present is reported as <span class="mono">skip</span>.</li>
+    <li><strong>Non-interactive.</strong> They ask for your password once at the start, then run to the end unattended.</li>
+    <li><strong>Strict.</strong> They stop on the first real failure rather than leaving a half-installed system.</li>
+    <li><strong>Self-verifying.</strong> Each one finishes by printing the version of everything it installed.</li>
+  </ul>
+
+  <h2 id="settings">Settings you can override</h2>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Variable</th><th>Script</th><th>Default</th><th>Effect</th></tr></thead>
+      <tbody>
+        <tr><td><code>PYTHON_VERSION</code></td><td><code>install_py.sh</code></td><td><code>3.14</code></td><td>Which Python uv installs</td></tr>
+        <tr><td><code>UV_TOOLS</code></td><td><code>install_py.sh</code></td><td><code>ruff</code></td><td>Tools installed with <code>uv tool install</code></td></tr>
+        <tr><td><code>JDK_VERSION</code></td><td><code>install_java.sh</code></td><td><code>25</code></td><td>Which Temurin LTS to install</td></tr>
+        <tr><td><code>SKIP_MAVEN</code> / <code>SKIP_GRADLE</code></td><td><code>install_java.sh</code></td><td>unset</td><td>Set to <code>1</code> to leave that build tool out</td></tr>
+        <tr><td><code>STEPS</code></td><td><code>install_all.sh</code></td><td><code>cmds c py java</code></td><td>Which steps to run, in order</td></tr>
+        <tr><td><code>WSL_DISTRO</code></td><td><code>install_ubuntu_wsl.ps1</code></td><td><code>Ubuntu</code></td><td>Which distribution to install</td></tr>
+        <tr><td><code>SYSTEM_SETUP_BASE_URL</code></td><td>all</td><td>this site</td><td>Where scripts fetch each other from — point it at a fork</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>For example, to install Python 3.12 and skip Gradle:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>curl -fsSL https://aikaryashala.com/system_setup/scripts/install_py.sh | PYTHON_VERSION=3.12 bash
+<span class="prompt">$ </span>curl -fsSL https://aikaryashala.com/system_setup/scripts/install_java.sh | SKIP_GRADLE=1 bash</code></pre>
+  </div>
+
+  <h2 id="examples">Example files</h2>
+
+  <p>The small programs used on the guide pages, ready to download:</p>
+
+  <ul class="cmd-list">
+    <li><a href="../examples/hello.c"><code>hello.c</code></a><span>The C program from step 3</span></li>
+    <li><a href="../examples/overflow.c"><code>overflow.c</code></a><span>A deliberate buffer overflow, for the sanitizer demo</span></li>
+    <li><a href="../examples/hello.py"><code>hello.py</code></a><span>The Python script from step 4</span></li>
+    <li><a href="../examples/fetch.py"><code>fetch.py</code></a><span>A uv script with inline dependencies</span></li>
+    <li><a href="../examples/Hello.java"><code>Hello.java</code></a><span>The Java program from step 5</span></li>
+    <li><a href="../examples/Makefile"><code>Makefile</code></a><span>The Makefile from step 3</span></li>
+  </ul>
+
+  <nav class="page-nav">
+    <a href="../"><span class="dir">Back</span><span class="title">All steps</span></a>
+    <a class="next" href="https://github.com/aikaryashala/system_setup"><span class="dir">Source</span><span class="title">GitHub repository →</span></a>
+  </nav>
+
+</div>
+</main>
+
+<footer class="site-footer">
+  <div class="inner">
+    <span>system_setup — <a href="https://aikaryashala.com">aikaryashala</a></span>
+    <span class="spacer"><a href="https://github.com/aikaryashala/system_setup">Source on GitHub</a></span>
+  </div>
+</footer>
+
+<script src="../assets/site.js"></script>
+</body>
+</html>

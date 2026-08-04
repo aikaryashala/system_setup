@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="en" data-theme="">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Step 1 — Install Ubuntu on Windows with WSL 2 · system_setup</title>
+<meta name="description" content="Install Ubuntu Linux on Windows using WSL 2, with one PowerShell command.">
+<link rel="stylesheet" href="../assets/style.css">
+<script>
+(function(){try{var t=localStorage.getItem('system-setup-theme');if(t){document.documentElement.setAttribute('data-theme',t);}}catch(e){}}());
+</script>
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <div class="inner">
+    <a class="brand" href="../"><span class="mark">&gt;_</span> system_setup</a>
+    <nav class="header-nav">
+      <a href="../scripts/">Scripts</a>
+      <a href="https://github.com/aikaryashala/system_setup">GitHub</a>
+      <button class="theme-toggle" type="button" aria-label="Switch theme">☽</button>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+<div class="prose">
+
+  <p class="breadcrumb"><a href="../">system_setup</a> / Step 1</p>
+
+  <p class="eyebrow">Step 1 · Windows</p>
+  <h1>Install Ubuntu with WSL</h1>
+  <p class="lede">
+    WSL — the Windows Subsystem for Linux — runs a real Ubuntu system inside
+    Windows. No partitioning, no dual boot, no virtual machine to configure. Your
+    Windows files stay where they are and Linux can reach them.
+  </p>
+
+  <h2 id="run">Run this</h2>
+
+  <p>
+    Open PowerShell <strong>as Administrator</strong>: press <kbd>Windows</kbd>,
+    type <em>PowerShell</em>, right-click <strong>Windows PowerShell</strong> and
+    choose <strong>Run as administrator</strong>. Then paste:
+  </p>
+
+  <div class="codeblock" data-label="powershell (administrator)">
+<pre><code>irm https://aikaryashala.com/system_setup/scripts/install_ubuntu_wsl.ps1 | iex</code></pre>
+  </div>
+
+  <p>
+    <code>irm</code> downloads the script and <code>iex</code> runs it. You can
+    <a href="../scripts/install_ubuntu_wsl.ps1">read it first</a> — it is
+    plain text.
+  </p>
+
+  <div class="callout warn">
+    <div class="callout-title">You will probably need to restart once</div>
+    <p>
+      WSL depends on two Windows features that cannot switch on while Windows is
+      running. If the script turns them on, it stops and asks you to restart.
+      That is expected — restart, then run the same command again to finish.
+    </p>
+  </div>
+
+  <h2 id="what-it-does">What the script does</h2>
+
+  <ol>
+    <li>Checks you are running as Administrator, and that your Windows build is 19041 or newer.</li>
+    <li>Enables the <strong>Windows Subsystem for Linux</strong> and <strong>Virtual Machine Platform</strong> features.</li>
+    <li>Updates the WSL kernel and sets WSL&nbsp;2 as the default version.</li>
+    <li>Installs the Ubuntu distribution and makes it the default.</li>
+    <li>Prints what to do next.</li>
+  </ol>
+
+  <p>
+    Running it twice is harmless. Anything already in place is reported as
+    <span class="mono">skip</span> and left alone.
+  </p>
+
+  <h2 id="first-launch">First launch</h2>
+
+  <p>
+    Open the Start menu and launch <strong>Ubuntu</strong>. The first launch takes
+    a minute while it unpacks, then asks you to create an account:
+  </p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="out">Enter new UNIX username: </span>yourname
+<span class="out">New password: </span>
+<span class="out">Retype new password: </span></code></pre>
+  </div>
+
+  <div class="callout note">
+    <div class="callout-title">Two things that surprise everyone</div>
+    <p>
+      <strong>The password does not appear as you type.</strong> No dots, no
+      asterisks, nothing moves. It is being recorded. Type it and press Enter.
+    </p>
+    <p>
+      <strong>This is a new account.</strong> It has nothing to do with your
+      Windows or Microsoft password. You will type this Linux password whenever a
+      command starts with <code>sudo</code>, so pick something you can type quickly.
+    </p>
+  </div>
+
+  <h2 id="verify">Check it worked</h2>
+
+  <p>In your Ubuntu window:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>lsb_release -a
+<span class="out">Distributor ID: Ubuntu</span>
+<span class="out">Description:    Ubuntu 24.04 LTS</span>
+<span class="out">Release:        24.04</span>
+<span class="out">Codename:       noble</span></code></pre>
+  </div>
+
+  <p>And back in PowerShell, to confirm it is running under WSL&nbsp;2:</p>
+
+  <div class="codeblock" data-label="powershell">
+<pre><code>wsl --list --verbose</code></pre>
+  </div>
+
+  <p>
+    The <code>VERSION</code> column should read <code>2</code>. If it reads
+    <code>1</code>, convert it with
+    <code>wsl --set-version Ubuntu 2</code>.
+  </p>
+
+  <h2 id="orientation">Finding your way around</h2>
+
+  <p>
+    You now have two file systems, and knowing which is which saves a lot of
+    confusion later.
+  </p>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Where</th><th>From Linux</th><th>From Windows</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Your Linux home</td>
+          <td><code>~</code> or <code>/home/yourname</code></td>
+          <td><code>\\wsl$\Ubuntu\home\yourname</code></td>
+        </tr>
+        <tr>
+          <td>Your Windows C: drive</td>
+          <td><code>/mnt/c</code></td>
+          <td><code>C:\</code></td>
+        </tr>
+        <tr>
+          <td>Your Windows desktop</td>
+          <td><code>/mnt/c/Users/&lt;you&gt;/Desktop</code></td>
+          <td><code>C:\Users\&lt;you&gt;\Desktop</code></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout tip">
+    <div class="callout-title">Keep your code in the Linux home directory</div>
+    <p>
+      Files under <code>/mnt/c</code> are reached through a translation layer, and
+      compiling there can be several times slower. Work in <code>~/</code> and you
+      will not notice the difference from native Linux.
+    </p>
+  </div>
+
+  <h3>Handy commands</h3>
+
+  <ul class="cmd-list">
+    <li><code>explorer.exe .</code><span>Open the current Linux folder in Windows File Explorer</span></li>
+    <li><code>wsl --shutdown</code><span>From PowerShell: stop WSL completely. The fix for most odd behaviour.</span></li>
+    <li><code>code .</code><span>Open the current folder in VS Code on Windows, editing Linux files directly</span></li>
+    <li><code>exit</code><span>Close the Ubuntu shell</span></li>
+  </ul>
+
+  <h2 id="troubleshooting">If something goes wrong</h2>
+
+  <h3>“WslRegisterDistribution failed with error: 0x80370102”</h3>
+  <p>
+    Virtualization is switched off in your computer's firmware. Restart, enter
+    the BIOS/UEFI settings, and enable <em>Intel VT-x</em> or <em>AMD-V</em>
+    (often listed as <em>SVM Mode</em> or <em>Virtualization Technology</em>).
+  </p>
+
+  <h3>“The term 'wsl' is not recognized”</h3>
+  <p>
+    The Windows features have not finished installing. Restart the computer and
+    run the script again.
+  </p>
+
+  <h3>The install is extremely slow, or stalls at 0%</h3>
+  <p>
+    Usually corporate VPN or antivirus interference. Try again off the VPN, or
+    install the distribution manually from the Microsoft Store.
+  </p>
+
+  <h3>Doing it by hand instead</h3>
+  <p>If you would rather not run a script, these are the same steps:</p>
+
+  <div class="codeblock" data-label="powershell (administrator)">
+<pre><code>dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart
+dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart
+<span class="comment"># restart Windows here</span>
+wsl --update
+wsl --set-default-version 2
+wsl --install -d Ubuntu</code></pre>
+  </div>
+
+  <h2 id="next">Next</h2>
+  <p>
+    With Ubuntu running, everything else happens inside that terminal. Step 2
+    installs the commands the later steps rely on.
+  </p>
+
+  <nav class="page-nav">
+    <a href="../"><span class="dir">Back</span><span class="title">All steps</span></a>
+    <a class="next" href="../02_install_cmds/"><span class="dir">Step 2</span><span class="title">Essential commands →</span></a>
+  </nav>
+
+</div>
+</main>
+
+<footer class="site-footer">
+  <div class="inner">
+    <span>system_setup — <a href="https://aikaryashala.com">aikaryashala</a></span>
+    <span class="spacer"><a href="https://github.com/aikaryashala/system_setup">Source on GitHub</a></span>
+  </div>
+</footer>
+
+<script src="../assets/site.js"></script>
+</body>
+</html>

@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en" data-theme="">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>system_setup — a development environment, from scratch</title>
+<meta name="description" content="Setup scripts that take a fresh Windows machine to a working Ubuntu development environment with C, Python and Java toolchains.">
+<link rel="stylesheet" href="assets/style.css">
+<script>
+/* Applied before first paint so a stored theme choice never flashes. */
+(function(){try{var t=localStorage.getItem('system-setup-theme');if(t){document.documentElement.setAttribute('data-theme',t);}}catch(e){}}());
+</script>
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <div class="inner">
+    <a class="brand" href="./"><span class="mark">&gt;_</span> system_setup</a>
+    <nav class="header-nav">
+      <a href="scripts/">Scripts</a>
+      <a href="https://github.com/aikaryashala/system_setup">GitHub</a>
+      <button class="theme-toggle" type="button" aria-label="Switch theme">☽</button>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+
+  <div class="hero">
+    <p class="eyebrow">aikaryashala</p>
+    <h1>A development environment, from scratch.</h1>
+    <p class="lede">
+      Five steps take a brand-new Windows machine to a working Linux setup with
+      toolchains for C, Python and Java. Every step is one command you can copy.
+      Nothing here assumes you have used a terminal before.
+    </p>
+  </div>
+
+  <h2 id="start" style="margin-top:0;border-top:0;padding-top:0">Start here</h2>
+
+  <p class="prose">
+    Work through the steps in order. Step 1 runs on Windows and installs Linux.
+    Everything after that runs inside Linux.
+  </p>
+
+  <ul class="steps">
+
+    <li><a class="step-card platform-windows" href="01_install_ubuntu/">
+      <span class="num">STEP 1</span>
+      <h3>Install Ubuntu</h3>
+      <p>Turn on WSL and install Ubuntu Linux alongside Windows — no dual boot, no virtual machine to configure.</p>
+      <span class="tools">wsl ubuntu</span>
+    </a></li>
+
+    <li><a class="step-card platform-ubuntu" href="02_install_cmds/">
+      <span class="num">STEP 2</span>
+      <h3>Essential commands</h3>
+      <p>The everyday tools: fetching files, editing them, searching them, and seeing what your machine is doing.</p>
+      <span class="tools">git curl vim tmux jq rg fd fzf bat</span>
+    </a></li>
+
+    <li><a class="step-card platform-ubuntu" href="03_install_c/">
+      <span class="num">STEP 3</span>
+      <h3>C: clang and lldb</h3>
+      <p>Compile C with clang, debug it with lldb, and read the compiled result byte by byte in hexadecimal.</p>
+      <span class="tools">clang lldb xxd hexyl objdump readelf</span>
+    </a></li>
+
+    <li><a class="step-card platform-ubuntu" href="04_install_py/">
+      <span class="num">STEP 4</span>
+      <h3>Python with uv</h3>
+      <p>One fast tool that installs Python itself, manages dependencies, and runs your code. No pip, no venv.</p>
+      <span class="tools">uv uvx python3 ruff</span>
+    </a></li>
+
+    <li><a class="step-card platform-ubuntu" href="05_install_java/">
+      <span class="num">STEP 5</span>
+      <h3>Java toolchain</h3>
+      <p>A current Temurin JDK, plus Maven and Gradle for when a single file stops being enough.</p>
+      <span class="tools">java javac jshell mvn gradle</span>
+    </a></li>
+
+  </ul>
+
+  <div class="prose">
+
+    <h2 id="one-command">Or install everything at once</h2>
+
+    <p>
+      Once step 1 is done and you have an Ubuntu terminal open, this single
+      command runs steps 2 through 5 back to back. It takes a few minutes.
+    </p>
+
+    <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>curl -fsSL https://aikaryashala.com/system_setup/scripts/install_all.sh | bash</code></pre>
+    </div>
+
+    <div class="callout note">
+      <div class="callout-title">Before you paste that</div>
+      <p>
+        Piping a script from the internet into your shell runs whatever that
+        script contains. That is worth being careful about — including here.
+        Every script on this site is plain text you can read first:
+        <a href="scripts/install_all.sh">open it in your browser</a>, or
+        read it <a href="https://github.com/aikaryashala/system_setup/tree/main/docs/scripts">on GitHub</a>.
+      </p>
+    </div>
+
+    <h2 id="what-you-get">What you end up with</h2>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Area</th><th>Tools</th><th>Why these</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Operating system</td>
+            <td><code>Ubuntu 24.04</code> on <code>WSL 2</code></td>
+            <td>Real Linux, running next to Windows, sharing your files.</td>
+          </tr>
+          <tr>
+            <td>C</td>
+            <td><code>clang</code>, <code>lldb</code></td>
+            <td>Clang explains its errors better than any other C compiler, and LLDB is its matching debugger.</td>
+          </tr>
+          <tr>
+            <td>Binary inspection</td>
+            <td><code>xxd</code>, <code>hexyl</code>, <code>hexdump</code>, <code>od</code>, <code>objdump</code>, <code>readelf</code></td>
+            <td>Seeing a program as bytes is how you learn what compiling actually produced.</td>
+          </tr>
+          <tr>
+            <td>Python</td>
+            <td><code>uv</code></td>
+            <td>Replaces pip, venv, pyenv, pipx and poetry with one tool that is also far faster.</td>
+          </tr>
+          <tr>
+            <td>Java</td>
+            <td><code>Temurin JDK</code>, <code>Maven</code>, <code>Gradle</code></td>
+            <td>The mainstream OpenJDK build, kept current, with both major build tools.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2 id="requirements">What you need</h2>
+
+    <ul>
+      <li>Windows 10 version 2004 or newer, or Windows 11 (build 19041+).</li>
+      <li>An administrator account on that machine, for step 1 only.</li>
+      <li>Around 10&nbsp;GB of free disk space and a reasonable internet connection.</li>
+    </ul>
+
+    <p class="muted">
+      Already on Linux or a Mac with Ubuntu in a container? Skip step 1 — steps 2
+      to 5 are ordinary Ubuntu package installs and work anywhere APT does.
+    </p>
+
+    <h2 id="conventions">How to read the pages</h2>
+
+    <p>Code blocks on this site look like this:</p>
+
+    <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>clang --version
+<span class="out">Ubuntu clang version 18.1.3</span></code></pre>
+    </div>
+
+    <ul>
+      <li>The <code>$</code> is the prompt your terminal already shows. Do not type it.</li>
+      <li>Grey lines are what the computer prints back, not something to type.</li>
+      <li>The <strong>Copy</strong> button strips both, so pasting always gives you just the command.</li>
+    </ul>
+
+  </div>
+
+</main>
+
+<footer class="site-footer">
+  <div class="inner">
+    <span>system_setup — <a href="https://aikaryashala.com">aikaryashala</a></span>
+    <span class="spacer"><a href="https://github.com/aikaryashala/system_setup">Source on GitHub</a></span>
+  </div>
+</footer>
+
+<script src="assets/site.js"></script>
+</body>
+</html>

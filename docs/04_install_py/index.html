@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="en" data-theme="">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Step 4 — Python with uv · system_setup</title>
+<meta name="description" content="Install Python 3 on Ubuntu using uv, the modern replacement for pip, venv, pyenv, pipx and poetry.">
+<link rel="stylesheet" href="../assets/style.css">
+<script>
+(function(){try{var t=localStorage.getItem('system-setup-theme');if(t){document.documentElement.setAttribute('data-theme',t);}}catch(e){}}());
+</script>
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <div class="inner">
+    <a class="brand" href="../"><span class="mark">&gt;_</span> system_setup</a>
+    <nav class="header-nav">
+      <a href="../scripts/">Scripts</a>
+      <a href="https://github.com/aikaryashala/system_setup">GitHub</a>
+      <button class="theme-toggle" type="button" aria-label="Switch theme">☽</button>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+<div class="prose">
+
+  <p class="breadcrumb"><a href="../">system_setup</a> / Step 4</p>
+
+  <p class="eyebrow">Step 4 · Ubuntu</p>
+  <h1>Python, with uv</h1>
+  <p class="lede">
+    <strong>uv</strong> is a single fast binary that installs Python itself,
+    creates environments, resolves dependencies and runs your code. It replaces
+    pip, venv, virtualenv, pyenv, pipx and poetry — all of them — and it is the
+    only Python tool used anywhere in this project.
+  </p>
+
+  <h2 id="run">Run this</h2>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>curl -fsSL https://aikaryashala.com/system_setup/scripts/install_py.sh | bash</code></pre>
+  </div>
+
+  <p>Then reload your shell so <code>uv</code> is on your <code>PATH</code>:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>source ~/.bashrc
+<span class="prompt">$ </span>uv --version</code></pre>
+  </div>
+
+  <h2 id="why">Why uv, and not the tools you have read about</h2>
+
+  <p>
+    Python's packaging story accumulated a lot of separate tools over twenty
+    years. Each solved one problem: <code>venv</code> isolates dependencies,
+    <code>pip</code> installs them, <code>pyenv</code> manages interpreter
+    versions, <code>pipx</code> installs applications, <code>poetry</code> locks
+    versions. Learning them is mostly learning how they fail to cooperate.
+  </p>
+
+  <p>uv does all of it, in one tool, typically in under a second.</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Instead of</th><th>Use</th></tr></thead>
+      <tbody>
+        <tr><td><code>python3 -m venv .venv &amp;&amp; source .venv/bin/activate</code></td><td><code>uv venv</code> — or nothing at all; <code>uv run</code> handles it</td></tr>
+        <tr><td><code>pip install requests</code></td><td><code>uv add requests</code></td></tr>
+        <tr><td><code>pip install -r requirements.txt</code></td><td><code>uv sync</code></td></tr>
+        <tr><td><code>pip freeze &gt; requirements.txt</code></td><td>nothing — <code>uv.lock</code> is maintained for you</td></tr>
+        <tr><td><code>pyenv install 3.14</code></td><td><code>uv python install 3.14</code></td></tr>
+        <tr><td><code>pipx install ruff</code></td><td><code>uv tool install ruff</code></td></tr>
+        <tr><td><code>pipx run ruff check .</code></td><td><code>uvx ruff check .</code></td></tr>
+        <tr><td><code>python script.py</code></td><td><code>uv run script.py</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout warn">
+    <div class="callout-title">Never install packages into the system Python</div>
+    <p>
+      Ubuntu itself is written partly in Python, and its
+      <code>/usr/bin/python3</code> belongs to the operating system. Installing
+      packages there can break system tools. Modern Ubuntu refuses outright, with
+      an <em>externally-managed-environment</em> error.
+    </p>
+    <p>
+      uv sidesteps this entirely: it downloads its own Python builds into your
+      home directory and never touches the system one.
+    </p>
+  </div>
+
+  <h2 id="script">Running a single script</h2>
+
+  <p>Create <code>hello.py</code>:</p>
+
+  <div class="codeblock" data-label="hello.py">
+<pre><code>import sys
+
+def main() -&gt; None:
+    print(f"Hello from Python {sys.version.split()[0]}")
+
+if __name__ == "__main__":
+    main()</code></pre>
+  </div>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>uv run hello.py
+<span class="out">Hello from Python 3.14.0</span></code></pre>
+  </div>
+
+  <p>An interactive interpreter, without creating a project:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>uv run python</code></pre>
+  </div>
+
+  <h3>A script with its own dependencies</h3>
+
+  <p>
+    A standalone script can declare what it needs in a comment block at the top.
+    uv reads it, builds a throwaway environment, and runs the script — nothing to
+    install first, nothing left behind.
+  </p>
+
+  <div class="codeblock" data-label="fetch.py">
+<pre><code># /// script
+# requires-python = "&gt;=3.12"
+# dependencies = ["httpx"]
+# ///
+
+import httpx
+
+response = httpx.get("https://api.github.com/repos/aikaryashala/system_setup")
+print(response.json()["full_name"])</code></pre>
+  </div>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>uv run fetch.py</code></pre>
+  </div>
+
+  <p>Or let uv write that header for you:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>uv add --script fetch.py httpx</code></pre>
+  </div>
+
+  <h2 id="project">Starting a project</h2>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>uv init myproject
+<span class="prompt">$ </span>cd myproject
+<span class="prompt">$ </span>uv add requests
+<span class="prompt">$ </span>uv run main.py</code></pre>
+  </div>
+
+  <p>That leaves you with:</p>
+
+  <div class="codeblock" data-label="myproject/">
+<pre><code>myproject/
+├── .python-version    which Python this project uses
+├── pyproject.toml     your dependencies, declared
+├── uv.lock            exact resolved versions - commit this
+├── README.md
+├── main.py
+└── .venv/             the environment, managed for you - do not commit</code></pre>
+  </div>
+
+  <div class="callout note">
+    <div class="callout-title">There is no “activate” step</div>
+    <p>
+      <code>uv run</code> finds the project's environment, creates it if needed,
+      installs anything missing, and then runs your command inside it. Forgetting
+      to activate an environment stops being a category of mistake you can make.
+    </p>
+  </div>
+
+  <h3>Everyday project commands</h3>
+  <ul class="cmd-list">
+    <li><code>uv add httpx</code><span>Add a dependency, update the lock file, install it</span></li>
+    <li><code>uv add --dev pytest</code><span>Add a development-only dependency</span></li>
+    <li><code>uv remove httpx</code><span>Remove one</span></li>
+    <li><code>uv sync</code><span>Make the environment match the lock file exactly</span></li>
+    <li><code>uv lock --upgrade</code><span>Update dependencies to their newest allowed versions</span></li>
+    <li><code>uv run pytest</code><span>Run a command inside the project environment</span></li>
+    <li><code>uv tree</code><span>Show the dependency tree</span></li>
+    <li><code>uv run --python 3.12 main.py</code><span>Run under a different Python, just this once</span></li>
+  </ul>
+
+  <h2 id="interpreters">Managing Python versions</h2>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="comment"># install a specific version</span>
+<span class="prompt">$ </span>uv python install 3.14
+
+<span class="comment"># what is installed, and what is available</span>
+<span class="prompt">$ </span>uv python list
+
+<span class="comment"># pin this project to a version - writes .python-version</span>
+<span class="prompt">$ </span>uv python pin 3.14
+
+<span class="comment"># where does that interpreter actually live?</span>
+<span class="prompt">$ </span>uv python find 3.14</code></pre>
+  </div>
+
+  <p>
+    Installing several versions side by side is normal and cheap. Testing against
+    an older Python is <code>uv run --python 3.11 pytest</code>.
+  </p>
+
+  <h2 id="tools">Command line tools</h2>
+
+  <p>
+    Some Python packages are applications rather than libraries. Install those
+    globally, each isolated in its own environment:
+  </p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="comment"># install permanently, onto your PATH</span>
+<span class="prompt">$ </span>uv tool install ruff
+
+<span class="comment"># run once without installing anything</span>
+<span class="prompt">$ </span>uvx ruff check .
+<span class="prompt">$ </span>uvx ruff format .
+
+<span class="comment"># manage what you have installed</span>
+<span class="prompt">$ </span>uv tool list
+<span class="prompt">$ </span>uv tool upgrade --all</code></pre>
+  </div>
+
+  <p>
+    <code>uvx</code> is the one to remember. It downloads, caches and runs a tool
+    in one step, which makes trying something out essentially free.
+  </p>
+
+  <h2 id="existing">An existing project that uses requirements.txt</h2>
+
+  <p>uv reads the old formats, so you can adopt it without rewriting anything:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="comment"># create an environment and install from requirements.txt</span>
+<span class="prompt">$ </span>uv venv
+<span class="prompt">$ </span>uv pip install -r requirements.txt
+
+<span class="comment"># or convert properly, to pyproject.toml and a lock file</span>
+<span class="prompt">$ </span>uv init --bare
+<span class="prompt">$ </span>uv add -r requirements.txt</code></pre>
+  </div>
+
+  <div class="callout note">
+    <div class="callout-title">About <code>uv pip</code></div>
+    <p>
+      <code>uv pip</code> exists only as a compatibility layer for projects that
+      still expect pip's interface. For anything new, use <code>uv add</code> and
+      <code>uv sync</code> — they maintain a lock file, which <code>uv pip</code>
+      does not.
+    </p>
+  </div>
+
+  <h2 id="verify">Check it worked</h2>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>uv --version
+<span class="prompt">$ </span>uv python list --only-installed
+<span class="prompt">$ </span>uv run --no-project python -c "import sys; print(sys.version)"</code></pre>
+  </div>
+
+  <div class="callout warn">
+    <div class="callout-title">“uv: command not found”</div>
+    <p>
+      uv installs into <code>~/.local/bin</code>. The script adds that directory
+      to your <code>PATH</code>, but your current shell has not read the change
+      yet. Run <code>source ~/.bashrc</code>, or open a new terminal.
+    </p>
+  </div>
+
+  <h2 id="next">Next</h2>
+  <p>Step 5 is the last one: a Java toolchain, with the JDK, Maven and Gradle.</p>
+
+  <nav class="page-nav">
+    <a href="../03_install_c/"><span class="dir">Step 3</span><span class="title">← C: clang and lldb</span></a>
+    <a class="next" href="../05_install_java/"><span class="dir">Step 5</span><span class="title">Java toolchain →</span></a>
+  </nav>
+
+</div>
+</main>
+
+<footer class="site-footer">
+  <div class="inner">
+    <span>system_setup — <a href="https://aikaryashala.com">aikaryashala</a></span>
+    <span class="spacer"><a href="https://github.com/aikaryashala/system_setup">Source on GitHub</a></span>
+  </div>
+</footer>
+
+<script src="../assets/site.js"></script>
+</body>
+</html>

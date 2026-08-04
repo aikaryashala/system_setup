@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="en" data-theme="">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Step 5 — Java: JDK, Maven and Gradle · system_setup</title>
+<meta name="description" content="Install a Temurin JDK on Ubuntu with javac, java, jshell and jar, plus Maven and Gradle.">
+<link rel="stylesheet" href="../assets/style.css">
+<script>
+(function(){try{var t=localStorage.getItem('system-setup-theme');if(t){document.documentElement.setAttribute('data-theme',t);}}catch(e){}}());
+</script>
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <div class="inner">
+    <a class="brand" href="../"><span class="mark">&gt;_</span> system_setup</a>
+    <nav class="header-nav">
+      <a href="../scripts/">Scripts</a>
+      <a href="https://github.com/aikaryashala/system_setup">GitHub</a>
+      <button class="theme-toggle" type="button" aria-label="Switch theme">☽</button>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+<div class="prose">
+
+  <p class="breadcrumb"><a href="../">system_setup</a> / Step 5</p>
+
+  <p class="eyebrow">Step 5 · Ubuntu</p>
+  <h1>Java: JDK, Maven and Gradle</h1>
+  <p class="lede">
+    The JDK — Java Development Kit — is the compiler, the runtime, and an
+    interactive prompt for trying ideas out. This step installs the Temurin build
+    of OpenJDK, plus the two build tools you will meet in real projects.
+  </p>
+
+  <h2 id="run">Run this</h2>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>curl -fsSL https://aikaryashala.com/system_setup/scripts/install_java.sh | bash</code></pre>
+  </div>
+
+  <p>Then reload your shell so <code>JAVA_HOME</code> is set:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>source ~/.bashrc
+<span class="prompt">$ </span>java -version</code></pre>
+  </div>
+
+  <h2 id="whats-installed">What gets installed</h2>
+
+  <ul class="cmd-list">
+    <li><code>javac</code><span>The compiler. Turns <code>.java</code> source into <code>.class</code> bytecode.</span></li>
+    <li><code>java</code><span>The runtime. Executes bytecode — and, these days, single source files directly.</span></li>
+    <li><code>jshell</code><span>An interactive Java prompt. Type an expression, see the result.</span></li>
+    <li><code>jar</code><span>Bundle classes into a single distributable <code>.jar</code>.</span></li>
+    <li><code>javap</code><span>Disassemble a class file and show its bytecode.</span></li>
+    <li><code>mvn</code><span>Maven: the long-established build tool. XML configuration, very predictable.</span></li>
+    <li><code>gradle</code><span>Gradle: the newer one. Faster incremental builds, script-based configuration.</span></li>
+  </ul>
+
+  <div class="callout note">
+    <div class="callout-title">Why Temurin rather than Ubuntu's openjdk</div>
+    <p>
+      Ubuntu packages a JDK, but which versions it offers depends on your release
+      and they can lag well behind. Eclipse Adoptium publishes Temurin — the same
+      OpenJDK, built and tested by the community that maintains it — through its
+      own APT repository, so every LTS is available and upgrades are clean. The
+      script adds that repository, and falls back to Ubuntu's package if it
+      cannot be reached.
+    </p>
+  </div>
+
+  <h2 id="jshell">Try it without writing a file</h2>
+
+  <p>
+    <code>jshell</code> is the fastest way to test an idea. No class, no
+    <code>main</code>, no compile step.
+  </p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>jshell
+<span class="out">|  Welcome to JShell. For an introduction type: /help intro</span>
+<span class="out">jshell&gt; </span>int x = 21
+<span class="out">x ==&gt; 21</span>
+<span class="out">jshell&gt; </span>x * 2
+<span class="out">$2 ==&gt; 42</span>
+<span class="out">jshell&gt; </span>System.out.println("hello")
+<span class="out">hello</span>
+<span class="out">jshell&gt; </span>"abc".toUpperCase()
+<span class="out">$4 ==&gt; "ABC"</span>
+<span class="out">jshell&gt; </span>/exit</code></pre>
+  </div>
+
+  <p>
+    Useful commands inside jshell: <code>/list</code> shows what you have typed,
+    <code>/vars</code> the variables you have defined, <code>/imports</code> what
+    is already imported, and <code>/exit</code> leaves.
+  </p>
+
+  <h2 id="hello">Compile a program</h2>
+
+  <p>Create <code>Hello.java</code>:</p>
+
+  <div class="codeblock" data-label="Hello.java">
+<pre><code>public class Hello {
+    public static void main(String[] args) {
+        String who = args.length &gt; 0 ? args[0] : "world";
+        System.out.println("Hello, " + who + "!");
+        System.out.println("Running on Java " + System.getProperty("java.version"));
+    }
+}</code></pre>
+  </div>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>javac Hello.java
+<span class="prompt">$ </span>java Hello
+<span class="out">Hello, world!</span>
+<span class="out">Running on Java 25.0.1</span>
+<span class="prompt">$ </span>java Hello Ubuntu
+<span class="out">Hello, Ubuntu!</span></code></pre>
+  </div>
+
+  <div class="callout tip">
+    <div class="callout-title">You can skip the compile step</div>
+    <p>
+      Modern Java runs a single source file directly — it compiles in memory and
+      leaves no <code>.class</code> file behind. Ideal while learning:
+    </p>
+    <div class="codeblock">
+<pre><code><span class="prompt">$ </span>java Hello.java</code></pre>
+    </div>
+  </div>
+
+  <div class="callout warn">
+    <div class="callout-title">The file name must match the class name</div>
+    <p>
+      A <code>public class Hello</code> has to live in a file called
+      <code>Hello.java</code> — same spelling, same capitalisation. Getting this
+      wrong is the first error nearly everyone hits.
+    </p>
+  </div>
+
+  <h3>Looking at the bytecode</h3>
+
+  <p>
+    Java compiles to bytecode rather than machine code. The same hex tools from
+    <a href="../03_install_c/">step 3</a> work here, and <code>javap</code> makes
+    the result readable:
+  </p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="comment"># every class file starts with the magic number 0xCAFEBABE</span>
+<span class="prompt">$ </span>xxd -l 16 Hello.class
+<span class="out">00000000: cafe babe 0000 0045 001d 0a00 0200 03...  .......E........</span>
+
+<span class="comment"># the class as the JVM sees it</span>
+<span class="prompt">$ </span>javap Hello
+
+<span class="comment"># the actual bytecode instructions</span>
+<span class="prompt">$ </span>javap -c Hello</code></pre>
+  </div>
+
+  <h2 id="maven">A Maven project</h2>
+
+  <p>Maven expects a fixed directory layout and describes the build in <code>pom.xml</code>.</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>mvn archetype:generate \
+    -DgroupId=com.example \
+    -DartifactId=myapp \
+    -DarchetypeArtifactId=maven-archetype-quickstart \
+    -DinteractiveMode=false
+
+<span class="prompt">$ </span>cd myapp
+<span class="prompt">$ </span>mvn compile
+<span class="prompt">$ </span>mvn test
+<span class="prompt">$ </span>mvn package
+<span class="prompt">$ </span>java -cp target/myapp-1.0-SNAPSHOT.jar com.example.App</code></pre>
+  </div>
+
+  <ul class="cmd-list">
+    <li><code>mvn compile</code><span>Compile the main sources</span></li>
+    <li><code>mvn test</code><span>Compile and run the tests</span></li>
+    <li><code>mvn package</code><span>Build the <code>.jar</code></span></li>
+    <li><code>mvn clean</code><span>Delete <code>target/</code> and start fresh</span></li>
+    <li><code>mvn dependency:tree</code><span>Show what depends on what</span></li>
+  </ul>
+
+  <div class="callout note">
+    <div class="callout-title">The first Maven build is slow</div>
+    <p>
+      Maven downloads its own plugins on first use, into <code>~/.m2</code>.
+      Expect a few minutes and a lot of scrolling once. Later builds are fast.
+    </p>
+  </div>
+
+  <h2 id="gradle">A Gradle project</h2>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>mkdir myapp &amp;&amp; cd myapp
+<span class="prompt">$ </span>gradle init --type java-application --dsl kotlin \
+    --test-framework junit-jupiter --project-name myapp --package com.example
+
+<span class="prompt">$ </span>./gradlew build
+<span class="prompt">$ </span>./gradlew run
+<span class="prompt">$ </span>./gradlew test</code></pre>
+  </div>
+
+  <div class="callout tip">
+    <div class="callout-title">Use <code>./gradlew</code>, not <code>gradle</code></div>
+    <p>
+      <code>gradle init</code> generates a <em>wrapper</em> script,
+      <code>gradlew</code>, pinned to the exact Gradle version the project needs.
+      Using it means everyone building the project gets the same Gradle, whatever
+      they have installed. Commit it; call <code>gradle</code> directly only when
+      creating a project.
+    </p>
+  </div>
+
+  <h2 id="java-home">JAVA_HOME</h2>
+
+  <p>
+    Many Java tools locate the JDK through the <code>JAVA_HOME</code> environment
+    variable. The script works out the right path and adds it to
+    <code>~/.bashrc</code>:
+  </p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>echo $JAVA_HOME
+<span class="out">/usr/lib/jvm/temurin-25-jdk-amd64</span></code></pre>
+  </div>
+
+  <p>If you install more than one JDK, switch between them with:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>sudo update-alternatives --config java
+<span class="prompt">$ </span>sudo update-alternatives --config javac</code></pre>
+  </div>
+
+  <h2 id="verify">Check it worked</h2>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>java -version
+<span class="prompt">$ </span>javac -version
+<span class="prompt">$ </span>mvn -version
+<span class="prompt">$ </span>gradle --version
+<span class="prompt">$ </span>echo $JAVA_HOME</code></pre>
+  </div>
+
+  <h2 id="done">That is everything</h2>
+
+  <p>
+    Ubuntu is running, the essential commands are in place, and you have working
+    toolchains for C, Python and Java. Re-run any step at any time — the scripts
+    are safe to repeat, and will pick up newer versions when they exist.
+  </p>
+
+  <nav class="page-nav">
+    <a href="../04_install_py/"><span class="dir">Step 4</span><span class="title">← Python with uv</span></a>
+    <a class="next" href="../"><span class="dir">Finished</span><span class="title">Back to all steps →</span></a>
+  </nav>
+
+</div>
+</main>
+
+<footer class="site-footer">
+  <div class="inner">
+    <span>system_setup — <a href="https://aikaryashala.com">aikaryashala</a></span>
+    <span class="spacer"><a href="https://github.com/aikaryashala/system_setup">Source on GitHub</a></span>
+  </div>
+</footer>
+
+<script src="../assets/site.js"></script>
+</body>
+</html>

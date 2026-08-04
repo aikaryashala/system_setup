@@ -1,0 +1,376 @@
+<!doctype html>
+<html lang="en" data-theme="">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Step 3 — C with clang, lldb and hex tools · system_setup</title>
+<meta name="description" content="Install a C toolchain on Ubuntu: clang to compile, lldb to debug, and xxd, hexyl, objdump and readelf to read binaries.">
+<link rel="stylesheet" href="../assets/style.css">
+<script>
+(function(){try{var t=localStorage.getItem('system-setup-theme');if(t){document.documentElement.setAttribute('data-theme',t);}}catch(e){}}());
+</script>
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <div class="inner">
+    <a class="brand" href="../"><span class="mark">&gt;_</span> system_setup</a>
+    <nav class="header-nav">
+      <a href="../scripts/">Scripts</a>
+      <a href="https://github.com/aikaryashala/system_setup">GitHub</a>
+      <button class="theme-toggle" type="button" aria-label="Switch theme">☽</button>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+<div class="prose">
+
+  <p class="breadcrumb"><a href="../">system_setup</a> / Step 3</p>
+
+  <p class="eyebrow">Step 3 · Ubuntu</p>
+  <h1>C: clang, lldb, and reading binaries</h1>
+  <p class="lede">
+    A compiler turns your C into a file of bytes the processor understands. This
+    step installs <strong>clang</strong> to do that, <strong>lldb</strong> to step
+    through the result line by line, and a set of tools for looking at that file
+    as raw hexadecimal — which is the fastest way to understand what compiling
+    really produced.
+  </p>
+
+  <h2 id="run">Run this</h2>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>curl -fsSL https://aikaryashala.com/system_setup/scripts/install_c.sh | bash</code></pre>
+  </div>
+
+  <p>
+    At the end the script compiles a small program, runs it, and shows you the
+    first 64 bytes of the binary it produced — so you know the whole chain works.
+  </p>
+
+  <h2 id="whats-installed">What gets installed</h2>
+
+  <h3>Compiler and linker</h3>
+  <ul class="cmd-list">
+    <li><code>clang</code><span>The compiler. Turns <code>.c</code> source into an executable.</span></li>
+    <li><code>lld</code><span>LLVM's linker — much faster than the default when projects grow.</span></li>
+    <li><code>make</code><span>Runs a <code>Makefile</code>, rebuilding only what changed.</span></li>
+    <li><code>cmake</code> <code>ninja</code><span>For projects that outgrow a handwritten Makefile.</span></li>
+    <li><code>clang-format</code> <code>clang-tidy</code><span>Format code consistently; catch bugs without running the program.</span></li>
+  </ul>
+
+  <h3>Debugging</h3>
+  <ul class="cmd-list">
+    <li><code>lldb</code><span>The debugger. Pause a program, inspect variables, step one line at a time.</span></li>
+    <li><code>valgrind</code><span>Find memory leaks, and reads or writes past the end of an array.</span></li>
+    <li><code>strace</code><span>Show every system call — every time the program asks the kernel for something.</span></li>
+    <li><code>ltrace</code><span>The same idea, for calls into shared libraries.</span></li>
+  </ul>
+
+  <h3>Reading files as bytes</h3>
+  <ul class="cmd-list">
+    <li><code>xxd</code><span>The classic hex dump. <code>xxd -r</code> turns hex back into binary.</span></li>
+    <li><code>hexyl</code><span>A colourised hex viewer that groups bytes by what they are. Easiest to read.</span></li>
+    <li><code>hexdump</code><span>The traditional tool; <code>hexdump -C</code> is the canonical view.</span></li>
+    <li><code>od</code><span>Octal dump. On every Unix ever made, so worth knowing.</span></li>
+    <li><code>strings</code><span>Pull the readable text out of a binary.</span></li>
+    <li><code>objdump</code><span><code>objdump -d</code> disassembles: machine code back to assembly.</span></li>
+    <li><code>readelf</code><span>Explain the structure of a Linux executable, section by section.</span></li>
+    <li><code>nm</code><span>List the symbols — function and variable names — inside an object file.</span></li>
+    <li><code>size</code><span>How much of the binary is code, initialised data, and zeroed data.</span></li>
+  </ul>
+
+  <h2 id="hello">Compile something</h2>
+
+  <p>Create <code>hello.c</code>:</p>
+
+  <div class="codeblock" data-label="hello.c">
+<pre><code>#include &lt;stdio.h&gt;
+
+int main(void) {
+    int answer = 42;
+    printf("Hello from C. The answer is %d.\n", answer);
+    return 0;
+}</code></pre>
+  </div>
+
+  <p>Compile and run it:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>clang -g -O0 -Wall -Wextra -o hello hello.c
+<span class="prompt">$ </span>./hello
+<span class="out">Hello from C. The answer is 42.</span></code></pre>
+  </div>
+
+  <p>Those flags matter more than they look:</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Flag</th><th>What it does</th><th>Why</th></tr></thead>
+      <tbody>
+        <tr><td><code>-g</code></td><td>Keep debug information</td><td>Without it, lldb can show you assembly but not your source lines.</td></tr>
+        <tr><td><code>-O0</code></td><td>Do not optimise</td><td>Optimised code reorders and deletes things, so stepping through it is confusing.</td></tr>
+        <tr><td><code>-Wall -Wextra</code></td><td>Turn on the warnings</td><td>Most C bugs are things the compiler already suspected. Let it tell you.</td></tr>
+        <tr><td><code>-o hello</code></td><td>Name the output</td><td>Otherwise you get a file called <code>a.out</code>.</td></tr>
+        <tr><td><code>-fsanitize=address</code></td><td>Add runtime memory checks</td><td>Catches buffer overruns and use-after-free the moment they happen.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout tip">
+    <div class="callout-title">A habit worth forming</div>
+    <p>
+      Use <code>clang -g -O0 -Wall -Wextra -fsanitize=address</code> while you are
+      learning. The sanitizer turns silent memory corruption — the hardest class
+      of C bug — into an immediate, readable error message.
+    </p>
+  </div>
+
+  <h2 id="lldb">Debug it with lldb</h2>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>lldb ./hello
+<span class="out">(lldb) target create "./hello"</span>
+<span class="out">(lldb) </span>b main
+<span class="out">(lldb) </span>run
+<span class="out">(lldb) </span>frame variable
+<span class="out">(lldb) </span>next
+<span class="out">(lldb) </span>print answer
+<span class="out">(lldb) </span>continue
+<span class="out">(lldb) </span>quit</code></pre>
+  </div>
+
+  <h3>The commands worth memorising</h3>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Command</th><th>Short</th><th>What it does</th></tr></thead>
+      <tbody>
+        <tr><td><code>breakpoint set --name main</code></td><td><code>b main</code></td><td>Stop when <code>main</code> is entered</td></tr>
+        <tr><td><code>breakpoint set --file hello.c --line 5</code></td><td><code>b hello.c:5</code></td><td>Stop at a specific line</td></tr>
+        <tr><td><code>run</code></td><td><code>r</code></td><td>Start the program</td></tr>
+        <tr><td><code>next</code></td><td><code>n</code></td><td>Run the next line, stepping over function calls</td></tr>
+        <tr><td><code>step</code></td><td><code>s</code></td><td>Run the next line, stepping into calls</td></tr>
+        <tr><td><code>finish</code></td><td></td><td>Run until the current function returns</td></tr>
+        <tr><td><code>continue</code></td><td><code>c</code></td><td>Carry on until the next breakpoint</td></tr>
+        <tr><td><code>print answer</code></td><td><code>p answer</code></td><td>Show the value of one expression</td></tr>
+        <tr><td><code>frame variable</code></td><td><code>v</code></td><td>Show every local variable at once</td></tr>
+        <tr><td><code>bt</code></td><td></td><td>Backtrace: how did we get to this line?</td></tr>
+        <tr><td><code>memory read --size 1 --format x --count 32 &amp;answer</code></td><td><code>x/32xb &amp;answer</code></td><td>Read raw bytes at an address</td></tr>
+        <tr><td><code>quit</code></td><td><code>q</code></td><td>Leave the debugger</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout note">
+    <div class="callout-title">Coming from gdb?</div>
+    <p>
+      LLDB accepts many gdb spellings, but its own syntax is
+      <code>&lt;noun&gt; &lt;verb&gt; &lt;options&gt;</code> — for example
+      <code>breakpoint set</code>, <code>memory read</code>,
+      <code>thread backtrace</code>. The short aliases above cover almost
+      everything you will do day to day.
+    </p>
+  </div>
+
+  <h2 id="memory-bugs">Catch a memory bug</h2>
+
+  <p>This program writes one element past the end of its array:</p>
+
+  <div class="codeblock" data-label="overflow.c">
+<pre><code>#include &lt;stdio.h&gt;
+
+int main(void) {
+    int numbers[4] = {1, 2, 3, 4};
+    numbers[4] = 99;              /* one past the end */
+    printf("%d\n", numbers[0]);
+    return 0;
+}</code></pre>
+  </div>
+
+  <p>
+    Compiled normally it may well appear to work, which is exactly what makes
+    this class of bug dangerous. Compiled with the address sanitizer, it does not:
+  </p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>clang -g -O0 -fsanitize=address -o overflow overflow.c
+<span class="prompt">$ </span>./overflow
+<span class="out">==1234==ERROR: AddressSanitizer: stack-buffer-overflow on address 0x7ffd...</span>
+<span class="out">WRITE of size 4 at 0x7ffd... thread T0</span>
+<span class="out">    #0 0x... in main overflow.c:5:16</span></code></pre>
+  </div>
+
+  <p>Valgrind finds a similar class of problem in heap memory, without recompiling:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>valgrind --leak-check=full ./myprogram</code></pre>
+  </div>
+
+  <h2 id="hex">Look at the bytes</h2>
+
+  <p>
+    A compiled program is just a file. These tools let you read that file as what
+    it is, rather than as what it does.
+  </p>
+
+  <h3>xxd — the classic</h3>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>xxd -l 64 hello
+<span class="out">00000000: 7f45 4c46 0201 0100 0000 0000 0000 0000  .ELF............</span>
+<span class="out">00000010: 0300 3e00 0100 0000 4010 0000 0000 0000  ..>.....@.......</span>
+<span class="out">00000020: 4000 0000 0000 0000 7834 0000 0000 0000  @.......x4......</span>
+<span class="out">00000030: 0000 0000 4000 3800 0d00 4000 1e00 1d00  ....@.8...@.....</span></code></pre>
+  </div>
+
+  <p>Three columns: the offset into the file, the bytes in hexadecimal, and those same bytes as text where they happen to be printable.</p>
+
+  <p>
+    Those first four bytes — <code>7f 45 4c 46</code> — are the magic number
+    <code>0x7F</code> followed by <code>"ELF"</code>. That is how Linux recognises
+    an executable. Every file format has a marker like this;
+    <code>file</code> works by reading them.
+  </p>
+
+  <h4>xxd options you will actually use</h4>
+  <ul class="cmd-list">
+    <li><code>xxd -l 64 f</code><span>Only the first 64 bytes</span></li>
+    <li><code>xxd -s 512 -l 64 f</code><span>64 bytes starting at offset 512</span></li>
+    <li><code>xxd -b f</code><span>Binary — actual ones and zeroes — instead of hex</span></li>
+    <li><code>xxd -c 8 f</code><span>8 bytes per line instead of 16</span></li>
+    <li><code>xxd -g 1 f</code><span>Group by single bytes, not pairs</span></li>
+    <li><code>xxd -r dump.txt &gt; f</code><span>Reverse: rebuild the binary from a hex dump</span></li>
+  </ul>
+
+  <h3>hexyl — the readable one</h3>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>hexyl -n 64 hello</code></pre>
+  </div>
+
+  <p>
+    Same information, but colour-coded by category: null bytes, ASCII text,
+    printable punctuation and non-ASCII each get their own colour. When you are
+    hunting for structure in an unfamiliar file, this is the one to reach for.
+  </p>
+
+  <h3>hexdump and od — the traditional pair</h3>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="comment"># hexdump -C is the canonical side-by-side view</span>
+<span class="prompt">$ </span>hexdump -C -n 64 hello
+
+<span class="comment"># od: hex bytes with hex offsets and printable characters</span>
+<span class="prompt">$ </span>od -A x -t x1z -N 64 hello
+
+<span class="comment"># od can also show other bases - here, octal</span>
+<span class="prompt">$ </span>od -A o -t o1 -N 32 hello</code></pre>
+  </div>
+
+  <p>
+    <code>od</code> is worth knowing because it is guaranteed present on any Unix
+    system, however minimal — including containers where <code>xxd</code> is not.
+  </p>
+
+  <h3>Reading structure, not just bytes</h3>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="comment"># what kind of file is this?</span>
+<span class="prompt">$ </span>file hello
+
+<span class="comment"># the readable text hiding inside the binary</span>
+<span class="prompt">$ </span>strings hello | head
+
+<span class="comment"># how big are the code and data sections?</span>
+<span class="prompt">$ </span>size hello
+
+<span class="comment"># the ELF header, explained field by field</span>
+<span class="prompt">$ </span>readelf -h hello
+
+<span class="comment"># every section in the file</span>
+<span class="prompt">$ </span>readelf -S hello
+
+<span class="comment"># function and variable names</span>
+<span class="prompt">$ </span>nm hello
+
+<span class="comment"># disassemble main back into assembly</span>
+<span class="prompt">$ </span>objdump -d --disassemble=main hello
+
+<span class="comment"># assembly interleaved with the C it came from (needs -g)</span>
+<span class="prompt">$ </span>objdump -S hello | less</code></pre>
+  </div>
+
+  <div class="callout tip">
+    <div class="callout-title">The exercise that makes this click</div>
+    <p>
+      Compile the same file twice — once with <code>-O0</code> and once with
+      <code>-O2</code> — then run
+      <code>objdump -d --disassemble=main</code> on each and put the output side
+      by side. Seeing what the optimiser did to your loop teaches more about how
+      C works than any amount of reading.
+    </p>
+  </div>
+
+  <h2 id="make">A Makefile, once one file is not enough</h2>
+
+  <div class="codeblock" data-label="Makefile">
+<pre><code>CC      = clang
+CFLAGS  = -g -O0 -Wall -Wextra -std=c17
+TARGET  = hello
+
+$(TARGET): hello.c
+	$(CC) $(CFLAGS) -o $(TARGET) hello.c
+
+debug: CFLAGS += -fsanitize=address
+debug: clean $(TARGET)
+
+clean:
+	rm -f $(TARGET)
+
+.PHONY: debug clean</code></pre>
+  </div>
+
+  <div class="callout warn">
+    <div class="callout-title">Makefiles demand real tab characters</div>
+    <p>
+      The indented lines under each rule must begin with a tab, not spaces. This
+      is the single most common reason a Makefile fails with
+      <em>“missing separator”</em>.
+    </p>
+  </div>
+
+  <p>Then <code>make</code> to build, <code>make debug</code> for the sanitizer build, <code>make clean</code> to start over.</p>
+
+  <h2 id="verify">Check it worked</h2>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>clang --version
+<span class="prompt">$ </span>lldb --version
+<span class="prompt">$ </span>xxd -l 16 /bin/ls</code></pre>
+  </div>
+
+  <h2 id="next">Next</h2>
+  <p>Step 4 sets up Python — with <code>uv</code>, which replaces the entire old stack of Python tooling.</p>
+
+  <nav class="page-nav">
+    <a href="../02_install_cmds/"><span class="dir">Step 2</span><span class="title">← Essential commands</span></a>
+    <a class="next" href="../04_install_py/"><span class="dir">Step 4</span><span class="title">Python with uv →</span></a>
+  </nav>
+
+</div>
+</main>
+
+<footer class="site-footer">
+  <div class="inner">
+    <span>system_setup — <a href="https://aikaryashala.com">aikaryashala</a></span>
+    <span class="spacer"><a href="https://github.com/aikaryashala/system_setup">Source on GitHub</a></span>
+  </div>
+</footer>
+
+<script src="../assets/site.js"></script>
+</body>
+</html>
