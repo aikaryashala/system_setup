@@ -1,0 +1,5 @@
+The script in Step-1 is not installing a specific version of linux, we need fix the script to install specific Ubuntu OS of 24 version :'Ubuntu 24.04 LTS' install this in the script itself
+
+---
+
+if 22.04 version is already installed, skip installing this version.
