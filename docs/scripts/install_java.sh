@@ -305,8 +305,11 @@ main() {
   java Report 4 8 15 16 23 42   # run it with your own numbers
   jshell                        # or try an idea with no file at all
 
-That is the last step of the main sequence. Everything from
-https://aikaryashala.com/system_setup steps 1 to 5 is now installed."
+Last thing - check it all works and report it:
+
+  curl -fsSL $SYSTEM_SETUP_BASE_URL/report_completion.sh | bash
+
+Guide: https://aikaryashala.com/system_setup/05_5_report/"
 }
 
 main "$@"

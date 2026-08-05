@@ -296,18 +296,28 @@
 <span class="prompt">$ </span>ls ~/java-samples</code></pre>
   </div>
 
-  <h2 id="done">That is the main sequence</h2>
+  <h2 id="done">One thing left</h2>
 
   <p>
     Ubuntu is running, and you have the core commands plus working toolchains for
-    C, Python and Java. The remaining steps are optional extras — including
+    C, Python and Java. Now check they all really work and report it:
+    <a href="../05_5_report/">step 5.5</a> tests every tool from steps 2 to 5 by
+    actually using it, and sends the result.
+  </p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>curl -fsSL https://aikaryashala.com/system_setup/scripts/report_completion.sh | bash</code></pre>
+  </div>
+
+  <p class="muted">
+    After that, everything else is optional — including
     <a href="../09_install_maven_gradle/">Maven and Gradle</a> for when a Java
     project needs a real build tool.
   </p>
 
   <nav class="page-nav">
     <a href="../04_install_py/"><span class="dir">Step 4</span><span class="title">← Python and pdb</span></a>
-    <a class="next" href="../"><span class="dir">Finished</span><span class="title">Back to all steps →</span></a>
+    <a class="next" href="../05_5_report/"><span class="dir">Step 5.5</span><span class="title">Check everything, and report →</span></a>
   </nav>
 
 </div>
