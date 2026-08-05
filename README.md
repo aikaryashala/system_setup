@@ -97,7 +97,9 @@ asked. Install any of them at any time.
 ├── README.md
 ├── CLAUDE.md                        # working conventions for this repo
 ├── tools/check_links.sh             # verifies every relative link in docs/
-├── .github/workflows/shellcheck.yml # lints scripts and links on push
+├── .github/workflows/
+│   ├── pages.yml                # publishes docs/ to GitHub Pages
+│   └── lint.yml                 # shellcheck, PSScriptAnalyzer, link check
 └── docs/                            # ← GitHub Pages root
     ├── index.html                   # landing page
     ├── assets/                      # shared css + js (no external CDNs)
@@ -175,10 +177,16 @@ exactly what ships.
 
 ### Publishing
 
-GitHub Pages is configured as **Deploy from a branch → `main` / `docs`**. Pushing
-to `main` publishes. The custom domain is inherited from the organisation's user
-pages site, which is why project pages land at `aikaryashala.com/system_setup`
-and no `CNAME` file is needed here.
+Set **Settings → Pages → Build and deployment → Source** to **GitHub Actions**.
+`.github/workflows/pages.yml` then publishes `docs/` on every push to `main`.
+
+That workflow is deliberately independent of `lint.yml`: a shellcheck or
+PSScriptAnalyzer failure reports a red check, but it cannot stop the site from
+deploying.
+
+The custom domain is inherited from the organisation's user pages site, which is
+why project pages land at `aikaryashala.com/system_setup` and no `CNAME` file is
+needed here.
 
 `docs/.nojekyll` is present so GitHub serves the directory verbatim instead of
 running it through Jekyll.

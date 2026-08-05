@@ -1,5 +1,9 @@
 name: lint
 
+# Code quality only. This workflow does NOT publish the website - that is
+# pages.yml, which runs independently. A lint failure must never stop the site
+# from deploying.
+
 on:
   push:
     branches: [main]
@@ -37,16 +41,21 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Settings live in .github/PSScriptAnalyzerSettings.psd1, which documents
+      # why a couple of module-oriented rules are excluded for a console
+      # installer.
       - name: Lint the WSL installer
         shell: pwsh
         run: |
           Install-Module -Name PSScriptAnalyzer -Force -Scope CurrentUser -SkipPublisherCheck
-          $results = Invoke-ScriptAnalyzer -Path docs/scripts/install_ubuntu_wsl.ps1 -Severity Error,Warning
+          $results = Invoke-ScriptAnalyzer `
+              -Path docs/scripts/install_ubuntu_wsl.ps1 `
+              -Settings .github/PSScriptAnalyzerSettings.psd1
           if ($results) {
-            $results | Format-Table -AutoSize
-            exit 1
+              $results | Format-Table -AutoSize
+              throw "PSScriptAnalyzer reported $($results.Count) issue(s)."
           }
-          Write-Host "No issues found."
+          Write-Output "No issues found."
 
   links:
     name: internal links

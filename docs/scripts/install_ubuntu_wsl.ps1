@@ -58,7 +58,7 @@ function Test-WslCommand {
 }
 
 # Returns the list of installed distribution names, or an empty array.
-function Get-InstalledDistros {
+function Get-InstalledDistro {
     if (-not (Test-WslCommand)) { return @() }
     try {
         $output = & wsl.exe --list --quiet 2>$null
@@ -98,7 +98,7 @@ function Install-UbuntuWsl {
     # The bare name "Ubuntu" tracks whatever Microsoft makes default, which is
     # not the same thing and drifts between releases.
     $distro = if ($env:WSL_DISTRO) { $env:WSL_DISTRO } else { 'Ubuntu-24.04' }
-    Write-Ok "Target distribution: $distro" 
+    Write-Ok "Target distribution: $distro"
 
     # -- Windows optional features -----------------------------------------
 
@@ -158,7 +158,7 @@ function Install-UbuntuWsl {
 
     # -- The Ubuntu distribution -------------------------------------------
 
-    $installed = Get-InstalledDistros
+    $installed = Get-InstalledDistro
 
     $exact       = $installed | Where-Object { $_ -eq $distro }
     $otherUbuntu = $installed | Where-Object { $_ -like 'Ubuntu*' -and $_ -ne $distro }
@@ -204,7 +204,7 @@ function Install-UbuntuWsl {
 
     # Make that Ubuntu the one a bare "wsl" command opens.
     & wsl.exe --set-default $active 2>&1 | Out-Null
-    Write-Ok "$active is the default distribution" 
+    Write-Ok "$active is the default distribution"
 
     # -- Summary ------------------------------------------------------------
 

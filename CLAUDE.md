@@ -196,8 +196,19 @@ shellcheck -x docs/scripts/*.sh tools/*.sh
 python3 -m http.server 8000 --directory docs   # then click through every page
 ```
 
-CI (`.github/workflows/shellcheck.yml`) runs all three, plus PSScriptAnalyzer on
-the PowerShell installer.
+CI runs all three in `.github/workflows/lint.yml`, plus PSScriptAnalyzer on the
+PowerShell installer.
+
+**Deployment is separate on purpose.** `.github/workflows/pages.yml` publishes
+`docs/` and does not depend on lint — a style warning must never be able to stop
+the website going live. Do not merge the two workflows, and do not add a
+`needs: lint` to the deploy job.
+
+PSScriptAnalyzer runs against `.github/PSScriptAnalyzerSettings.psd1`. The
+excluded rules are module-oriented ones that are wrong for a console installer
+(`PSAvoidUsingWriteHost` above all — printing to the console is the script's
+whole purpose). Do not lint the `.ps1` with bare `-Severity Error,Warning`: it
+fails on every `Write-Host` and can never pass.
 
 The scripts target Ubuntu and cannot be executed on macOS. When changing a
 script from a Mac, verify it by reading and by `shellcheck`; do not claim it was
