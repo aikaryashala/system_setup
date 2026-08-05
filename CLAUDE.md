@@ -198,12 +198,30 @@ There is no test suite. Before committing:
 
 ```bash
 shellcheck -x docs/scripts/*.sh tools/*.sh
-./tools/check_links.sh docs                    # every relative href resolves
+./tools/check_links.sh docs                    # links resolve AND nav labels match
 python3 -m http.server 8000 --directory docs   # then click through every page
 ```
 
 CI runs all three in `.github/workflows/lint.yml`, plus PSScriptAnalyzer on the
 PowerShell installer.
+
+`check_links.sh` does two things. The second is the one worth knowing about: it
+compares every `page-nav` label against the `<h1>` of the page it points at, and
+fails when the label contains a word the heading has nothing to do with. Renaming
+a page silently leaves its inbound labels describing something that no longer
+exists — plain link checking cannot see that, because the URL still works.
+
+The rule is a subset, not an overlap: **every** meaningful word in the label must
+appear in the target heading. Overlap is too weak — "Python with uv" and
+"Python 3, and tracing it with pdb" share "python", which is precisely the stale
+label the check exists to find.
+
+When a label is deliberately descriptive rather than a restatement of the
+heading, opt it out instead of distorting the wording:
+
+```html
+<a class="next" data-nav-label="free" href="../05_install_java/">
+```
 
 **Deployment is separate on purpose.** `.github/workflows/pages.yml` publishes
 `docs/` and does not depend on lint — a style warning must never be able to stop
