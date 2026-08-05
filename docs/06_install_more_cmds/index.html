@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Step 6 — The wider command line toolkit · system_setup</title>
-<meta name="description" content="Install ripgrep, fd, fzf, bat, jq, tmux, wget, rsync and the rest of the everyday Ubuntu command line toolkit.">
+<meta name="description" content="Install ripgrep, fd, fzf, bat, tmux, wget, rsync and the rest of the everyday Ubuntu command line toolkit.">
 <link rel="stylesheet" href="../assets/style.css">
 <script>
 (function(){try{var t=localStorage.getItem('system-setup-theme');if(t){document.documentElement.setAttribute('data-theme',t);}}catch(e){}}());
@@ -33,9 +33,8 @@
   <p class="eyebrow">Step 6 · Ubuntu · Independent</p>
   <h1>The wider command line toolkit</h1>
   <p class="lede">
-    Search that is fast enough to use without thinking, JSON you can actually
-    read, a terminal that survives disconnection, and the remaining network and
-    archive utilities.
+    Search that is fast enough to use without thinking, a terminal that survives
+    disconnection, and the remaining network and archive utilities.
   </p>
 
   <div class="callout note">
@@ -61,7 +60,6 @@
     <li><code>fd</code><span>Find files by name, with sane defaults.</span></li>
     <li><code>fzf</code><span>Fuzzy-pick from any list. Press <kbd>Ctrl</kbd>+<kbd>R</kbd> to search your command history.</span></li>
     <li><code>bat</code><span>Like <code>cat</code>, but with syntax highlighting and line numbers.</span></li>
-    <li><code>jq</code><span>Read, filter and reshape JSON.</span></li>
   </ul>
 
   <h3>Networking</h3>
@@ -112,9 +110,6 @@
 <span class="comment"># look at a file with syntax highlighting</span>
 <span class="prompt">$ </span>bat hello.c
 
-<span class="comment"># pull one field out of a JSON response</span>
-<span class="prompt">$ </span>curl -s https://api.github.com/repos/aikaryashala/system_setup | jq -r .full_name
-
 <span class="comment"># copy a folder to another machine, resuming if it breaks</span>
 <span class="prompt">$ </span>rsync -avP ./project/ user@host:~/project/
 
@@ -144,7 +139,7 @@
 
   <div class="codeblock" data-label="ubuntu terminal">
 <pre><code><span class="prompt">$ </span>source ~/.bashrc
-<span class="prompt">$ </span>rg --version &amp;&amp; jq --version &amp;&amp; bat --version &amp;&amp; fd --version</code></pre>
+<span class="prompt">$ </span>rg --version &amp;&amp; bat --version &amp;&amp; fd --version &amp;&amp; fzf --version</code></pre>
   </div>
 
   <div class="callout warn">

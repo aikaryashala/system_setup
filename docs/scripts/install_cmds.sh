@@ -63,6 +63,7 @@ PKGS_EDIT=(
     vim                 # the powerful one
     less                # page through long output
     file                # identify what a file actually is
+    jq                  # read, filter and reshape JSON
 )
 
 # Looking around, and archives.
@@ -87,6 +88,7 @@ summary() {
     verify "curl"  curl --version
     verify "vim"   vim --version
     verify "tree"  tree --version
+    verify "jq"    jq --version
     verify_present "nano"  nano
     verify_present "less"  less
     verify_present "file"  file

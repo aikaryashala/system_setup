@@ -62,8 +62,9 @@ tools went. The restriction is about the scripted install chain, not navigation.
 ### What belongs where
 
 - **Step 2** is the irreducible set: `curl ssh ip ping dig git nano vim less
-  file tree zip unzip htop`. Anything else that is a general-purpose command
-  belongs in step 6.
+  file jq tree zip unzip htop`. Anything else that is a general-purpose command
+  belongs in step 6. (`jq` is here rather than in step 6 because reading a JSON
+  API response is a core skill, and it pairs directly with `curl`.)
 - **Step 3** is the compile/debug loop only: `clang`, `lldb`, and what those two
   need to function. A tool that operates on the *output* of compiling — hex
   viewers, `objdump`, `valgrind`, `strace`, `make` — belongs in step 7.

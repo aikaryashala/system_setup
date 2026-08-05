@@ -40,7 +40,7 @@ curl -fsSL https://aikaryashala.com/system_setup/scripts/install_java.sh | bash 
 ### Steps 6–9 — optional extras, in any order, at any time
 
 ```bash
-curl -fsSL https://aikaryashala.com/system_setup/scripts/install_more_cmds.sh    | bash  # rg fd fzf bat jq tmux …
+curl -fsSL https://aikaryashala.com/system_setup/scripts/install_more_cmds.sh    | bash  # rg fd fzf bat tmux rsync …
 curl -fsSL https://aikaryashala.com/system_setup/scripts/install_binary.sh       | bash  # xxd objdump valgrind make …
 curl -fsSL https://aikaryashala.com/system_setup/scripts/install_uv.sh           | bash  # uv uvx ruff
 curl -fsSL https://aikaryashala.com/system_setup/scripts/install_maven_gradle.sh | bash  # mvn gradle
@@ -58,7 +58,7 @@ Steps 1–5 are the main sequence and run in order.
 | Step | Page | Installs |
 | --- | --- | --- |
 | 1 | [Install Ubuntu](docs/01_install_ubuntu) | WSL2, Ubuntu, virtualization features |
-| 2 | [Core commands](docs/02_install_cmds) | `curl` `ssh` `ip` `ping` `dig` `git` `nano` `vim` `less` `file` `tree` `zip` `unzip` `htop` |
+| 2 | [Core commands](docs/02_install_cmds) | `curl` `ssh` `ip` `ping` `dig` `git` `nano` `vim` `less` `file` `jq` `tree` `zip` `unzip` `htop` |
 | 3 | [C: clang and lldb](docs/03_install_c) | `clang` `lldb` `lld` — compile, and debug the compiled program |
 | 4 | [Python and pdb](docs/04_install_py) | `python3` and `pdb` — run a script, and trace it line by line |
 | 5 | [Java: javac and jshell](docs/05_install_java) | Temurin JDK (LTS), `javac` `java` `jshell` `jar` `javap` |
@@ -69,7 +69,7 @@ asked. Install any of them at any time.
 
 | Step | Page | Installs |
 | --- | --- | --- |
-| 6 | [The wider toolkit](docs/06_install_more_cmds) | `ripgrep` `fd` `fzf` `bat` `jq` `tmux` `wget` `rsync` `nc` `traceroute` `ncdu` `tar` `xz` `man` `bc` `time` `dos2unix` `gnupg` |
+| 6 | [The wider toolkit](docs/06_install_more_cmds) | `ripgrep` `fd` `fzf` `bat` `tmux` `wget` `rsync` `nc` `traceroute` `ncdu` `tar` `xz` `man` `bc` `time` `dos2unix` `gnupg` |
 | 7 | [Reading binaries](docs/07_install_binary) | `xxd` `hexyl` `hexdump` `od` `objdump` `readelf` `nm` `strings` `size` `valgrind` `strace` `ltrace` `make` `cmake` `ninja` `clang-format` `clang-tidy` |
 | 8 | [Python packages with uv](docs/08_install_uv) | [`uv`](https://docs.astral.sh/uv/), `uvx`, a uv-managed Python, plus `ruff` |
 | 9 | [Java build tools](docs/09_install_maven_gradle) | Maven, Gradle — needs the JDK from step 5 |

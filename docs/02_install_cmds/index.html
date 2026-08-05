@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Step 2 — Core command line tools · system_setup</title>
-<meta name="description" content="Install the core Ubuntu command line tools: git, curl, ssh, vim, nano, less, file, tree, htop, zip and the basic network utilities.">
+<meta name="description" content="Install the core Ubuntu command line tools: git, curl, ssh, vim, nano, less, file, jq, tree, htop, zip and the basic network utilities.">
 <link rel="stylesheet" href="../assets/style.css">
 <script>
 (function(){try{var t=localStorage.getItem('system-setup-theme');if(t){document.documentElement.setAttribute('data-theme',t);}}catch(e){}}());
@@ -72,6 +72,7 @@
     <li><code>vim</code><span>The powerful one. <code>:q!</code> gets you out.</span></li>
     <li><code>less</code><span>Page through long output. <kbd>Space</kbd> scrolls, <kbd>/</kbd> searches, <kbd>q</kbd> quits.</span></li>
     <li><code>file</code><span>Tell me what this file actually is, regardless of its extension.</span></li>
+    <li><code>jq</code><span>Read, filter and reshape JSON — the format almost every web API answers in.</span></li>
   </ul>
 
   <h3>Looking around</h3>
@@ -82,7 +83,7 @@
   </ul>
 
   <div class="callout note">
-    <div class="callout-title">Looking for ripgrep, fzf, jq or tmux?</div>
+    <div class="callout-title">Looking for ripgrep, fzf or tmux?</div>
     <p>
       They are in <a href="../06_install_more_cmds/">step 6</a>, along with
       <code>wget</code>, <code>rsync</code>, <code>bat</code>, <code>fd</code>
@@ -109,6 +110,86 @@
 
 <span class="comment"># where does a name point?</span>
 <span class="prompt">$ </span>dig +short github.com</code></pre>
+  </div>
+
+  <h3>Reading JSON with jq</h3>
+
+  <p>
+    Web APIs answer in JSON, which is dense and awkward to read raw.
+    <code>jq</code> turns it into something you can actually use — and pairs
+    naturally with <code>curl</code>.
+  </p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="comment"># raw JSON: technically readable, practically not</span>
+<span class="prompt">$ </span>curl -s https://api.github.com/repos/aikaryashala/system_setup
+
+<span class="comment"># the same thing, indented and coloured</span>
+<span class="prompt">$ </span>curl -s https://api.github.com/repos/aikaryashala/system_setup | jq
+
+<span class="comment"># pull out one field</span>
+<span class="prompt">$ </span>curl -s https://api.github.com/repos/aikaryashala/system_setup | jq -r .full_name
+<span class="out">aikaryashala/system_setup</span>
+
+<span class="comment"># several fields, as a new object</span>
+<span class="prompt">$ </span>curl -s https://api.github.com/repos/aikaryashala/system_setup \
+    | jq '{name: .name, stars: .stargazers_count, language: .language}'
+
+<span class="comment"># walk into a list: the name of every public repo</span>
+<span class="prompt">$ </span>curl -s https://api.github.com/users/aikaryashala/repos | jq -r '.[].name'
+
+<span class="comment"># filter a list, then count what is left</span>
+<span class="prompt">$ </span>curl -s https://api.github.com/users/aikaryashala/repos \
+    | jq '[.[] | select(.fork == false)] | length'</code></pre>
+  </div>
+
+  <div class="callout tip">
+    <div class="callout-title">What <code>-r</code> does, and why you want it</div>
+    <p>
+      Without it, <code>jq</code> prints strings with their JSON quotes:
+      <code>"aikaryashala/system_setup"</code>. <code>-r</code> gives raw output
+      with no quotes, which is what you need when feeding the result into
+      another command.
+    </p>
+  </div>
+
+  <h4>Practice</h4>
+
+  <p>jq works on local files too, so you can try these with no network at all:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>cat &gt; readings.json &lt;&lt;'JSON'
+{
+  "site": "north",
+  "readings": [
+    {"id": 1, "value": 12, "ok": true},
+    {"id": 2, "value": 7,  "ok": true},
+    {"id": 3, "value": 21, "ok": false},
+    {"id": 4, "value": 9,  "ok": true}
+  ]
+}
+JSON
+
+<span class="comment"># 1. print the site name</span>
+<span class="prompt">$ </span>jq -r .site readings.json
+
+<span class="comment"># 2. every value, one per line</span>
+<span class="prompt">$ </span>jq '.readings[].value' readings.json
+
+<span class="comment"># 3. only the readings marked ok</span>
+<span class="prompt">$ </span>jq '.readings[] | select(.ok)' readings.json
+
+<span class="comment"># 4. how many are not ok?</span>
+<span class="prompt">$ </span>jq '[.readings[] | select(.ok == false)] | length' readings.json
+
+<span class="comment"># 5. add the values up</span>
+<span class="prompt">$ </span>jq '[.readings[].value] | add' readings.json
+
+<span class="comment"># 6. the largest value</span>
+<span class="prompt">$ </span>jq '[.readings[].value] | max' readings.json
+
+<span class="comment"># 7. reshape into a simpler list</span>
+<span class="prompt">$ </span>jq '[.readings[] | {id, value}]' readings.json</code></pre>
   </div>
 
   <h2 id="git-setup">Set up git</h2>
@@ -143,7 +224,7 @@
   <p>The script prints a version summary when it finishes. To confirm by hand:</p>
 
   <div class="codeblock" data-label="ubuntu terminal">
-<pre><code><span class="prompt">$ </span>git --version &amp;&amp; curl --version | head -1 &amp;&amp; tree --version</code></pre>
+<pre><code><span class="prompt">$ </span>git --version &amp;&amp; curl --version | head -1 &amp;&amp; tree --version &amp;&amp; jq --version</code></pre>
   </div>
 
   <h2 id="next">Next</h2>

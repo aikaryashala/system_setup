@@ -3,7 +3,7 @@
 # install_more_cmds.sh - Step 6 of https://aikaryashala.com/system_setup
 #
 # The rest of the everyday command line toolkit: fast search, archives,
-# terminal multiplexing, JSON, and the remaining network utilities.
+# terminal multiplexing, and the remaining network utilities.
 #
 # This step is independent. Nothing in steps 1 to 5 needs it, and nothing here
 # depends on the language toolchains. Install it whenever you want it.
@@ -45,7 +45,6 @@ PKGS_SEARCH=(
     fd-find             # fd: find files by name
     fzf                 # fuzzy-pick from any list
     bat                 # cat with syntax highlighting
-    jq                  # read and reshape JSON
 )
 
 # The remaining network utilities.
@@ -119,7 +118,6 @@ summary() {
     banner "Installed"
     verify "ripgrep" rg --version
     verify "fzf"     fzf --version
-    verify "jq"      jq --version
     verify "tmux"    tmux -V
     verify "wget"    wget --version
     verify "rsync"   rsync --version
@@ -145,7 +143,7 @@ main() {
   rg \"TODO\"                    # search file contents, fast
   fd \"\\.c\$\"                    # find files by name
   bat hello.c                  # cat, with syntax highlighting
-  curl -s URL | jq -r .field   # pull one field out of JSON
+  rsync -avP src/ host:dst/    # copy a folder, resuming if it breaks
   tmux                         # split the terminal, keep sessions alive
 
 Guide: https://aikaryashala.com/system_setup/06_install_more_cmds/"

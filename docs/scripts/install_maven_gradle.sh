@@ -79,8 +79,8 @@ install_gradle() {
         version="$(printf '%s' "$meta" | jq -r '.version // empty')"
         url="$(printf '%s' "$meta" | jq -r '.downloadUrl // empty')"
     elif [ -n "$meta" ]; then
-        # jq lives in step 6, which is optional - fall back to plain text
-        # matching so this script does not depend on it.
+        # jq comes from step 2, but this step is independent and may run on a
+        # machine that never had it - fall back to plain text matching.
         version="$(printf '%s' "$meta" | sed -n 's/.*"version"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p')"
         url="$(printf '%s' "$meta" | sed -n 's/.*"downloadUrl"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p')"
     fi
