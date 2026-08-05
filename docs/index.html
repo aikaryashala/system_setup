@@ -87,7 +87,7 @@
   <div class="prose">
     <h2 id="extras">Optional extras</h2>
     <p>
-      These five stand on their own. Nothing in steps 1 to 5 needs them, and
+      These six stand on their own. Nothing in steps 1 to 5 needs them, and
       they are not part of the install-everything command below. Add them
       whenever you want what they contain.
     </p>
@@ -130,6 +130,13 @@
       <span class="tools">jq practice</span>
     </a></li>
 
+    <li><a class="step-card platform-ubuntu" href="11_clang_options/">
+      <span class="num">STEP 11</span>
+      <h3>Compiler options that find bugs</h3>
+      <p>Make clang hunt for your mistakes: warnings, and a sanitizer that names the exact line a memory bug happened on.</p>
+      <span class="tools">-Wall -Wextra -fsanitize=address</span>
+    </a></li>
+
   </ul>
 
   <div class="prose">
@@ -148,12 +155,12 @@
     <p>
       That is everything most people need. The extras below are
       <strong>optional</strong> — skip this second command entirely unless you
-      want what steps 6 to 10 contain, and you can always come back and run it
+      want what steps 6 to 11 contain, and you can always come back and run it
       later.
     </p>
 
     <div class="codeblock" data-label="ubuntu terminal — optional extras">
-<pre><code><span class="prompt">$ </span>curl -fsSL https://aikaryashala.com/system_setup/scripts/install_all.sh | STEPS="more_cmds binary uv maven_gradle" bash</code></pre>
+<pre><code><span class="prompt">$ </span>curl -fsSL https://aikaryashala.com/system_setup/scripts/install_all.sh | STEPS="more_cmds binary uv maven_gradle sanitizers" bash</code></pre>
     </div>
 
     <div class="callout note">

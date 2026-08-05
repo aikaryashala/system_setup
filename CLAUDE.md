@@ -36,6 +36,7 @@ independent extras
   08_install_uv         →  install_uv.sh
   09_install_maven_gradle → install_maven_gradle.sh
   10_jq_practice        →  (no script - practice page only)
+  11_clang_options      →  install_sanitizers.sh
 ```
 
 Not every step installs something. Step 10 is a practice page for a tool step 2
@@ -48,12 +49,12 @@ Adding a step means adding all three: the numbered page directory, the script in
 Renumbering is disruptive — it changes public URLs — so append rather than insert
 unless there is a real reason.
 
-### Steps 6 to 10 are independent — keep them that way
+### Steps 6 to 11 are independent — keep them that way
 
 They exist so the main sequence stays short. Two rules follow, and both are easy
 to break by accident:
 
-- **No script in the main sequence may link to steps 6 to 10.** The `finish`
+- **No script in the main sequence may link to steps 6 to 11.** The `finish`
   message of `install_cmds.sh` points at step 3, `install_c.sh` at step 4,
   `install_py.sh` at step 5, and `install_java.sh` ends the sequence. Do not add
   "and then install the extras" to any of them.
@@ -72,9 +73,11 @@ tools went. The restriction is about the scripted install chain, not navigation.
   belongs in step 6. `jq` is here, but **only** as a JSON validity check
   (`jq . file.json` — output means valid, an error means broken). Anything
   beyond that — field access, `select`, `add`, reshaping — belongs in step 10.
-- **Step 3** is the compile/debug loop only: `clang`, `lldb`, and what those two
-  need to function. A tool that operates on the *output* of compiling — hex
-  viewers, `objdump`, `valgrind`, `strace`, `make` — belongs in step 7.
+- **Step 3** is the compile/debug loop only, and exactly one compile line:
+  `clang -g hello.c -o hello`. Do not add `-Wall`, `-Wextra`, `-O0` or
+  `-fsanitize=address` to step 3 — those are step 11. A tool that operates on
+  the *output* of compiling — hex viewers, `objdump`, `valgrind`, `strace`,
+  `make` — belongs in step 7.
 - **Step 4** is `python3` and `pdb` — running a script and tracing it. Anything
   involving packages, environments or extra interpreter versions is step 8.
 - **Step 5** is `javac`, `java` and `jshell` — compiling and running source

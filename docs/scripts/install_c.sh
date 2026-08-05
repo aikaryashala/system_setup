@@ -5,9 +5,10 @@
 # The two tools you need to write C: clang to compile it, lldb to debug the
 # program that comes out.
 #
-# Everything else that works on a compiled file - reading it as hex, taking it
-# apart, checking it for memory errors, build systems - is step 7, installed
-# separately.
+# Deliberately minimal. Compiler options that hunt for bugs - warnings,
+# optimisation levels, -fsanitize=address - are step 11. Tools that work on the
+# compiled file, such as hex viewers and disassemblers, are step 7. Both are
+# installed separately.
 #
 # Run inside Ubuntu:
 #   curl -fsSL https://aikaryashala.com/system_setup/scripts/install_c.sh | bash
@@ -54,27 +55,6 @@ install_toolchain() {
     apt_install "${PKGS_C[@]}"
 }
 
-# -fsanitize=address is the single most useful flag a C beginner can learn, and
-# the guide recommends it. Ubuntu ships the runtime it links against in a
-# separate, version-suffixed package: without it clang compiles the program and
-# then fails at the link step with a missing libclang_rt.asan. Derive the
-# version from clang itself so this keeps working on future releases.
-install_sanitizer_runtime() {
-    banner "Installing the sanitizer runtime"
-
-    local major
-    major="$(clang --version 2>/dev/null \
-        | sed -n 's/.*clang version \([0-9][0-9]*\).*/\1/p' \
-        | head -n 1)"
-
-    if [ -z "$major" ]; then
-        warn "Could not determine the clang version - skipping the sanitizer runtime"
-        return 0
-    fi
-
-    apt_install_optional "libclang-rt-${major}-dev"
-}
-
 # Prove the toolchain actually works end to end, rather than only checking that
 # the binaries exist.
 smoke_test() {
@@ -93,7 +73,7 @@ int main(void) {
 }
 EOF
 
-    if ! clang -g -O0 -Wall -Wextra -o "$dir/hello" "$dir/hello.c" 2>"$dir/err"; then
+    if ! clang -g "$dir/hello.c" -o "$dir/hello" 2>"$dir/err"; then
         warn "clang could not compile a test program:"
         cat "$dir/err" >&2
         VERIFY_FAILED=1
@@ -129,47 +109,6 @@ EOF
         VERIFY_FAILED=1
     fi
 
-    # The guide tells people to use -fsanitize=address, so prove it links and
-    # actually catches something.
-    cat >"$dir/overflow.c" <<'EOF'
-int main(void) {
-    int numbers[4] = {1, 2, 3, 4};
-    numbers[4] = 99;
-    return numbers[0];
-}
-EOF
-
-    if ! clang -g -O0 -fsanitize=address -o "$dir/overflow" "$dir/overflow.c" 2>"$dir/asan_err"; then
-        # Failing to link is a genuine installation problem: it means the
-        # sanitizer runtime package is missing.
-        warn "Could not build with -fsanitize=address:"
-        head -n 3 "$dir/asan_err" >&2
-        VERIFY_FAILED=1
-        return 0
-    fi
-
-    # `|| status=$?` rather than a bare call: this program is meant to die, and
-    # under `set -e` a bare call would abort the whole script before we could
-    # look at how it died.
-    local status=0
-    "$dir/overflow" >"$dir/asan_out" 2>&1 || status=$?
-
-    if grep -q "AddressSanitizer" "$dir/asan_out"; then
-        ok "AddressSanitizer works and caught a buffer overflow"
-    elif [ "$status" -eq 137 ] || [ "$status" -eq 139 ]; then
-        # AddressSanitizer reserves an enormous shadow memory mapping. Emulated
-        # containers and memory-capped environments kill it before it can start.
-        # The toolchain is installed correctly - it just cannot run here, which
-        # is not something this script can fix and not an install failure.
-        warn "AddressSanitizer is installed but cannot run in this environment"
-        warn "(the test program was killed - usually emulation or a memory limit)."
-        warn "It will work normally on a real Ubuntu or WSL machine."
-    else
-        warn "AddressSanitizer linked but did not report a known-bad write."
-        warn "The program printed:"
-        head -n 5 "$dir/asan_out" >&2
-        VERIFY_FAILED=1
-    fi
 }
 
 summary() {
@@ -184,15 +123,14 @@ main() {
     require_sudo
 
     install_toolchain
-    install_sanitizer_runtime
     smoke_test
     summary
 
     finish "Try it out:
 
-  clang -g -O0 -Wall -Wextra -o hello hello.c   # compile with debug info
-  ./hello                                       # run it
-  lldb ./hello                                  # debug it
+  clang -g hello.c -o hello    # compile, keeping debug information
+  ./hello                      # run it
+  lldb ./hello                 # debug it
 
 Next step - Python and the pdb debugger:
 

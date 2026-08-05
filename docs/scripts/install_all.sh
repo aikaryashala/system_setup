@@ -11,9 +11,9 @@
 #
 # Safe to run more than once.
 #
-# Steps 6 to 9 are independent extras and are deliberately NOT part of this
+# Steps 6 to 11 are independent extras and are deliberately NOT part of this
 # run. Ask for them by name if you want them:
-#   STEPS="more_cmds binary uv maven_gradle" bash install_all.sh
+#   STEPS="more_cmds binary uv maven_gradle sanitizers" bash install_all.sh
 #
 # Optional environment variables:
 #   STEPS="cmds c py java"   run only some of the steps, in this order
@@ -60,6 +60,7 @@ step_label() {
         binary)    echo "Binary, analysis and build tools" ;;
         uv)           echo "uv: Python packages, projects and versions" ;;
         maven_gradle) echo "Java build tools: Maven and Gradle" ;;
+        sanitizers)   echo "clang warnings and AddressSanitizer" ;;
         *)         echo "$1" ;;
     esac
 }

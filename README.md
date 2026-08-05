@@ -59,11 +59,11 @@ Steps 1–5 are the main sequence and run in order.
 | --- | --- | --- |
 | 1 | [Install Ubuntu](docs/01_install_ubuntu) | WSL2, **Ubuntu 24.04 LTS** (pinned; skipped if any Ubuntu is already installed), virtualization features |
 | 2 | [Core commands](docs/02_install_cmds) | `curl` `ssh` `ip` `ping` `dig` `git` `nano` `vim` `less` `file` `jq` `tree` `zip` `unzip` `htop` |
-| 3 | [C: clang and lldb](docs/03_install_c) | `clang` `lldb` `lld` — compile, and debug the compiled program |
+| 3 | [C: clang and lldb](docs/03_install_c) | `clang` `lldb` `lld` — `clang -g hello.c -o hello`, then debug it |
 | 4 | [Python and pdb](docs/04_install_py) | `python3` and `pdb` — run a script, and trace it line by line |
 | 5 | [Java: javac and jshell](docs/05_install_java) | Temurin JDK (LTS), `javac` `java` `jshell` `jar` `javap` |
 
-Steps 6–10 are **independent extras**. Nothing in steps 1–5 needs them, no script
+Steps 6–11 are **independent extras**. Nothing in steps 1–5 needs them, no script
 in the main sequence links to them, and `install_all.sh` does not run them unless
 asked. Install any of them at any time.
 
@@ -74,6 +74,7 @@ asked. Install any of them at any time.
 | 8 | [Python packages with uv](docs/08_install_uv) | [`uv`](https://docs.astral.sh/uv/), `uvx`, a uv-managed Python, plus `ruff` |
 | 9 | [Java build tools](docs/09_install_maven_gradle) | Maven, Gradle — needs the JDK from step 5 |
 | 10 | [Doing more with jq](docs/10_jq_practice) | Practice only, no install — filtering and reshaping JSON |
+| 11 | [Compiler options that find bugs](docs/11_clang_options) | `-Wall` `-Wextra` `-fsanitize=address` — needs clang from step 3 |
 
 ### Tooling choices, and why
 
@@ -115,6 +116,7 @@ asked. Install any of them at any time.
     │   ├── install_binary.sh        # step 7  (independent)
     │   ├── install_uv.sh            # step 8  (independent)
     │   ├── install_maven_gradle.sh  # step 9  (independent)
+    │   ├── install_sanitizers.sh    # step 11 (independent)
     │   └── install_all.sh           # steps 2–5, in order
     ├── 01_install_ubuntu/index.html
     ├── 02_install_cmds/index.html
@@ -125,7 +127,8 @@ asked. Install any of them at any time.
     ├── 07_install_binary/index.html
     ├── 08_install_uv/index.html
     ├── 09_install_maven_gradle/index.html
-    └── 10_jq_practice/index.html      # practice page, no script
+    ├── 10_jq_practice/index.html      # practice page, no script
+    └── 11_clang_options/index.html
 ```
 
 The numbered directories are both the site's URL structure and the intended

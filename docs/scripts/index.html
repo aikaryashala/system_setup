@@ -101,7 +101,13 @@
           <td><a href="install_all.sh"><code>install_all.sh</code></a></td>
           <td>2–5</td>
           <td>Ubuntu</td>
-          <td>Runs steps 2 to 5 in order. Does <em>not</em> include 6 to 9.</td>
+          <td>Runs steps 2 to 5 in order. Does <em>not</em> include 6 to 11.</td>
+        </tr>
+        <tr>
+          <td><a href="install_sanitizers.sh"><code>install_sanitizers.sh</code></a></td>
+          <td><a href="../11_clang_options/">11</a></td>
+          <td>Ubuntu</td>
+          <td>AddressSanitizer runtime — needs clang from step 3</td>
         </tr>
         <tr>
           <td class="muted">— none —</td>
@@ -162,7 +168,7 @@
         <tr><td><code>UV_TOOLS</code></td><td><code>install_uv.sh</code></td><td><code>ruff</code></td><td>Tools installed with <code>uv tool install</code></td></tr>
         <tr><td><code>JDK_VERSION</code></td><td><code>install_java.sh</code></td><td><code>25</code></td><td>Which Temurin LTS to install</td></tr>
         <tr><td><code>SKIP_MAVEN</code> / <code>SKIP_GRADLE</code></td><td><code>install_maven_gradle.sh</code></td><td>unset</td><td>Set to <code>1</code> to leave that build tool out</td></tr>
-        <tr><td><code>STEPS</code></td><td><code>install_all.sh</code></td><td><code>cmds c py java</code></td><td>Which steps to run, in order. Also accepts <code>more_cmds</code>, <code>binary</code>, <code>uv</code> and <code>maven_gradle</code>.</td></tr>
+        <tr><td><code>STEPS</code></td><td><code>install_all.sh</code></td><td><code>cmds c py java</code></td><td>Which steps to run, in order. Also accepts <code>more_cmds</code>, <code>binary</code>, <code>uv</code>, <code>maven_gradle</code> and <code>sanitizers</code>.</td></tr>
         <tr><td><code>WSL_DISTRO</code></td><td><code>install_ubuntu_wsl.ps1</code></td><td><code>Ubuntu-24.04</code></td><td>Which distribution to install</td></tr>
         <tr><td><code>SYSTEM_SETUP_BASE_URL</code></td><td>all</td><td>this site</td><td>Where scripts fetch each other from — point it at a fork</td></tr>
       </tbody>
@@ -182,7 +188,7 @@
 
   <ul class="cmd-list">
     <li><a href="../examples/hello.c"><code>hello.c</code></a><span>The C program from step 3</span></li>
-    <li><a href="../examples/overflow.c"><code>overflow.c</code></a><span>A deliberate buffer overflow, for the sanitizer demo</span></li>
+    <li><a href="../examples/overflow.c"><code>overflow.c</code></a><span>A deliberate buffer overflow (step 11)</span></li>
     <li><a href="../examples/hello.py"><code>hello.py</code></a><span>The Python script from step 4</span></li>
     <li><a href="../examples/fetch.py"><code>fetch.py</code></a><span>A uv script with inline dependencies (step 8)</span></li>
     <li><a href="../examples/student.json"><code>student.json</code></a><span>The JSON file you check with jq (step 2)</span></li>

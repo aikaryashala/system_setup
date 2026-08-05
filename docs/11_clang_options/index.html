@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="en" data-theme="">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Step 11 — Compiler options that find bugs · system_setup</title>
+<meta name="description" content="clang options that catch C bugs for you: -Wall, -Wextra and -fsanitize=address, with a worked buffer overflow.">
+<link rel="stylesheet" href="../assets/style.css">
+<script>
+(function(){try{var t=localStorage.getItem('system-setup-theme');if(t){document.documentElement.setAttribute('data-theme',t);}}catch(e){}}());
+</script>
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <div class="inner">
+    <a class="brand" href="../"><span class="mark">&gt;_</span> system_setup</a>
+    <nav class="header-nav">
+      <a href="../scripts/">Scripts</a>
+      <a href="https://github.com/aikaryashala/system_setup">GitHub</a>
+      <button class="theme-toggle" type="button" aria-label="Switch theme">☽</button>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+<div class="prose">
+
+  <p class="breadcrumb"><a href="../">system_setup</a> / Step 11</p>
+
+  <p class="eyebrow">Step 11 · Ubuntu · Independent</p>
+  <h1>Compiler options that find bugs</h1>
+  <p class="lede">
+    In <a href="../03_install_c/">step 3</a> you compiled with
+    <code>clang -g hello.c -o hello</code>. Adding a few more options turns the
+    compiler from something that merely translates your code into something that
+    actively hunts for mistakes in it.
+  </p>
+
+  <div class="callout note">
+    <div class="callout-title">This step needs clang from step 3</div>
+    <p>
+      Warnings are just options you pass — nothing to install. The sanitizer is
+      different: Ubuntu keeps its runtime library in a separate package, and
+      without it clang compiles your program and then fails to link it. This step
+      installs that package.
+    </p>
+  </div>
+
+  <h2 id="run">Run this</h2>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>curl -fsSL https://aikaryashala.com/system_setup/scripts/install_sanitizers.sh | bash</code></pre>
+  </div>
+
+  <p>
+    It writes <code>overflow.c</code> into <code>~/c-samples</code> — the program
+    used below — and checks both warnings and the sanitizer actually work on your
+    machine.
+  </p>
+
+  <h2 id="warnings">Let the compiler warn you</h2>
+
+  <p>
+    Most C bugs are things the compiler already had doubts about. It stays quiet
+    unless you ask. This program uses a variable it never gave a value to:
+  </p>
+
+  <div class="codeblock" data-label="warn.c">
+<pre><code>#include &lt;stdio.h&gt;
+
+int main(void)
+{
+    int counted;                  /* never given a value */
+    printf("%d\n", counted);
+    return 0;
+}</code></pre>
+  </div>
+
+  <p>Compiled the step 3 way, clang says nothing at all:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>clang -g warn.c -o warn</code></pre>
+  </div>
+
+  <p>Ask for warnings and it tells you exactly what is wrong, and where:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>clang -g -Wall -Wextra warn.c -o warn
+<span class="out">warn.c:6:20: warning: variable 'counted' is uninitialized when used here [-Wuninitialized]</span>
+<span class="out">    6 |     printf("%d\n", counted);</span>
+<span class="out">      |                    ^~~~~~~</span></code></pre>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Option</th><th>What it does</th></tr></thead>
+      <tbody>
+        <tr><td><code>-Wall</code></td><td>Turn on the common warnings. Despite the name, this is not all of them.</td></tr>
+        <tr><td><code>-Wextra</code></td><td>Turn on a further set that catches subtler mistakes.</td></tr>
+        <tr><td><code>-Werror</code></td><td>Treat every warning as an error, so the program refuses to build until it is clean.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout tip">
+    <div class="callout-title">Make this your normal compile line</div>
+    <p>
+      <code>clang -g -Wall -Wextra yourfile.c -o yourprogram</code>. It costs
+      nothing, and the compiler will catch mistakes that would otherwise take you
+      an afternoon to find by hand.
+    </p>
+  </div>
+
+  <h2 id="overflow">A bug warnings cannot catch</h2>
+
+  <p>
+    Some mistakes only exist while the program is running. This one writes to the
+    fifth slot of a four-slot array:
+  </p>
+
+  <div class="codeblock" data-label="overflow.c">
+<pre><code>#include &lt;stdio.h&gt;
+
+int main(void)
+{
+    int numbers[4] = {1, 2, 3, 4};
+
+    numbers[4] = 99;              /* one past the end of the array */
+
+    printf("%d\n", numbers[0]);
+    return 0;
+}</code></pre>
+  </div>
+
+  <p>Build and run it the ordinary way:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>cd ~/c-samples
+<span class="prompt">$ </span>clang -g overflow.c -o overflow
+<span class="prompt">$ </span>./overflow
+<span class="out">1</span></code></pre>
+  </div>
+
+  <p>
+    It printed <code>1</code> and exited cleanly. No crash, no complaint — and
+    that is precisely the danger. The program wrote 99 into memory that did not
+    belong to it and carried on as if nothing happened. On another day, with
+    slightly different code, that stray write lands on something that matters and
+    the program fails somewhere else entirely, for no visible reason.
+  </p>
+
+  <h2 id="sanitizer">Turn on AddressSanitizer</h2>
+
+  <p>
+    <code>-fsanitize=address</code> asks clang to build in checks around every
+    memory access. The program runs a little slower, and tells you the instant
+    something goes wrong:
+  </p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>clang -g -fsanitize=address overflow.c -o overflow</code></pre>
+  </div>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>./overflow
+<span class="out">==1234==ERROR: AddressSanitizer: stack-buffer-overflow on address 0x7ffd...</span>
+<span class="out">WRITE of size 4 at 0x7ffd... thread T0</span>
+<span class="out">    #0 0x... in main overflow.c:7:16</span>
+<span class="out"></span>
+<span class="out">Address ... is located in stack of thread T0 at offset 48 in frame</span>
+<span class="out">    #0 0x... in main overflow.c:4</span>
+<span class="out"></span>
+<span class="out">  This frame has 1 object(s):</span>
+<span class="out">    [32, 48) 'numbers' (line 5) &lt;== Memory access at offset 48 overflows this variable</span></code></pre>
+  </div>
+
+  <p>Read that from the top and it tells you everything:</p>
+
+  <ul>
+    <li><strong>what</strong> — a <code>stack-buffer-overflow</code></li>
+    <li><strong>which kind</strong> — a <code>WRITE of size 4</code>, one <code>int</code></li>
+    <li><strong>where</strong> — <code>overflow.c:7</code>, the exact line</li>
+    <li><strong>to what</strong> — the variable <code>numbers</code>, declared on line 5</li>
+  </ul>
+
+  <div class="callout tip">
+    <div class="callout-title">A habit worth forming</div>
+    <p>
+      While you are learning, compile with
+      <code>clang -g -Wall -Wextra -fsanitize=address</code>. Between them,
+      warnings catch what is visible in the source and the sanitizer catches what
+      only appears at run time. Turn the sanitizer off when you want the program
+      to run at full speed.
+    </p>
+  </div>
+
+  <h2 id="optimisation">Optimisation, and why to leave it alone for now</h2>
+
+  <p>
+    clang can rewrite your code to make it faster. That is what the
+    <code>-O</code> options control:
+  </p>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Option</th><th>Meaning</th></tr></thead>
+      <tbody>
+        <tr><td><code>-O0</code></td><td>No optimisation. The default, and what you want while debugging.</td></tr>
+        <tr><td><code>-O1</code> <code>-O2</code></td><td>Progressively more rewriting, for speed.</td></tr>
+        <tr><td><code>-O3</code></td><td>More still, sometimes making the program larger.</td></tr>
+        <tr><td><code>-Os</code></td><td>Optimise for a small program rather than a fast one.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    You do not need to pass <code>-O0</code>: clang already does no optimisation
+    unless asked. It is worth knowing the name, because optimised code reorders
+    and deletes things, so stepping through it in
+    <a href="../03_install_c/">lldb</a> jumps around confusingly and some
+    variables simply are not there any more. Debug at <code>-O0</code>; optimise
+    when the program is correct.
+  </p>
+
+  <h2 id="verify">Check it worked</h2>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>cd ~/c-samples &amp;&amp; clang -g -fsanitize=address overflow.c -o overflow &amp;&amp; ./overflow</code></pre>
+  </div>
+
+  <p>
+    You should see the AddressSanitizer report above, not the number
+    <code>1</code>. If you see <code>1</code>, the sanitizer did not get built
+    in — check the command for a typo.
+  </p>
+
+  <nav class="page-nav">
+    <a href="../03_install_c/"><span class="dir">Builds on</span><span class="title">← Step 3: clang and lldb</span></a>
+    <a class="next" href="../"><span class="dir">Back</span><span class="title">All steps →</span></a>
+  </nav>
+
+</div>
+</main>
+
+<footer class="site-footer">
+  <div class="inner">
+    <span>system_setup — <a href="https://aikaryashala.com">aikaryashala</a></span>
+    <span class="spacer"><a href="https://github.com/aikaryashala/system_setup">Source on GitHub</a></span>
+  </div>
+</footer>
+
+<script src="../assets/site.js"></script>
+</body>
+</html>

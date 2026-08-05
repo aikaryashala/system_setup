@@ -45,9 +45,9 @@
   </div>
 
   <p>
-    The script finishes by compiling a small program, running it, stopping it
-    under the debugger, and catching a deliberate memory bug — so you know the
-    whole loop works before you write anything of your own.
+    The script finishes by compiling a small program, running it, and stopping
+    it under the debugger — so you know the whole loop works before you write
+    anything of your own.
   </p>
 
   <h2 id="whats-installed">What gets installed</h2>
@@ -60,10 +60,11 @@
   </ul>
 
   <p class="muted">
-    That is the whole list. Tools that work on the <em>result</em> of compiling —
-    hex viewers, disassemblers, <code>valgrind</code>, <code>make</code> — are in
-    <a href="../07_install_binary/">step 7</a>, which you can install whenever
-    you want it.
+    That is the whole list. Compiler options that hunt for bugs are
+    <a href="../11_clang_options/">step 11</a>, and tools that work on the
+    <em>result</em> of compiling — hex viewers, disassemblers,
+    <code>valgrind</code>, <code>make</code> — are
+    <a href="../07_install_binary/">step 7</a>. Both are separate installs.
   </p>
 
   <h2 id="hello">Compile something</h2>
@@ -84,34 +85,50 @@ int main()
   <p>Compile and run it:</p>
 
   <div class="codeblock" data-label="ubuntu terminal">
-<pre><code><span class="prompt">$ </span>clang -g -O0 -Wall -Wextra -o hello hello.c
-<span class="prompt">$ </span>./hello
+<pre><code><span class="prompt">$ </span>clang -g hello.c -o hello</code></pre>
+  </div>
+
+  <p>Nothing is printed when it works. Now run the program you just built:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>./hello
 <span class="out">Namasthey from C. The answer is 42.</span></code></pre>
   </div>
 
-  <p>Those flags matter more than they look:</p>
+  <p>Two options, and that is all you need for now:</p>
 
   <div class="table-wrap">
     <table>
-      <thead><tr><th>Flag</th><th>What it does</th><th>Why</th></tr></thead>
+      <thead><tr><th>Option</th><th>What it does</th><th>Why</th></tr></thead>
       <tbody>
-        <tr><td><code>-g</code></td><td>Keep debug information</td><td>Without it, lldb can show you assembly but not your source lines.</td></tr>
-        <tr><td><code>-O0</code></td><td>Do not optimise</td><td>Optimised code reorders and deletes things, so stepping through it is confusing.</td></tr>
-        <tr><td><code>-Wall -Wextra</code></td><td>Turn on the warnings</td><td>Most C bugs are things the compiler already suspected. Let it tell you.</td></tr>
-        <tr><td><code>-o hello</code></td><td>Name the output</td><td>Otherwise you get a file called <code>a.out</code>.</td></tr>
-        <tr><td><code>-fsanitize=address</code></td><td>Add runtime memory checks</td><td>Catches buffer overruns and use-after-free the moment they happen.</td></tr>
+        <tr>
+          <td><code>-g</code></td>
+          <td>Keep debug information</td>
+          <td>Without it, lldb can show you machine instructions but not your own lines of C.</td>
+        </tr>
+        <tr>
+          <td><code>-o hello</code></td>
+          <td>Name the program</td>
+          <td>Leave it out and clang produces a file called <code>a.out</code> instead.</td>
+        </tr>
       </tbody>
     </table>
   </div>
 
-  <div class="callout tip">
-    <div class="callout-title">A habit worth forming</div>
+  <div class="callout warn">
+    <div class="callout-title">Why <code>./hello</code> and not <code>hello</code></div>
     <p>
-      Use <code>clang -g -O0 -Wall -Wextra -fsanitize=address</code> while you are
-      learning. The sanitizer turns silent memory corruption — the hardest class
-      of C bug — into an immediate, readable error message.
+      The dot means &ldquo;this folder&rdquo;. Typing <code>hello</code> on its own makes the
+      shell search the places where system commands live &mdash; and your new program
+      is not one of those. <code>./hello</code> says &ldquo;run the one right here&rdquo;.
     </p>
   </div>
+
+  <p class="muted">
+    clang has many more options, including some that hunt for bugs on your
+    behalf. Those are <a href="../11_clang_options/">step 11</a>, once this loop
+    feels comfortable.
+  </p>
 
   <h2 id="lldb">Debug it with lldb</h2>
 
@@ -171,46 +188,14 @@ int main()
 <pre><code><span class="prompt">$ </span>lldb --batch -o "b main" -o run -o "frame variable" -o quit ./hello</code></pre>
   </div>
 
-  <h2 id="memory-bugs">Catch a memory bug</h2>
-
-  <p>This program writes one element past the end of its array:</p>
-
-  <div class="codeblock" data-label="overflow.c">
-<pre><code>#include &lt;stdio.h&gt;
-
-int main()
-{
-    int numbers[4] = {1, 2, 3, 4};
-    numbers[4] = 99;              /* one past the end */
-    printf("%d\n", numbers[0]);
-    return 0;
-}</code></pre>
-  </div>
-
-  <p>
-    Compiled normally it may well appear to work, which is exactly what makes
-    this class of bug dangerous. Compiled with the address sanitizer, it does not:
-  </p>
-
-  <div class="codeblock" data-label="ubuntu terminal">
-<pre><code><span class="prompt">$ </span>clang -g -O0 -fsanitize=address -o overflow overflow.c
-<span class="prompt">$ </span>./overflow
-<span class="out">==1234==ERROR: AddressSanitizer: stack-buffer-overflow on address 0x7ffd...</span>
-<span class="out">WRITE of size 4 at 0x7ffd... thread T0</span>
-<span class="out">    #0 0x... in main overflow.c:5:16</span></code></pre>
-  </div>
-
-  <p>
-    The sanitizer names the file and line that did it. Compare that with the
-    version without <code>-fsanitize=address</code>, which prints <code>1</code>
-    and exits cleanly while quietly corrupting memory.
-  </p>
-
   <h2 id="verify">Check it worked</h2>
 
   <div class="codeblock" data-label="ubuntu terminal">
-<pre><code><span class="prompt">$ </span>clang --version
-<span class="prompt">$ </span>lldb --version</code></pre>
+<pre><code><span class="prompt">$ </span>clang --version</code></pre>
+  </div>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>lldb --version</code></pre>
   </div>
 
   <h2 id="next">Next</h2>
