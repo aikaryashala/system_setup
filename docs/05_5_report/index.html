@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en" data-theme="">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Step 5.5 — Check everything and report · system_setup</title>
+<meta name="description" content="Verify every tool from steps 2 to 5 actually works, then report your progress.">
+<link rel="stylesheet" href="../assets/style.css">
+<script>
+(function(){try{var t=localStorage.getItem('system-setup-theme');if(t){document.documentElement.setAttribute('data-theme',t);}}catch(e){}}());
+</script>
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <div class="inner">
+    <a class="brand" href="../"><span class="mark">&gt;_</span> system_setup</a>
+    <nav class="header-nav">
+      <a href="../scripts/">Scripts</a>
+      <a href="https://github.com/aikaryashala/system_setup">GitHub</a>
+      <button class="theme-toggle" type="button" aria-label="Switch theme">☽</button>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+<div class="prose">
+
+  <p class="breadcrumb"><a href="../">system_setup</a> / Step 5.5</p>
+
+  <p class="eyebrow">Step 5.5 · Ubuntu</p>
+  <h1>Check everything, and report</h1>
+  <p class="lede">
+    One command that tests every tool from steps 2 to 5 and reports the result to
+    your teacher. Run it once you have finished
+    <a href="../05_install_java/">step 5</a>.
+  </p>
+
+  <h2 id="run">Run this</h2>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>curl -fsSL https://aikaryashala.com/system_setup/scripts/report_completion.sh | bash</code></pre>
+  </div>
+
+  <p>
+    It asks for your name and roll number, then sends them along with the result.
+    Nothing is installed and nothing on your machine is changed.
+  </p>
+
+  <h2 id="checks">What it checks</h2>
+
+  <p>
+    It does not simply look for the commands. A command can exist and still be
+    unable to do its job — so it makes each one actually work:
+  </p>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Step</th><th>What it does</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><a href="../02_install_cmds/">2</a></td>
+          <td>Looks for all 15 core commands, then has <code>jq</code> validate a JSON file</td>
+        </tr>
+        <tr>
+          <td><a href="../03_install_c/">3</a></td>
+          <td>Compiles a C program with <code>clang</code>, runs it, and stops it at a breakpoint in <code>lldb</code></td>
+        </tr>
+        <tr>
+          <td><a href="../04_install_py/">4</a></td>
+          <td>Runs a Python script, then runs it again under <code>pdb</code> and reads a variable from inside the debugger</td>
+        </tr>
+        <tr>
+          <td><a href="../05_install_java/">5</a></td>
+          <td>Compiles with <code>javac</code>, runs with <code>java</code>, and has <code>jshell</code> evaluate an expression</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2 id="result">What gets reported</h2>
+
+  <p>If every test passes, your status is sent as:</p>
+
+  <div class="codeblock">
+<pre><code>Completed</code></pre>
+  </div>
+
+  <p>
+    If something does not work, the status says <em>what</em> — so your teacher
+    can see exactly where you are stuck without having to ask:
+  </p>
+
+  <div class="codeblock">
+<pre><code>Failed: step3 clang cannot compile, step5 jshell not working</code></pre>
+  </div>
+
+  <div class="callout note">
+    <div class="callout-title">A failure is still worth reporting</div>
+    <p>
+      The script sends your result either way. You do not need a perfect setup
+      before reporting — a report saying what is broken is more useful than no
+      report at all. Fix the step, run this again, and the newer report will say
+      <span class="mono">Completed</span>.
+    </p>
+  </div>
+
+  <h2 id="sent">Exactly what is sent</h2>
+
+  <p>Four things, and nothing else:</p>
+
+  <ul class="cmd-list">
+    <li><code>Name</code><span>What you type at the prompt</span></li>
+    <li><code>Roll Number</code><span>What you type at the prompt</span></li>
+    <li><code>Status</code><span><code>Completed</code>, or the list of what failed</span></li>
+    <li><code>Assignment</code><span>A fixed code identifying this assignment</span></li>
+  </ul>
+
+  <p class="muted">
+    No files, no contents of your home directory, nothing about your machine
+    beyond which of the four checks passed. The script is plain text —
+    <a href="../scripts/report_completion.sh">read it</a> before you run it.
+  </p>
+
+  <h2 id="troubleshooting">If a check fails</h2>
+
+  <p>Re-run the step it names, then run this again.</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>curl -fsSL https://aikaryashala.com/system_setup/scripts/install_cmds.sh | bash</code></pre>
+  </div>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>curl -fsSL https://aikaryashala.com/system_setup/scripts/install_c.sh | bash</code></pre>
+  </div>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>curl -fsSL https://aikaryashala.com/system_setup/scripts/install_py.sh | bash</code></pre>
+  </div>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>curl -fsSL https://aikaryashala.com/system_setup/scripts/install_java.sh | bash</code></pre>
+  </div>
+
+  <div class="callout warn">
+    <div class="callout-title">“command not found” straight after installing</div>
+    <p>
+      Your shell remembers where commands were. Load the new settings and try
+      again:
+    </p>
+    <div class="codeblock">
+<pre><code><span class="prompt">$ </span>source ~/.bashrc</code></pre>
+    </div>
+  </div>
+
+  <h2 id="check-first">Seeing the result without sending it</h2>
+
+  <p>
+    To run all the checks and see what <em>would</em> be reported, without
+    sending anything:
+  </p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>curl -fsSL https://aikaryashala.com/system_setup/scripts/report_completion.sh | DRY_RUN=1 bash</code></pre>
+  </div>
+
+  <nav class="page-nav">
+    <a href="../05_install_java/"><span class="dir">Step 5</span><span class="title">← Java</span></a>
+    <a class="next" href="../"><span class="dir">Finished</span><span class="title">Back to all steps →</span></a>
+  </nav>
+
+</div>
+</main>
+
+<footer class="site-footer">
+  <div class="inner">
+    <span>system_setup — <a href="https://aikaryashala.com">aikaryashala</a></span>
+    <span class="spacer"><a href="https://github.com/aikaryashala/system_setup">Source on GitHub</a></span>
+  </div>
+</footer>
+
+<script src="../assets/site.js"></script>
+</body>
+</html>

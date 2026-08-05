@@ -74,6 +74,12 @@
           <td>Temurin JDK — javac, java, jshell</td>
         </tr>
         <tr>
+          <td><a href="report_completion.sh"><code>report_completion.sh</code></a></td>
+          <td><a href="../05_5_report/">5.5</a></td>
+          <td>Ubuntu</td>
+          <td>Tests steps 2–5 and reports the result. Installs nothing.</td>
+        </tr>
+        <tr>
           <td><a href="install_more_cmds.sh"><code>install_more_cmds.sh</code></a></td>
           <td><a href="../06_install_more_cmds/">6</a></td>
           <td>Ubuntu</td>
@@ -168,6 +174,8 @@
         <tr><td><code>UV_TOOLS</code></td><td><code>install_uv.sh</code></td><td><code>ruff</code></td><td>Tools installed with <code>uv tool install</code></td></tr>
         <tr><td><code>JDK_VERSION</code></td><td><code>install_java.sh</code></td><td><code>25</code></td><td>Which Temurin LTS to install</td></tr>
         <tr><td><code>SKIP_MAVEN</code> / <code>SKIP_GRADLE</code></td><td><code>install_maven_gradle.sh</code></td><td>unset</td><td>Set to <code>1</code> to leave that build tool out</td></tr>
+        <tr><td><code>STUDENT_NAME</code> / <code>ROLL_NUMBER</code></td><td><code>report_completion.sh</code></td><td>asked for</td><td>Skip the prompts</td></tr>
+        <tr><td><code>DRY_RUN</code></td><td><code>report_completion.sh</code></td><td>unset</td><td>Set to <code>1</code> to check everything but send nothing</td></tr>
         <tr><td><code>STEPS</code></td><td><code>install_all.sh</code></td><td><code>cmds c py java</code></td><td>Which steps to run, in order. Also accepts <code>more_cmds</code>, <code>binary</code>, <code>uv</code>, <code>maven_gradle</code> and <code>sanitizers</code>.</td></tr>
         <tr><td><code>WSL_DISTRO</code></td><td><code>install_ubuntu_wsl.ps1</code></td><td><code>Ubuntu-24.04</code></td><td>Which distribution to install</td></tr>
         <tr><td><code>SYSTEM_SETUP_BASE_URL</code></td><td>all</td><td>this site</td><td>Where scripts fetch each other from — point it at a fork</td></tr>

@@ -62,6 +62,7 @@ Steps 1–5 are the main sequence and run in order.
 | 3 | [C: clang and lldb](docs/03_install_c) | `clang` `lldb` `lld` — `clang -g hello.c -o hello`, then debug it |
 | 4 | [Python and pdb](docs/04_install_py) | `python3` and `pdb` — run a script, and trace it line by line |
 | 5 | [Java: javac and jshell](docs/05_install_java) | Temurin JDK (LTS), `javac` `java` `jshell` `jar` `javap` |
+| 5.5 | [Check and report](docs/05_5_report) | Installs nothing — tests steps 2–5 by using them, then reports the result |
 
 Steps 6–11 are **independent extras**. Nothing in steps 1–5 needs them, no script
 in the main sequence links to them, and `install_all.sh` does not run them unless
@@ -112,6 +113,7 @@ asked. Install any of them at any time.
     │   ├── install_c.sh             # step 3
     │   ├── install_py.sh            # step 4
     │   ├── install_java.sh          # step 5
+    │   ├── report_completion.sh     # step 5.5 - verifies and reports
     │   ├── install_more_cmds.sh     # step 6  (independent)
     │   ├── install_binary.sh        # step 7  (independent)
     │   ├── install_uv.sh            # step 8  (independent)
@@ -123,6 +125,7 @@ asked. Install any of them at any time.
     ├── 03_install_c/index.html
     ├── 04_install_py/index.html
     ├── 05_install_java/index.html
+    ├── 05_5_report/index.html
     ├── 06_install_more_cmds/index.html
     ├── 07_install_binary/index.html
     ├── 08_install_uv/index.html

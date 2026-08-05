@@ -29,6 +29,7 @@ main sequence, runs in order
   03_install_c        →  install_c.sh
   04_install_py       →  install_py.sh
   05_install_java     →  install_java.sh
+  05_5_report         →  report_completion.sh
 
 independent extras
   06_install_more_cmds  →  install_more_cmds.sh
@@ -168,7 +169,9 @@ so readers do not need a build file to try something.
 
 Every `.sh` file in `docs/scripts/` must:
 
-1. Start with `#!/usr/bin/env bash` and `set -euo pipefail`.
+1. Start with `#!/usr/bin/env bash` and `set -euo pipefail`. The one exception is
+   `report_completion.sh`, which uses `set -uo pipefail`: it has to survive a
+   failing check in order to report it, which is the whole point of that script.
 2. Be **idempotent** — re-running is a no-op, not a reinstall or a duplicated
    line in `~/.bashrc`. Guard `.bashrc` edits with a marker-string grep.
 3. Be **non-interactive** — no prompts. Use `DEBIAN_FRONTEND=noninteractive` and
@@ -245,6 +248,23 @@ binary.
 Build test files with heredocs (`cat > t.c <<'EOF'`), never with nested `printf`
 and escaped quotes — the escaping breaks in a way that looks like a toolchain
 failure and wastes a debugging cycle.
+
+## report_completion.sh
+
+Step 5.5 reports a student's progress to a Google Form. Three things about it
+are load-bearing:
+
+- **It reads from `/dev/tty`, never stdin.** The documented way to run it is
+  `curl … | bash`, where stdin is the script itself — a plain `read` would
+  swallow script text instead of waiting for the student.
+- **It tests by doing, not by looking.** `command -v clang` proves nothing; the
+  script compiles and runs a program. A tool that exists but cannot work is a
+  failure, and gets named in the report.
+- **It reports failures too**, with what broke, so a teacher can see where a
+  student is stuck. Never change it to only submit on success.
+
+`DRY_RUN=1` runs every check and sends nothing. Use it for any testing — do not
+submit test rows to the live form.
 
 ## Tone of the website copy
 
