@@ -1,0 +1,1 @@
+step-3 just keep 'clang -g hello.c -o hello" Other options are not needed now and those tasks can be moved to step-11, like memory overflow.
