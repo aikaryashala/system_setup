@@ -1,0 +1,30 @@
+{
+  "cli_version": "0.9.0",
+  "checkpoint_id": "4b120886e5db",
+  "strategy": "manual-commit",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "docs/01_install_ubuntu/index.html",
+    "docs/03_install_c/index.html",
+    "docs/04_install_py/index.html",
+    "docs/05_install_java/index.html",
+    "docs/scripts/install_java.sh"
+  ],
+  "sessions": [
+    {
+      "metadata": "/4b/120886e5db/0/metadata.json",
+      "transcript": "/4b/120886e5db/0/full.jsonl",
+      "compact_transcript": "/4b/120886e5db/0/transcript.jsonl",
+      "content_hash": "/4b/120886e5db/0/content_hash.txt",
+      "prompt": "/4b/120886e5db/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 10,
+    "cache_creation_tokens": 11681,
+    "cache_read_tokens": 2689257,
+    "output_tokens": 3063,
+    "api_call_count": 5
+  }
+}
