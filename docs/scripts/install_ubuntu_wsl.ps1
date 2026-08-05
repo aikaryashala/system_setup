@@ -57,6 +57,17 @@ function Test-WslCommand {
     return $null -ne (Get-Command wsl.exe -ErrorAction SilentlyContinue)
 }
 
+# True when this WSL understands `--no-launch` on `wsl --install`.
+#
+# That option arrived with the Microsoft Store build of WSL, which is also the
+# first build to answer `wsl --version`. The inbox WSL that ships inside Windows
+# has neither, and rejects the whole command line if it is passed.
+function Test-WslNoLaunchSupport {
+    if (-not (Test-WslCommand)) { return $false }
+    & wsl.exe --version 2>&1 | Out-Null
+    return ($LASTEXITCODE -eq 0)
+}
+
 # Returns the list of installed distribution names, or an empty array.
 function Get-InstalledDistro {
     if (-not (Test-WslCommand)) { return @() }
@@ -141,15 +152,13 @@ function Install-UbuntuWsl {
     }
 
     Write-Step 'Updating the WSL kernel'
-    & wsl.exe --update --no-launch 2>&1 | Out-Host
+    # --update takes no other options. Do not add --no-launch here: it is only
+    # understood by --install, and WSL rejects the whole command.
+    & wsl.exe --update 2>&1 | Out-Host
     if ($LASTEXITCODE -eq 0) {
         Write-Ok 'WSL kernel is up to date'
     } else {
-        # Older WSL builds do not accept --no-launch on --update.
-        & wsl.exe --update 2>&1 | Out-Host
-        if ($LASTEXITCODE -ne 0) {
-            Write-Warn 'Could not update the WSL kernel automatically. Continuing.'
-        }
+        Write-Warn 'Could not update the WSL kernel automatically. Continuing.'
     }
 
     Write-Step 'Setting WSL 2 as the default version'
@@ -187,7 +196,18 @@ function Install-UbuntuWsl {
     }
     else {
         Write-Step "Installing $distro - this downloads a few hundred megabytes"
-        & wsl.exe --install --no-launch -d $distro 2>&1 | Out-Host
+
+        # --no-launch stops WSL opening a setup window the moment the download
+        # finishes, which is what we want when this script is being piped into
+        # PowerShell. The option only exists on the Microsoft Store build of WSL,
+        # so ask first rather than sending an argument the inbox build rejects.
+        if (Test-WslNoLaunchSupport) {
+            & wsl.exe --install --no-launch -d $distro 2>&1 | Out-Host
+        } else {
+            Write-Skip 'This WSL build has no --no-launch option; installing without it.'
+            Write-Skip 'Ubuntu may open its own window and ask for a username - that is fine.'
+            & wsl.exe --install -d $distro 2>&1 | Out-Host
+        }
 
         if ($LASTEXITCODE -ne 0) {
             Write-Warn "wsl --install -d $distro did not succeed."
