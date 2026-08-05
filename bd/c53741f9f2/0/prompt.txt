@@ -1,0 +1,1 @@
+yes, add that check to check_links.sh
