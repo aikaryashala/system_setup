@@ -1,0 +1,13 @@
+What are the tasks under 'jq' command
+
+---
+
+I am giving this to first time users, who are seeing the terminal for the first time, I am not going to expose them to this depth. I just want them to use 'jq' command to verify if it's a valid JSON file or not. JSON file contents are also simple that are being exposed like it has just key, value pairr. The dictionary will contain these keys name, roll_number, image_url, sankalpam. Where the students will give thir name, roll number, image url and sankalpam. So create json example which contains these value. For sankalpam use 'I want to be a software build who solve problems with software solutions plus services'. The remaining excercises that are present are good. Move those exercies to step-10. Which will be used later to understand them. First finish this. Then I have further changes which I will suggest after this.
+
+---
+
+expert software builder
+
+---
+
+In step-2 ..The 'Try them' commands must each be in seperate box, to copy them and try to see the output.
