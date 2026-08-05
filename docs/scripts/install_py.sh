@@ -177,6 +177,54 @@ EOF
     fi
 }
 
+# Run the two files this script just wrote. They are exactly what the reader
+# will type, so a typo in the heredocs above has to fail here - not in front of
+# a student who has no way to tell a broken sample from their own mistake.
+check_samples() {
+    banner "Checking the sample files run"
+
+    local dest="${SAMPLE_DEST:-$HOME/python-samples}"
+    local out
+    out="$(mktemp)"
+    # shellcheck disable=SC2064
+    trap "rm -f '$out'" RETURN
+
+    # Run from the samples directory: report.py does `import stats`, which only
+    # resolves when both files are in the working directory.
+    #
+    # report.py is meant to end in a ZeroDivisionError, so a non-zero exit is
+    # the correct outcome. Judge it by what it printed, not by its status.
+    ( cd "$dest" && python3 report.py ) >"$out" 2>&1 || true
+
+    if grep -q -- "--- readings ---" "$out" && grep -q "median: 10.5" "$out"; then
+        ok "report.py printed its report, and stats.py did the arithmetic"
+    else
+        warn "report.py did not print the expected report:"
+        head -n 6 "$out" >&2
+        VERIFY_FAILED=1
+    fi
+
+    if grep -q "ZeroDivisionError" "$out"; then
+        ok "report.py ended in the deliberate ZeroDivisionError, as intended"
+    else
+        warn "report.py did not raise the ZeroDivisionError the guide describes"
+        VERIFY_FAILED=1
+    fi
+
+    # The post-mortem exercise from the guide: let it crash, then read the
+    # variable that caused it. If this prints PM=[] the whole lesson works.
+    ( cd "$dest" && python3 -m pdb -c continue -c "print(f'PM={numbers}')" -c quit report.py ) \
+        >"$out" 2>&1 || true
+
+    if grep -q "PM=\[\]" "$out"; then
+        ok "pdb post-mortem stopped inside stats.py with the variables intact"
+    else
+        warn "pdb post-mortem did not behave as the guide describes:"
+        head -n 8 "$out" >&2
+        VERIFY_FAILED=1
+    fi
+}
+
 summary() {
     banner "Installed"
     verify "python3" python3 --version
@@ -193,6 +241,7 @@ main() {
     install_python
     write_samples
     smoke_test
+    check_samples
     summary
 
     finish "Two sample files are waiting in ${SAMPLE_DEST:-~/python-samples}:

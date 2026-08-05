@@ -21,20 +21,38 @@ SYSTEM_SETUP_BASE_URL="${SYSTEM_SETUP_BASE_URL:-https://aikaryashala.com/system_
 
 # Load common.sh from beside this script, or from the website when this script
 # was piped straight into bash.
+#
+# There is deliberately no "is curl installed" test here. Either this file came
+# from the website, in which case curl fetched it and is plainly present, or it
+# came from a clone, in which case common.sh is sitting next to it and curl is
+# never touched. What is worth checking is the thing that actually matters:
+# whether common.sh really loaded.
 _bootstrap_common() {
     local here=""
     if [ -n "${BASH_SOURCE[0]:-}" ] && [ -f "${BASH_SOURCE[0]}" ]; then
         here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
     fi
+
     if [ -n "$here" ] && [ -f "$here/common.sh" ]; then
         # shellcheck source=common.sh
         . "$here/common.sh"
-    elif command -v curl >/dev/null 2>&1; then
+    else
         # shellcheck disable=SC1090
         . <(curl -fsSL "$SYSTEM_SETUP_BASE_URL/common.sh")
-    else
-        echo "Cannot find common.sh, and curl is not installed to fetch it." >&2
-        echo "Run: sudo apt-get update && sudo apt-get install -y curl" >&2
+    fi
+
+    # A failed download, a 404 or a missing curl all end up the same way: an
+    # empty file that sources cleanly and leaves every helper undefined. Catch
+    # that here rather than 100 lines later with "require_linux: command not
+    # found".
+    #
+    # `declare -F` asks specifically "is this a shell function?". `command -v`
+    # would not do: several of these helper names also exist as real binaries -
+    # `banner` ships with macOS and with Ubuntu's sysvbanner - so it can answer
+    # yes about a program that has nothing to do with us.
+    if ! declare -F apt_install >/dev/null 2>&1; then
+        echo "Could not load common.sh from $SYSTEM_SETUP_BASE_URL" >&2
+        echo "Check your network connection and try again." >&2
         exit 1
     fi
 }

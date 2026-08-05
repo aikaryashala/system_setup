@@ -154,13 +154,29 @@ if __name__ == "__main__":
 <span class="out">   mean: 11.166666666666666</span>
 <span class="out"> median: 10.5</span>
 <span class="out"> spread: 18</span>
-<span class="out">--- missing ---</span>
 <span class="out">Traceback (most recent call last):</span>
-<span class="out">  File "report.py", line 24, in &lt;module&gt;</span>
+<span class="out">  ...</span>
+<span class="out">  File "stats.py", line 10, in mean</span>
+<span class="out">    return sum(numbers) / len(numbers)</span>
 <span class="out">ZeroDivisionError: division by zero</span></code></pre>
   </div>
 
   <p>The crash is deliberate. Finding out why, without adding a single <code>print</code>, is the exercise.</p>
+
+  <div class="callout note">
+    <div class="callout-title">Notice what is <em>missing</em> from that output</div>
+    <p>
+      There is no <code>--- missing ---</code> heading. The program asked for the
+      second report, but never got as far as printing its title — because
+      <code>show()</code> calls <code>stats.summarise()</code> on its first line,
+      and that is where it died.
+    </p>
+    <p>
+      That absence is your first clue, and reading output for what is
+      <em>not</em> there is a real debugging skill. The traceback confirms it:
+      the last line names <code>stats.py</code>, not <code>report.py</code>.
+    </p>
+  </div>
 
   <h2 id="pdb">Trace it with pdb</h2>
 
@@ -315,10 +331,48 @@ if __name__ == "__main__":
 
   <h2 id="verify">Check it worked</h2>
 
+  <p>Which Python you have:</p>
+
   <div class="codeblock" data-label="ubuntu terminal">
-<pre><code><span class="prompt">$ </span>python3 --version
-<span class="prompt">$ </span>python3 -c "import pdb; print('pdb ok')"
-<span class="prompt">$ </span>ls ~/python-samples</code></pre>
+<pre><code><span class="prompt">$ </span>python3 --version</code></pre>
+  </div>
+
+  <p>That the debugger is there:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>python3 -c "import pdb; print('pdb ok')"</code></pre>
+  </div>
+
+  <p>That your sample files arrived:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>ls ~/python-samples</code></pre>
+  </div>
+
+  <p>
+    And — the one that actually proves Python works — that a program runs and
+    produces the right numbers:
+  </p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>cd ~/python-samples &amp;&amp; python3 report.py</code></pre>
+  </div>
+
+  <p>
+    You should see the report, then the deliberate crash. Both halves matter: the
+    numbers mean <code>stats.py</code> was found and its arithmetic ran, and the
+    <code>ZeroDivisionError</code> means you have something real to practise the
+    debugger on.
+  </p>
+
+  <div class="callout tip">
+    <div class="callout-title">The install script already checked this</div>
+    <p>
+      Before it finished, the installer ran <code>report.py</code> itself,
+      confirmed the report and the expected error, and drove pdb through the
+      post-mortem exercise. If it printed <span class="mono">Done.</span> with no
+      warnings, everything on this page works on your machine.
+    </p>
   </div>
 
   <div class="callout note">
