@@ -73,9 +73,10 @@
   <div class="codeblock" data-label="hello.c">
 <pre><code>#include &lt;stdio.h&gt;
 
-int main(void) {
+int main()
+{
     int answer = 42;
-    printf("Hello from C. The answer is %d.\n", answer);
+    printf("Namasthey from C. The answer is %d.\n", answer);
     return 0;
 }</code></pre>
   </div>
@@ -85,7 +86,7 @@ int main(void) {
   <div class="codeblock" data-label="ubuntu terminal">
 <pre><code><span class="prompt">$ </span>clang -g -O0 -Wall -Wextra -o hello hello.c
 <span class="prompt">$ </span>./hello
-<span class="out">Hello from C. The answer is 42.</span></code></pre>
+<span class="out">Namasthey from C. The answer is 42.</span></code></pre>
   </div>
 
   <p>Those flags matter more than they look:</p>
@@ -177,7 +178,8 @@ int main(void) {
   <div class="codeblock" data-label="overflow.c">
 <pre><code>#include &lt;stdio.h&gt;
 
-int main(void) {
+int main()
+{
     int numbers[4] = {1, 2, 3, 4};
     numbers[4] = 99;              /* one past the end */
     printf("%d\n", numbers[0]);

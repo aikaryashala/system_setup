@@ -63,7 +63,7 @@ Steps 1–5 are the main sequence and run in order.
 | 4 | [Python and pdb](docs/04_install_py) | `python3` and `pdb` — run a script, and trace it line by line |
 | 5 | [Java: javac and jshell](docs/05_install_java) | Temurin JDK (LTS), `javac` `java` `jshell` `jar` `javap` |
 
-Steps 6–9 are **independent extras**. Nothing in steps 1–5 needs them, no script
+Steps 6–10 are **independent extras**. Nothing in steps 1–5 needs them, no script
 in the main sequence links to them, and `install_all.sh` does not run them unless
 asked. Install any of them at any time.
 
@@ -73,6 +73,7 @@ asked. Install any of them at any time.
 | 7 | [Reading binaries](docs/07_install_binary) | `xxd` `hexyl` `hexdump` `od` `objdump` `readelf` `nm` `strings` `size` `valgrind` `strace` `ltrace` `make` `cmake` `ninja` `clang-format` `clang-tidy` |
 | 8 | [Python packages with uv](docs/08_install_uv) | [`uv`](https://docs.astral.sh/uv/), `uvx`, a uv-managed Python, plus `ruff` |
 | 9 | [Java build tools](docs/09_install_maven_gradle) | Maven, Gradle — needs the JDK from step 5 |
+| 10 | [Doing more with jq](docs/10_jq_practice) | Practice only, no install — filtering and reshaping JSON |
 
 ### Tooling choices, and why
 
@@ -121,7 +122,8 @@ asked. Install any of them at any time.
     ├── 06_install_more_cmds/index.html
     ├── 07_install_binary/index.html
     ├── 08_install_uv/index.html
-    └── 09_install_maven_gradle/index.html
+    ├── 09_install_maven_gradle/index.html
+    └── 10_jq_practice/index.html      # practice page, no script
 ```
 
 The numbered directories are both the site's URL structure and the intended

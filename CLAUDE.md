@@ -35,19 +35,25 @@ independent extras
   07_install_binary     →  install_binary.sh
   08_install_uv         →  install_uv.sh
   09_install_maven_gradle → install_maven_gradle.sh
+  10_jq_practice        →  (no script - practice page only)
 ```
+
+Not every step installs something. Step 10 is a practice page for a tool step 2
+already installed, so it has no script and its directory is named for its topic
+rather than `NN_install_*`. That is fine; keep the numbering, drop the `install_`
+prefix when a step installs nothing.
 
 Adding a step means adding all three: the numbered page directory, the script in
 `scripts/`, a card on `docs/index.html`, and a row in the README table.
 Renumbering is disruptive — it changes public URLs — so append rather than insert
 unless there is a real reason.
 
-### Steps 6 to 9 are independent — keep them that way
+### Steps 6 to 10 are independent — keep them that way
 
 They exist so the main sequence stays short. Two rules follow, and both are easy
 to break by accident:
 
-- **No script in the main sequence may link to steps 6 to 9.** The `finish`
+- **No script in the main sequence may link to steps 6 to 10.** The `finish`
   message of `install_cmds.sh` points at step 3, `install_c.sh` at step 4,
   `install_py.sh` at step 5, and `install_java.sh` ends the sequence. Do not add
   "and then install the extras" to any of them.
@@ -63,8 +69,9 @@ tools went. The restriction is about the scripted install chain, not navigation.
 
 - **Step 2** is the irreducible set: `curl ssh ip ping dig git nano vim less
   file jq tree zip unzip htop`. Anything else that is a general-purpose command
-  belongs in step 6. (`jq` is here rather than in step 6 because reading a JSON
-  API response is a core skill, and it pairs directly with `curl`.)
+  belongs in step 6. `jq` is here, but **only** as a JSON validity check
+  (`jq . file.json` — output means valid, an error means broken). Anything
+  beyond that — field access, `select`, `add`, reshaping — belongs in step 10.
 - **Step 3** is the compile/debug loop only: `clang`, `lldb`, and what those two
   need to function. A tool that operates on the *output* of compiling — hex
   viewers, `objdump`, `valgrind`, `strace`, `make` — belongs in step 7.
@@ -212,6 +219,12 @@ and escaped quotes — the escaping breaks in a way that looks like a toolchain
 failure and wastes a debugging cycle.
 
 ## Tone of the website copy
+
+The audience is a **first-time terminal user**. Steps 1 to 5 in particular must
+assume no prior knowledge: no shell scripting, no pipes, no regular expressions,
+and no jargon that is not explained on the spot. When a tool can do far more than
+the step needs, teach only the part the step needs and point at a later step for
+the rest — as step 2 does with `jq`.
 
 The audience is a beginner who may never have opened a terminal. Explain what a
 command does before showing it, prefer whole words to jargon on first use, and

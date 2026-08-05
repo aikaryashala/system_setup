@@ -94,103 +94,267 @@
 
   <h2 id="try">Try them</h2>
 
+  <p>
+    Copy one command at a time, paste it into your Ubuntu terminal, and press
+    <kbd>Enter</kbd>. Read what comes back before moving to the next one — that
+    is how you learn what each command is for.
+  </p>
+
+  <h3>See what a machine is called</h3>
+
+  <p>Ask DNS which address a name points to.</p>
+
   <div class="codeblock" data-label="ubuntu terminal">
-<pre><code><span class="comment"># fetch a page and look at it</span>
-<span class="prompt">$ </span>curl -s https://example.com | less
-
-<span class="comment"># what is this file, really?</span>
-<span class="prompt">$ </span>file /bin/ls
-<span class="out">/bin/ls: ELF 64-bit LSB pie executable, x86-64, dynamically linked</span>
-
-<span class="comment"># show the current folder as a tree, two levels deep</span>
-<span class="prompt">$ </span>tree -L 2
-
-<span class="comment"># what address does this machine have?</span>
-<span class="prompt">$ </span>ip addr
-
-<span class="comment"># where does a name point?</span>
-<span class="prompt">$ </span>dig +short github.com</code></pre>
+<pre><code><span class="prompt">$ </span>dig +short github.com</code></pre>
   </div>
 
-  <h3>Reading JSON with jq</h3>
+  <h3>Find your own address</h3>
+
+  <p>Show the network addresses this machine currently has.</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>ip addr</code></pre>
+  </div>
+
+  <h3>Check that another machine answers</h3>
 
   <p>
-    Web APIs answer in JSON, which is dense and awkward to read raw.
-    <code>jq</code> turns it into something you can actually use — and pairs
-    naturally with <code>curl</code>.
+    Send a few small messages and see how long the replies take. It keeps going
+    until you stop it — press <kbd>Ctrl</kbd>+<kbd>C</kbd>.
   </p>
 
   <div class="codeblock" data-label="ubuntu terminal">
-<pre><code><span class="comment"># raw JSON: technically readable, practically not</span>
-<span class="prompt">$ </span>curl -s https://api.github.com/repos/aikaryashala/system_setup
-
-<span class="comment"># the same thing, indented and coloured</span>
-<span class="prompt">$ </span>curl -s https://api.github.com/repos/aikaryashala/system_setup | jq
-
-<span class="comment"># pull out one field</span>
-<span class="prompt">$ </span>curl -s https://api.github.com/repos/aikaryashala/system_setup | jq -r .full_name
-<span class="out">aikaryashala/system_setup</span>
-
-<span class="comment"># several fields, as a new object</span>
-<span class="prompt">$ </span>curl -s https://api.github.com/repos/aikaryashala/system_setup \
-    | jq '{name: .name, stars: .stargazers_count, language: .language}'
-
-<span class="comment"># walk into a list: the name of every public repo</span>
-<span class="prompt">$ </span>curl -s https://api.github.com/users/aikaryashala/repos | jq -r '.[].name'
-
-<span class="comment"># filter a list, then count what is left</span>
-<span class="prompt">$ </span>curl -s https://api.github.com/users/aikaryashala/repos \
-    | jq '[.[] | select(.fork == false)] | length'</code></pre>
+<pre><code><span class="prompt">$ </span>ping -c 4 github.com</code></pre>
   </div>
 
-  <div class="callout tip">
-    <div class="callout-title">What <code>-r</code> does, and why you want it</div>
+  <h3>Fetch a web page</h3>
+
+  <p>Download a page and print it straight to the screen.</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>curl -s https://example.com</code></pre>
+  </div>
+
+  <h3>Read something long, one screen at a time</h3>
+
+  <p>
+    The same page, but paged. Press <kbd>Space</kbd> for the next screen and
+    <kbd>q</kbd> to quit.
+  </p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>curl -s https://example.com | less</code></pre>
+  </div>
+
+  <div class="callout warn">
+    <div class="callout-title">Stuck on a screen with no prompt?</div>
     <p>
-      Without it, <code>jq</code> prints strings with their JSON quotes:
-      <code>"aikaryashala/system_setup"</code>. <code>-r</code> gives raw output
-      with no quotes, which is what you need when feeding the result into
-      another command.
+      You are inside <code>less</code>. Press <kbd>q</kbd> to come back to the
+      terminal. This catches everyone once.
     </p>
   </div>
 
-  <h4>Practice</h4>
+  <h3>Ask what a file really is</h3>
 
-  <p>jq works on local files too, so you can try these with no network at all:</p>
+  <p>
+    File names can say anything. <code>file</code> looks inside and tells you
+    what it actually found.
+  </p>
 
   <div class="codeblock" data-label="ubuntu terminal">
-<pre><code><span class="prompt">$ </span>cat &gt; readings.json &lt;&lt;'JSON'
-{
-  "site": "north",
-  "readings": [
-    {"id": 1, "value": 12, "ok": true},
-    {"id": 2, "value": 7,  "ok": true},
-    {"id": 3, "value": 21, "ok": false},
-    {"id": 4, "value": 9,  "ok": true}
-  ]
-}
-JSON
-
-<span class="comment"># 1. print the site name</span>
-<span class="prompt">$ </span>jq -r .site readings.json
-
-<span class="comment"># 2. every value, one per line</span>
-<span class="prompt">$ </span>jq '.readings[].value' readings.json
-
-<span class="comment"># 3. only the readings marked ok</span>
-<span class="prompt">$ </span>jq '.readings[] | select(.ok)' readings.json
-
-<span class="comment"># 4. how many are not ok?</span>
-<span class="prompt">$ </span>jq '[.readings[] | select(.ok == false)] | length' readings.json
-
-<span class="comment"># 5. add the values up</span>
-<span class="prompt">$ </span>jq '[.readings[].value] | add' readings.json
-
-<span class="comment"># 6. the largest value</span>
-<span class="prompt">$ </span>jq '[.readings[].value] | max' readings.json
-
-<span class="comment"># 7. reshape into a simpler list</span>
-<span class="prompt">$ </span>jq '[.readings[] | {id, value}]' readings.json</code></pre>
+<pre><code><span class="prompt">$ </span>file /bin/ls
+<span class="out">/bin/ls: ELF 64-bit LSB pie executable, x86-64, dynamically linked</span></code></pre>
   </div>
+
+  <h3>See a folder as a tree</h3>
+
+  <p>
+    Show what is in the current folder, going two levels deep. Try it in your
+    home folder.
+  </p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>tree -L 2</code></pre>
+  </div>
+
+  <h3>See what your machine is busy with</h3>
+
+  <p>
+    A live view of every running program. Press <kbd>q</kbd> to quit.
+  </p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>htop</code></pre>
+  </div>
+
+  <h3>Make a zip file, then unpack it</h3>
+
+  <p>Three commands: create a folder with a file in it, zip it, then unzip it.</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>mkdir practice &amp;&amp; echo "hello" &gt; practice/note.txt</code></pre>
+  </div>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>zip -r practice.zip practice</code></pre>
+  </div>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>unzip practice.zip -d unpacked</code></pre>
+  </div>
+
+  <h3>Checking a JSON file with jq</h3>
+
+  <p>
+    JSON is a plain text format for storing information as
+    <strong>key and value</strong> pairs. It is what most programs use to save
+    settings and to send information to each other. A JSON file looks like this:
+  </p>
+
+  <div class="codeblock" data-label="student.json">
+<pre><code>{
+  "name": "Your Name",
+  "roll_number": "24CS101",
+  "image_url": "https://example.com/photos/yourname.jpg",
+  "sankalpam": "I want to be an expert software builder who solve problems with software solutions plus services"
+}</code></pre>
+  </div>
+
+  <p>
+    Every line is one key, then a colon, then its value. The keys here are
+    <code>name</code>, <code>roll_number</code>, <code>image_url</code> and
+    <code>sankalpam</code>.
+  </p>
+
+  <p>
+    JSON is strict about punctuation. One missing comma or one missing quotation
+    mark and the whole file becomes unreadable to every program that opens it.
+    <code>jq</code> tells you straight away whether a file is correct.
+  </p>
+
+  <h4>Make your own file</h4>
+
+  <p>
+    Type this in your terminal, replacing the four values with your own. Keep all
+    the quotation marks and commas exactly where they are.
+  </p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>nano student.json</code></pre>
+  </div>
+
+  <p>
+    Nano opens an empty editor. Type your file, then press
+    <kbd>Ctrl</kbd>+<kbd>O</kbd> and <kbd>Enter</kbd> to save, and
+    <kbd>Ctrl</kbd>+<kbd>X</kbd> to leave:
+  </p>
+
+  <div class="codeblock" data-label="student.json">
+<pre><code>{
+  "name": "Lakshmi Prasad",
+  "roll_number": "24CS042",
+  "image_url": "https://example.com/photos/lakshmi.jpg",
+  "sankalpam": "I want to be an expert software builder who solve problems with software solutions plus services"
+}</code></pre>
+  </div>
+
+  <h4>Check whether it is valid</h4>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>jq . student.json</code></pre>
+  </div>
+
+  <p>
+    If the file is correct, <code>jq</code> prints it back to you, neatly laid
+    out and coloured:
+  </p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="out">{</span>
+<span class="out">  "name": "Lakshmi Prasad",</span>
+<span class="out">  "roll_number": "24CS042",</span>
+<span class="out">  "image_url": "https://example.com/photos/lakshmi.jpg",</span>
+<span class="out">  "sankalpam": "I want to be an expert software builder who solve problems with software solutions plus services"</span>
+<span class="out">}</span></code></pre>
+  </div>
+
+  <p>That means your file is valid JSON.</p>
+
+  <h4>What a mistake looks like</h4>
+
+  <p>
+    Now break it on purpose — remove the comma at the end of the
+    <code>roll_number</code> line — and run the same command again:
+  </p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>jq . student.json
+<span class="out">jq: parse error: Expected separator between values at line 4, column 13</span></code></pre>
+  </div>
+
+  <p>
+    No neat output means the file is not valid. The message gives you a line and
+    column to look at. Do not worry about the exact wording — what matters is
+    that there is an error at all.
+  </p>
+
+  <div class="callout warn">
+    <div class="callout-title">The error line is often one <em>past</em> the mistake</div>
+    <p>
+      You deleted the comma on line 3, but jq reports line 4. That is normal: it
+      only notices something is wrong when it reaches the next value and finds no
+      comma before it. When the reported line looks fine, <strong>check the line
+      above it</strong>.
+    </p>
+  </div>
+
+  <p>
+    Put the comma back, save, and run <code>jq . student.json</code> again until
+    it prints your file.
+  </p>
+
+  <div class="callout tip">
+    <div class="callout-title">The rule to remember</div>
+    <p>
+      <strong>Output means valid. An error means broken.</strong> Whenever you
+      write a JSON file by hand, run <code>jq . yourfile.json</code> before using
+      it anywhere else. It takes a second and saves a lot of confusion later.
+    </p>
+  </div>
+
+  <h4>The three mistakes that cause almost every error</h4>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Mistake</th><th>What jq says</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>A missing comma between two lines</td>
+          <td><code>Expected separator between values</code></td>
+        </tr>
+        <tr>
+          <td>A comma after the <em>last</em> pair — JSON does not allow one</td>
+          <td><code>Expected another key-value pair</code></td>
+        </tr>
+        <tr>
+          <td>Missing quotation marks around a key</td>
+          <td><code>Invalid numeric literal</code></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p class="muted">
+    That third message is a strange way to say “this key has no quotes”, but it is
+    what jq prints. Whenever a message makes no sense, look at the line and the
+    one above it for a missing quote or comma.
+  </p>
+
+  <p class="muted">
+    <code>jq</code> can do far more than check a file — searching, filtering and
+    reshaping data. That is <a href="../10_jq_practice/">step 10</a>, for when
+    you are comfortable here.
+  </p>
 
   <h2 id="git-setup">Set up git</h2>
 

@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="en" data-theme="">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Step 10 — Doing more with jq · system_setup</title>
+<meta name="description" content="Practice with jq beyond checking a file: reading fields, filtering lists, counting, adding up and reshaping JSON.">
+<link rel="stylesheet" href="../assets/style.css">
+<script>
+(function(){try{var t=localStorage.getItem('system-setup-theme');if(t){document.documentElement.setAttribute('data-theme',t);}}catch(e){}}());
+</script>
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <div class="inner">
+    <a class="brand" href="../"><span class="mark">&gt;_</span> system_setup</a>
+    <nav class="header-nav">
+      <a href="../scripts/">Scripts</a>
+      <a href="https://github.com/aikaryashala/system_setup">GitHub</a>
+      <button class="theme-toggle" type="button" aria-label="Switch theme">☽</button>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+<div class="prose">
+
+  <p class="breadcrumb"><a href="../">system_setup</a> / Step 10</p>
+
+  <p class="eyebrow">Step 10 · Ubuntu · Practice</p>
+  <h1>Doing more with jq</h1>
+  <p class="lede">
+    In <a href="../02_install_cmds/">step 2</a> you used <code>jq</code> to check
+    whether a file was valid JSON. That is the smallest thing it does. This page
+    is for when you want to pull information <em>out</em> of JSON — reading
+    fields, filtering lists, counting and reshaping.
+  </p>
+
+  <div class="callout note">
+    <div class="callout-title">Nothing to install</div>
+    <p>
+      <code>jq</code> came with <a href="../02_install_cmds/">step 2</a>. This
+      page is practice only — there is no script to run. Work through it whenever
+      you are ready.
+    </p>
+  </div>
+
+  <h2 id="dot">The dot means “the whole thing”</h2>
+
+  <p>
+    Every jq command is a small expression describing what you want. The
+    simplest expression is <code>.</code>, which means “everything” — that is why
+    <code>jq . file.json</code> prints the file back unchanged.
+  </p>
+
+  <p>Start from the file you made in step 2:</p>
+
+  <div class="codeblock" data-label="student.json">
+<pre><code>{
+  "name": "Lakshmi Prasad",
+  "roll_number": "24CS042",
+  "image_url": "https://example.com/photos/lakshmi.jpg",
+  "sankalpam": "I want to be an expert software builder who solve problems with software solutions plus services"
+}</code></pre>
+  </div>
+
+  <p>Add a key name after the dot to pull out just that value:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>jq .name student.json
+<span class="out">"Lakshmi Prasad"</span>
+
+<span class="prompt">$ </span>jq .roll_number student.json
+<span class="out">"24CS042"</span>
+
+<span class="prompt">$ </span>jq .sankalpam student.json
+<span class="out">"I want to be an expert software builder who solve problems with software solutions plus services"</span></code></pre>
+  </div>
+
+  <h3>Losing the quotation marks</h3>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>jq -r .name student.json
+<span class="out">Lakshmi Prasad</span></code></pre>
+  </div>
+
+  <div class="callout tip">
+    <div class="callout-title">What <code>-r</code> does, and why you want it</div>
+    <p>
+      Without it, <code>jq</code> prints text values with their JSON quotes:
+      <code>"Lakshmi Prasad"</code>. <code>-r</code> gives raw output with no
+      quotes, which is what you need when feeding the result into another
+      command.
+    </p>
+  </div>
+
+  <h3>Several fields at once</h3>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="comment"># two values, one per line</span>
+<span class="prompt">$ </span>jq -r '.name, .roll_number' student.json
+
+<span class="comment"># build a smaller object from the ones you want</span>
+<span class="prompt">$ </span>jq '{name, roll_number}' student.json
+
+<span class="comment"># rename a key on the way out</span>
+<span class="prompt">$ </span>jq '{student: .name, roll: .roll_number}' student.json
+
+<span class="comment"># list the keys the file contains</span>
+<span class="prompt">$ </span>jq 'keys' student.json</code></pre>
+  </div>
+
+  <h2 id="lists">Working with a list</h2>
+
+  <p>
+    JSON gets more interesting when a file holds many records. Create this one to
+    practise on — it works offline, with no network needed:
+  </p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>cat &gt; readings.json &lt;&lt;'JSON'
+{
+  "site": "north",
+  "readings": [
+    {"id": 1, "value": 12, "ok": true},
+    {"id": 2, "value": 7,  "ok": true},
+    {"id": 3, "value": 21, "ok": false},
+    {"id": 4, "value": 9,  "ok": true}
+  ]
+}
+JSON</code></pre>
+  </div>
+
+  <p>Then work through these in order. Each one builds on the last.</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>#</th><th>Task</th><th>Command</th><th>Answer</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>1</td><td>Print the site name</td>
+          <td><code>jq -r .site readings.json</code></td>
+          <td><code>north</code></td>
+        </tr>
+        <tr>
+          <td>2</td><td>Every value, one per line</td>
+          <td><code>jq '.readings[].value' readings.json</code></td>
+          <td><code>12 7 21 9</code></td>
+        </tr>
+        <tr>
+          <td>3</td><td>Only the readings marked ok</td>
+          <td><code>jq '.readings[] | select(.ok)' readings.json</code></td>
+          <td>3 records</td>
+        </tr>
+        <tr>
+          <td>4</td><td>How many are <em>not</em> ok?</td>
+          <td><code>jq '[.readings[] | select(.ok == false)] | length' readings.json</code></td>
+          <td><code>1</code></td>
+        </tr>
+        <tr>
+          <td>5</td><td>Add the values up</td>
+          <td><code>jq '[.readings[].value] | add' readings.json</code></td>
+          <td><code>49</code></td>
+        </tr>
+        <tr>
+          <td>6</td><td>The largest value</td>
+          <td><code>jq '[.readings[].value] | max' readings.json</code></td>
+          <td><code>21</code></td>
+        </tr>
+        <tr>
+          <td>7</td><td>Reshape into a simpler list</td>
+          <td><code>jq '[.readings[] | {id, value}]' readings.json</code></td>
+          <td><code>[{"id":1,"value":12}, …]</code></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>The two pieces of punctuation that do the work</h3>
+
+  <ul>
+    <li>
+      <code>[]</code> after a list means <em>“each item in turn”</em>. So
+      <code>.readings[].value</code> reads the <code>value</code> of every
+      reading.
+    </li>
+    <li>
+      <code>|</code> passes the result of the left side into the right side —
+      the same idea as a pipe in the shell.
+    </li>
+  </ul>
+
+  <div class="callout warn">
+    <div class="callout-title">Why tasks 4 to 6 wrap everything in <code>[ ]</code></div>
+    <p>
+      <code>.readings[].value</code> produces four <em>separate</em> results, not
+      one list of four. <code>length</code>, <code>add</code> and
+      <code>max</code> need a single list to work on, so the square brackets
+      gather the separate results back into one. Leaving them out is the mistake
+      almost everyone makes first.
+    </p>
+  </div>
+
+  <h2 id="api">Reading a real API</h2>
+
+  <p>
+    Most web services answer in JSON, so <code>curl</code> and <code>jq</code>
+    work together naturally:
+  </p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="comment"># raw JSON: technically readable, practically not</span>
+<span class="prompt">$ </span>curl -s https://api.github.com/repos/aikaryashala/system_setup
+
+<span class="comment"># the same thing, indented and coloured</span>
+<span class="prompt">$ </span>curl -s https://api.github.com/repos/aikaryashala/system_setup | jq
+
+<span class="comment"># pull out one field</span>
+<span class="prompt">$ </span>curl -s https://api.github.com/repos/aikaryashala/system_setup | jq -r .full_name
+<span class="out">aikaryashala/system_setup</span>
+
+<span class="comment"># several fields, as a new object</span>
+<span class="prompt">$ </span>curl -s https://api.github.com/repos/aikaryashala/system_setup \
+    | jq '{name: .name, stars: .stargazers_count, language: .language}'
+
+<span class="comment"># walk into a list: the name of every public repo</span>
+<span class="prompt">$ </span>curl -s https://api.github.com/users/aikaryashala/repos | jq -r '.[].name'
+
+<span class="comment"># filter a list, then count what is left</span>
+<span class="prompt">$ </span>curl -s https://api.github.com/users/aikaryashala/repos \
+    | jq '[.[] | select(.fork == false)] | length'</code></pre>
+  </div>
+
+  <h2 id="cheatsheet">Cheat sheet</h2>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Expression</th><th>Means</th></tr></thead>
+      <tbody>
+        <tr><td><code>.</code></td><td>The whole document — use it to check a file is valid</td></tr>
+        <tr><td><code>.name</code></td><td>The value of the <code>name</code> key</td></tr>
+        <tr><td><code>.a.b</code></td><td>Go one level deeper</td></tr>
+        <tr><td><code>.items[]</code></td><td>Each item of a list in turn</td></tr>
+        <tr><td><code>.items[0]</code></td><td>Just the first item</td></tr>
+        <tr><td><code>keys</code></td><td>The list of keys</td></tr>
+        <tr><td><code>length</code></td><td>How many items, or how many characters</td></tr>
+        <tr><td><code>add</code></td><td>Add a list of numbers together</td></tr>
+        <tr><td><code>min</code> / <code>max</code></td><td>Smallest / largest in a list</td></tr>
+        <tr><td><code>select(.ok)</code></td><td>Keep only the items where that is true</td></tr>
+        <tr><td><code>{a, b}</code></td><td>Build a new object from those keys</td></tr>
+        <tr><td><code>sort_by(.value)</code></td><td>Order a list by one field</td></tr>
+        <tr><td><code>-r</code></td><td>Print text without quotation marks</td></tr>
+        <tr><td><code>-c</code></td><td>Print each result on one line</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <nav class="page-nav">
+    <a href="../02_install_cmds/"><span class="dir">Started in</span><span class="title">← Step 2: core commands</span></a>
+    <a class="next" href="../"><span class="dir">Back</span><span class="title">All steps →</span></a>
+  </nav>
+
+</div>
+</main>
+
+<footer class="site-footer">
+  <div class="inner">
+    <span>system_setup — <a href="https://aikaryashala.com">aikaryashala</a></span>
+    <span class="spacer"><a href="https://github.com/aikaryashala/system_setup">Source on GitHub</a></span>
+  </div>
+</footer>
+
+<script src="../assets/site.js"></script>
+</body>
+</html>
