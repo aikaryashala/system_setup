@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Step 1 — Install Ubuntu on Windows with WSL 2 · system_setup</title>
-<meta name="description" content="Install Ubuntu Linux on Windows using WSL 2, with one PowerShell command.">
+<title>Step 1 — Install Ubuntu 24.04 LTS on Windows with WSL 2 · system_setup</title>
+<meta name="description" content="Install Ubuntu 24.04 LTS on Windows using WSL 2, with one PowerShell command.">
 <link rel="stylesheet" href="../assets/style.css">
 <script>
 (function(){try{var t=localStorage.getItem('system-setup-theme');if(t){document.documentElement.setAttribute('data-theme',t);}}catch(e){}}());
@@ -31,11 +31,15 @@
   <p class="breadcrumb"><a href="../">system_setup</a> / Step 1</p>
 
   <p class="eyebrow">Step 1 · Windows</p>
-  <h1>Install Ubuntu with WSL</h1>
+  <h1>Install Ubuntu 24.04 LTS with WSL</h1>
   <p class="lede">
     WSL — the Windows Subsystem for Linux — runs a real Ubuntu system inside
     Windows. No partitioning, no dual boot, no virtual machine to configure. Your
     Windows files stay where they are and Linux can reach them.
+  </p>
+  <p class="lede">
+    This installs <strong>Ubuntu 24.04 LTS</strong> specifically, so everyone
+    following these steps ends up on the same system.
   </p>
 
   <h2 id="run">Run this</h2>
@@ -71,7 +75,8 @@
     <li>Checks you are running as Administrator, and that your Windows build is 19041 or newer.</li>
     <li>Enables the <strong>Windows Subsystem for Linux</strong> and <strong>Virtual Machine Platform</strong> features.</li>
     <li>Updates the WSL kernel and sets WSL&nbsp;2 as the default version.</li>
-    <li>Installs the Ubuntu distribution and makes it the default.</li>
+    <li>Installs <strong>Ubuntu 24.04 LTS</strong> — unless you already have an Ubuntu, in which case it installs nothing.</li>
+    <li>Makes your Ubuntu the default, so typing <code>wsl</code> opens it.</li>
     <li>Prints what to do next.</li>
   </ol>
 
@@ -80,11 +85,50 @@
     <span class="mono">skip</span> and left alone.
   </p>
 
+  <div class="callout note">
+    <div class="callout-title">Why a specific version, and not just “Ubuntu”</div>
+    <p>
+      <code>wsl --install -d Ubuntu</code> installs whichever release Microsoft
+      currently treats as the default, and that changes over time. Two people
+      running it months apart would end up on different systems, with different
+      package versions and different behaviour.
+    </p>
+    <p>
+      This script asks for <code>Ubuntu-24.04</code> by name. Every other step on
+      this site is written and tested against 24.04 LTS. <em>LTS</em> means Long
+      Term Support: it receives security updates for five years.
+    </p>
+    <p>
+      <strong>Already have Ubuntu installed?</strong> Any version — 22.04, for
+      example — and the script installs nothing. It leaves what you have alone
+      and uses it. The later steps work on any recent Ubuntu, so a second
+      several-hundred-megabyte download is not worth having two systems to keep
+      straight.
+    </p>
+  </div>
+
+  <div class="callout note">
+    <div class="callout-title">If you already have Ubuntu 22.04</div>
+    <p>
+      Keep it. Everything on this site works there — the only differences you
+      might meet are occasional package names, and the scripts already handle the
+      common ones.
+    </p>
+    <p>
+      If you would rather have 24.04 as well, the script prints the command for
+      it. You can run that yourself at any time:
+    </p>
+    <div class="codeblock">
+<pre><code>wsl --install -d Ubuntu-24.04</code></pre>
+    </div>
+  </div>
+
   <h2 id="first-launch">First launch</h2>
 
   <p>
-    Open the Start menu and launch <strong>Ubuntu</strong>. The first launch takes
-    a minute while it unpacks, then asks you to create an account:
+    Open the Start menu and launch <strong>Ubuntu 24.04.x LTS</strong> — or
+    whichever Ubuntu you already had. The first launch takes a minute while it
+    unpacks, then asks you to create an account:
   </p>
 
   <div class="codeblock" data-label="ubuntu terminal">
@@ -125,10 +169,15 @@
   </div>
 
   <p>
-    The <code>VERSION</code> column should read <code>2</code>. If it reads
-    <code>1</code>, convert it with
-    <code>wsl --set-version Ubuntu 2</code>.
+    Your Ubuntu should have a <code>*</code> next to it in the <code>NAME</code>
+    column, meaning it is the default, and <code>VERSION</code> should read
+    <code>2</code>. If the version reads <code>1</code>, convert it — put your
+    own distribution name in place of <code>Ubuntu-24.04</code>:
   </p>
+
+  <div class="codeblock" data-label="powershell">
+<pre><code>wsl --set-version Ubuntu-24.04 2</code></pre>
+  </div>
 
   <h2 id="orientation">Finding your way around</h2>
 
@@ -146,7 +195,7 @@
         <tr>
           <td>Your Linux home</td>
           <td><code>~</code> or <code>/home/yourname</code></td>
-          <td><code>\\wsl$\Ubuntu\home\yourname</code></td>
+          <td><code>\\wsl$\Ubuntu-24.04\home\yourname</code></td>
         </tr>
         <tr>
           <td>Your Windows C: drive</td>
@@ -210,7 +259,7 @@ dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /nores
 <span class="comment"># restart Windows here</span>
 wsl --update
 wsl --set-default-version 2
-wsl --install -d Ubuntu</code></pre>
+wsl --install -d Ubuntu-24.04</code></pre>
   </div>
 
   <h2 id="next">Next</h2>

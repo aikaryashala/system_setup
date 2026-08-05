@@ -57,7 +57,7 @@ Steps 1–5 are the main sequence and run in order.
 
 | Step | Page | Installs |
 | --- | --- | --- |
-| 1 | [Install Ubuntu](docs/01_install_ubuntu) | WSL2, Ubuntu, virtualization features |
+| 1 | [Install Ubuntu](docs/01_install_ubuntu) | WSL2, **Ubuntu 24.04 LTS** (pinned; skipped if any Ubuntu is already installed), virtualization features |
 | 2 | [Core commands](docs/02_install_cmds) | `curl` `ssh` `ip` `ping` `dig` `git` `nano` `vim` `less` `file` `jq` `tree` `zip` `unzip` `htop` |
 | 3 | [C: clang and lldb](docs/03_install_c) | `clang` `lldb` `lld` — compile, and debug the compiled program |
 | 4 | [Python and pdb](docs/04_install_py) | `python3` and `pdb` — run a script, and trace it line by line |

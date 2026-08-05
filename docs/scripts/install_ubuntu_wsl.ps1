@@ -1,7 +1,18 @@
 <#
     install_ubuntu_wsl.ps1 - Step 1 of https://aikaryashala.com/system_setup
 
-    Installs Ubuntu on Windows using WSL 2 (Windows Subsystem for Linux).
+    Installs Ubuntu 24.04 LTS on Windows using WSL 2 (Windows Subsystem for
+    Linux).
+
+    The version is pinned on purpose. "wsl --install -d Ubuntu" installs
+    whichever release Microsoft currently considers default, which changes over
+    time - so two people running this months apart would not get the same
+    system. Every other step on this site is written against 24.04 LTS, so that
+    is what this installs.
+
+    If ANY Ubuntu is already installed - 22.04, for example - this script leaves
+    it alone and installs nothing. The later steps work on any recent Ubuntu, and
+    a second download is not worth the confusion of having two.
 
     Run in Windows PowerShell AS ADMINISTRATOR:
 
@@ -10,7 +21,7 @@
     Safe to run more than once. Anything already in place is left alone.
 
     Optional environment variables:
-        $env:WSL_DISTRO = "Ubuntu-24.04"   # default: Ubuntu (the current LTS)
+        $env:WSL_DISTRO = "Ubuntu-22.04"   # default: Ubuntu-24.04
 #>
 
 $ErrorActionPreference = 'Stop'
@@ -60,7 +71,7 @@ function Get-InstalledDistros {
 
 function Install-UbuntuWsl {
 
-    Write-Banner 'system_setup - Step 1: Ubuntu on Windows via WSL 2'
+    Write-Banner 'system_setup - Step 1: Ubuntu 24.04 LTS on Windows via WSL 2'
 
     # -- Preconditions ------------------------------------------------------
 
@@ -83,7 +94,11 @@ function Install-UbuntuWsl {
     }
     Write-Ok "Windows build $build supports WSL 2"
 
-    $distro = if ($env:WSL_DISTRO) { $env:WSL_DISTRO } else { 'Ubuntu' }
+    # Pinned to the exact release the rest of system_setup is written against.
+    # The bare name "Ubuntu" tracks whatever Microsoft makes default, which is
+    # not the same thing and drifts between releases.
+    $distro = if ($env:WSL_DISTRO) { $env:WSL_DISTRO } else { 'Ubuntu-24.04' }
+    Write-Ok "Target distribution: $distro" 
 
     # -- Windows optional features -----------------------------------------
 
@@ -144,32 +159,52 @@ function Install-UbuntuWsl {
     # -- The Ubuntu distribution -------------------------------------------
 
     $installed = Get-InstalledDistros
-    $alreadyThere = $installed | Where-Object { $_ -like 'Ubuntu*' }
 
-    if ($alreadyThere) {
-        Write-Skip "Ubuntu is already installed ($($alreadyThere -join ', '))"
-    } else {
+    $exact       = $installed | Where-Object { $_ -eq $distro }
+    $otherUbuntu = $installed | Where-Object { $_ -like 'Ubuntu*' -and $_ -ne $distro }
+
+    # $active is whichever Ubuntu this machine will actually be using.
+    $active = $distro
+
+    if ($exact) {
+        Write-Skip "$distro is already installed"
+    }
+    elseif ($otherUbuntu) {
+        # An Ubuntu is already here. Downloading another one would cost a few
+        # hundred megabytes and leave the user with two systems to keep straight,
+        # so leave well alone - the later steps work on any recent Ubuntu.
+        $active = $otherUbuntu | Select-Object -First 1
+        Write-Skip "Ubuntu is already installed: $($otherUbuntu -join ', ')"
+        Write-Skip "Skipping the $distro download - your existing Ubuntu will be used."
+        Write-Host ''
+        Write-Host "  These guides are written and tested against Ubuntu 24.04 LTS."
+        Write-Host "  Almost everything works the same on $active, but if a package"
+        Write-Host "  name differs later, that is why."
+        Write-Host ''
+        Write-Host "  To install 24.04 as well, run this yourself:"
+        Write-Host "    wsl --install -d $distro" -ForegroundColor White
+        Write-Host ''
+    }
+    else {
         Write-Step "Installing $distro - this downloads a few hundred megabytes"
         & wsl.exe --install --no-launch -d $distro 2>&1 | Out-Host
 
         if ($LASTEXITCODE -ne 0) {
             Write-Warn "wsl --install -d $distro did not succeed."
             Write-Host ''
-            Write-Host 'Available distributions on this machine:'
+            Write-Host 'Distributions this machine can install:'
             & wsl.exe --list --online 2>&1 | Out-Host
             Write-Host ''
-            Write-Host "Pick one from the NAME column and run:  wsl --install -d <NAME>"
+            Write-Host "Look for Ubuntu-24.04 in the NAME column, then run:"
+            Write-Host "  wsl --install -d Ubuntu-24.04"
             return
         }
         Write-Ok "$distro installed"
     }
 
-    if ($alreadyThere) {
-        $defaultDistro = $alreadyThere | Select-Object -First 1
-    } else {
-        $defaultDistro = $distro
-    }
-    & wsl.exe --set-default $defaultDistro 2>&1 | Out-Null
+    # Make that Ubuntu the one a bare "wsl" command opens.
+    & wsl.exe --set-default $active 2>&1 | Out-Null
+    Write-Ok "$active is the default distribution" 
 
     # -- Summary ------------------------------------------------------------
 
@@ -177,7 +212,10 @@ function Install-UbuntuWsl {
     & wsl.exe --list --verbose 2>&1 | Out-Host
 
     Write-Banner 'Next steps'
-    Write-Host '  1. Open the Start menu and launch "Ubuntu".'
+    Write-Host "  1. Open the Start menu and launch `"$active`"."
+    if ($active -eq 'Ubuntu-24.04') {
+        Write-Host '     It appears as "Ubuntu 24.04.x LTS".'
+    }
     Write-Host '  2. On first launch it asks you to create a username and password.'
     Write-Host '     This is your Linux account - it is separate from your Windows login.'
     Write-Host '     The password is invisible as you type. That is normal.'

@@ -124,6 +124,20 @@ Binary/hex inspection is a first-class topic, not a footnote: `xxd`, `hexdump
 -C`, `od -A x -t x1z`, `hexyl`, `strings`, `nm`, `objdump -d`, `readelf -h`,
 `size`, `file`.
 
+### Ubuntu version is pinned
+
+Step 1 installs `Ubuntu-24.04` by name, never the bare `Ubuntu` alias — that
+alias tracks whatever Microsoft makes default and drifts over time.
+
+It installs nothing at all when *any* `Ubuntu*` distribution is already present:
+a second multi-hundred-megabyte download is not worth leaving someone with two
+systems to keep straight. It warns that the guides target 24.04 and prints the
+command to add it manually. Whichever Ubuntu ends up in use is then set as the
+WSL default. Everything
+else here is written and tested against 24.04 LTS. If the pin is ever moved,
+re-test every step: package names differ between releases (this project has
+already been bitten by `xxd`/`vim-common` and `bsdextrautils`/`bsdmainutils`).
+
 ### Java
 
 Temurin JDK from the Adoptium APT repository. Prefer `jshell` for short examples
