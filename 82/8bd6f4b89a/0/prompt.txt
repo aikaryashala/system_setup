@@ -1,0 +1,5 @@
+In step-2 we are using curl to run the script and running curl exists or not in the script which is not needed
+
+---
+
+In step-4 python is not being run and tested to verify.

@@ -1,0 +1,28 @@
+{
+  "cli_version": "0.9.0",
+  "checkpoint_id": "828bd6f4b89a",
+  "strategy": "manual-commit",
+  "branch": "main",
+  "checkpoints_count": 2,
+  "files_touched": [
+    "docs/04_install_py/index.html",
+    "docs/scripts/install_cmds.sh",
+    "docs/scripts/install_py.sh"
+  ],
+  "sessions": [
+    {
+      "metadata": "/82/8bd6f4b89a/0/metadata.json",
+      "transcript": "/82/8bd6f4b89a/0/full.jsonl",
+      "compact_transcript": "/82/8bd6f4b89a/0/transcript.jsonl",
+      "content_hash": "/82/8bd6f4b89a/0/content_hash.txt",
+      "prompt": "/82/8bd6f4b89a/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 26,
+    "cache_creation_tokens": 22604,
+    "cache_read_tokens": 6818226,
+    "output_tokens": 17161,
+    "api_call_count": 14
+  }
+}
