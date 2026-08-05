@@ -1,0 +1,26 @@
+{
+  "cli_version": "0.9.0",
+  "checkpoint_id": "dc2bf3adaf62",
+  "strategy": "manual-commit",
+  "branch": "main",
+  "checkpoints_count": 2,
+  "files_touched": [
+    "docs/scripts/install_ubuntu_wsl.ps1"
+  ],
+  "sessions": [
+    {
+      "metadata": "/dc/2bf3adaf62/0/metadata.json",
+      "transcript": "/dc/2bf3adaf62/0/full.jsonl",
+      "compact_transcript": "/dc/2bf3adaf62/0/transcript.jsonl",
+      "content_hash": "/dc/2bf3adaf62/0/content_hash.txt",
+      "prompt": "/dc/2bf3adaf62/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 11,
+    "cache_creation_tokens": 8832,
+    "cache_read_tokens": 2814756,
+    "output_tokens": 7324,
+    "api_call_count": 6
+  }
+}

@@ -1,0 +1,5 @@
+what is the meaning of this:   & wsl.exe --list --verbose 2>&1 | Out-Host
+
+---
+
+invalid command line argument: --no-launch Please use WSL help
