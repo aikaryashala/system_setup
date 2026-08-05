@@ -1,0 +1,5 @@
+PSScriptAnalyzer failed
+
+---
+
+When I tried to deploy this website on github pages it failed with PSScriptAnalyzer and did not deploy the website
