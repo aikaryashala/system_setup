@@ -1,0 +1,21 @@
+For chapter-6, I want to use clang and lldb only, no reference to gcc or gdb. Also I want to make them see in details the steps of compilation like for 'clang --save-temps hello.c -o hello'. First start with simple compilation like 'clang hello.c' will produce 'a.out'. Next industry practice is to give an output file name instead of defaulting to 'a.out'. so  next explain 'clang hello.c -o hello'. Next provide them with commands to generate .i file only and stop, next .ll(IR code) and stop, next .s(assembly) and stop, next .o(object code) and stop, next linking and generating 'hello' executable. And this file contains code section and data section. When you run the program './hello' it will load the contents of the executable to RAM and the address of the 'main' function is set in the processors PC/IP Register. Even thought there are Virtual Memory and all. Keep in the big picture simple. Later we will expose them to Virtual memory and how to programs having same address does not means same physical memory. And the processor start executing instruction by instruction and completes the program. Instead of hello.c program use sum.c program, with the same flow. the program inside code is like #include <stdio.h>
+
+int main()
+{
+    int num1;
+    int num2;
+
+    printf("To add two numbers.\n");
+
+    printf("Enter the first number: ");
+    scanf("%i", &num1);
+    
+    printf("Enter the second number: ");
+    scanf("%i", &num2);
+
+    num1 = num1 + num2;
+
+    printf("The sum of two numbers is %i.\n", num1);
+
+    return 0;
+} ...... explain the exit code which is from 'return 0' of the program.

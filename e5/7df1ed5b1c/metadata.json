@@ -1,0 +1,29 @@
+{
+  "cli_version": "0.9.0",
+  "checkpoint_id": "e57df1ed5b1c",
+  "strategy": "manual-commit",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "docs/03_install_c/index.html",
+    "docs/book/05-where-software-comes-from/index.html",
+    "docs/book/06-source-to-program/index.html",
+    "docs/book/index.html"
+  ],
+  "sessions": [
+    {
+      "metadata": "/e5/7df1ed5b1c/0/metadata.json",
+      "transcript": "/e5/7df1ed5b1c/0/full.jsonl",
+      "compact_transcript": "/e5/7df1ed5b1c/0/transcript.jsonl",
+      "content_hash": "/e5/7df1ed5b1c/0/content_hash.txt",
+      "prompt": "/e5/7df1ed5b1c/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 13,
+    "cache_creation_tokens": 21316,
+    "cache_read_tokens": 4780020,
+    "output_tokens": 16534,
+    "api_call_count": 7
+  }
+}
