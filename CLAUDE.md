@@ -333,6 +333,11 @@ book.
 
 ### Chapter layout
 
+Every chapter opens with a `.toc` block listing **all** of its `<h2>` sections,
+between the lede and the first heading. Generate it from the headings rather than
+writing it by hand — a partial or stale contents list is worse than none, and
+nothing in CI checks it.
+
 Each chapter ends with two sections: **Try it**, pointing at the step that
 practises the ideas, and **You can now explain**, a short self-check list. No
 quizzes and no grading — the book is not assessed.
