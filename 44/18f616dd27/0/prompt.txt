@@ -1,0 +1,5 @@
+The three roads and watch the video to play are all black colored rectangle boxes and circle instead of play, can you fix them.
+
+---
+
+For the youtube video: Just provide a link when clicked opens in new tab. No need of these diagrams and other things.
