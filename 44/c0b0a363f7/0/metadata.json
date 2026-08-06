@@ -1,0 +1,100 @@
+{
+  "cli_version": "0.9.0",
+  "checkpoint_id": "44c0b0a363f7",
+  "session_id": "dfc71054-8be9-4d23-95ae-1184daf517b5",
+  "strategy": "manual-commit",
+  "created_at": "2026-08-06T05:46:29.400932Z",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "save_step_count": 2,
+  "files_touched": [
+    "CLAUDE.md",
+    "README.md",
+    "docs/03_install_c/index.html",
+    "docs/04_install_py/index.html",
+    "docs/05_5_report/index.html",
+    "docs/05_install_java/index.html",
+    "docs/08_install_uv/index.html",
+    "docs/12_python_debugging/index.html",
+    "docs/book/07-three-ways-to-run/index.html",
+    "docs/examples/sum.py",
+    "docs/index.html",
+    "docs/scripts/index.html",
+    "docs/scripts/install_all.sh",
+    "docs/scripts/install_py.sh",
+    "docs/scripts/install_py_debug.sh",
+    "docs/scripts/report_completion.sh"
+  ],
+  "agent": "Claude Code",
+  "model": "claude-opus-5",
+  "turn_id": "fc8a71ccf65a",
+  "compact_transcript_start": 0,
+  "token_usage": {
+    "input_tokens": 744,
+    "cache_creation_tokens": 2179848,
+    "cache_read_tokens": 148735833,
+    "output_tokens": 527975,
+    "api_call_count": 397
+  },
+  "skill_events_version": 1,
+  "skill_events": [
+    {
+      "id": "claude-skill-toolu_01QHTekR6dDENphf46BfjV5n",
+      "event_type": "tool_invocation",
+      "skill": {
+        "name": "dataviz"
+      },
+      "source": {
+        "agent": "claude-code",
+        "signal": "skill_tool_use",
+        "confidence": "explicit"
+      },
+      "turn_id": "fc8a71ccf65a",
+      "transcript_anchor": {
+        "unit": "line",
+        "start": 1832,
+        "end": 1833,
+        "entry_ids": [
+          "9846f85c-6165-47f7-a9e5-fd0e59ea68b4"
+        ],
+        "tool_use_id": "toolu_01QHTekR6dDENphf46BfjV5n"
+      },
+      "native": {
+        "tool_name": "Skill",
+        "tool_use_id": "toolu_01QHTekR6dDENphf46BfjV5n"
+      },
+      "collapse": {
+        "target": "tool_pair",
+        "label": "Skill: dataviz",
+        "default_collapsed": true
+      }
+    }
+  ],
+  "session_metrics": {
+    "turn_count": 48
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-08-06T05:46:29.08956Z",
+    "agent_lines": 805,
+    "agent_removed": 481,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 805,
+    "total_lines_changed": 1286,
+    "agent_percentage": 100,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 2,
+      "user_lines_added": 17,
+      "user_lines_removed": 0,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0,
+      "user_added_per_file": {
+        ".claude/settings.local.json": 17
+      }
+    }
+  ]
+}
