@@ -1,0 +1,593 @@
+<!doctype html>
+<html lang="en" data-theme="">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chapter 6 — From source to a running program · system_setup</title>
+<meta name="description" content="Follow one C file through every stage clang puts it through, and see what happens when you run the result.">
+<link rel="stylesheet" href="../../assets/style.css">
+<script>
+(function(){try{var t=localStorage.getItem('system-setup-theme');if(t){document.documentElement.setAttribute('data-theme',t);}}catch(e){}}());
+</script>
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <div class="inner">
+    <a class="brand" href="../../"><span class="mark">&gt;_</span> system_setup</a>
+    <nav class="header-nav">
+      <a href="../">Book</a>
+      <a href="../../scripts/">Scripts</a>
+      <a href="https://github.com/aikaryashala/system_setup">GitHub</a>
+      <button class="theme-toggle" type="button" aria-label="Switch theme">☽</button>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+<div class="prose">
+
+  <p class="breadcrumb"><a href="../../">system_setup</a> / <a href="../">The Book</a> / Chapter 6</p>
+
+  <p class="eyebrow">Chapter 6</p>
+  <h1>From source to a running program</h1>
+  <p class="lede">
+    You type one command and get a program. It looks like one action. It is
+    four, and clang will stop after any of them and show you the result. This
+    chapter follows a single file through every stage.
+  </p>
+
+  <h2 id="program">The program we will follow</h2>
+
+  <p>Make a file called <code>sum.c</code> with this in it:</p>
+
+  <div class="codeblock" data-label="sum.c">
+<pre><code>#include &lt;stdio.h&gt;
+
+int main()
+{
+    int num1;
+    int num2;
+
+    printf("To add two numbers.\n");
+
+    printf("Enter the first number: ");
+    scanf("%i", &amp;num1);
+
+    printf("Enter the second number: ");
+    scanf("%i", &amp;num2);
+
+    num1 = num1 + num2;
+
+    printf("The sum of two numbers is %i.\n", num1);
+
+    return 0;
+}</code></pre>
+  </div>
+
+  <p>
+    Twenty-one lines. Keep that number in mind — it grows in a moment.
+  </p>
+
+  <h2 id="simplest">The simplest way to compile</h2>
+
+  <p>Give clang the file and nothing else:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>clang sum.c</code></pre>
+  </div>
+
+  <p>Nothing is printed. Now look at the folder:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>ls
+<span class="out">a.out  sum.c</span></code></pre>
+  </div>
+
+  <p>A new file has appeared, called <code>a.out</code>. Run it:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>./a.out
+<span class="out">To add two numbers.</span>
+<span class="out">Enter the first number: </span>3
+<span class="out">Enter the second number: </span>4
+<span class="out">The sum of two numbers is 7.</span></code></pre>
+  </div>
+
+  <div class="callout note">
+    <div class="callout-title">Why "a.out"</div>
+    <p>
+      It stands for <em>assembler output</em>. The name is over fifty years old
+      and has stayed as the default ever since. It tells you nothing about your
+      program, which is exactly the problem with it.
+    </p>
+  </div>
+
+  <h2 id="name-it">Name your program</h2>
+
+  <p>
+    Nobody ships <code>a.out</code>. The <code>-o</code> option says what the
+    finished program should be called:
+  </p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>clang sum.c -o sum</code></pre>
+  </div>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>./sum</code></pre>
+  </div>
+
+  <p>
+    Do this every time. Two programs in one folder both called
+    <code>a.out</code> cannot both exist, and a month later you will not know
+    what <code>a.out</code> was built from.
+  </p>
+
+  <h2 id="four-stages">One command, four stages</h2>
+
+  <p>
+    That single command did four separate jobs, one after another, and threw
+    away everything in between.
+  </p>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Stage</th><th>Does what</th><th>In</th><th>Out</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>1. Preprocess</td>
+          <td>Pastes in other files, handles lines starting with <code>#</code></td>
+          <td><code>.c</code></td>
+          <td><code>.i</code></td>
+        </tr>
+        <tr>
+          <td>2. Compile</td>
+          <td>Turns C into instructions for this processor</td>
+          <td><code>.i</code></td>
+          <td><code>.s</code></td>
+        </tr>
+        <tr>
+          <td>3. Assemble</td>
+          <td>Turns those instructions into numbers</td>
+          <td><code>.s</code></td>
+          <td><code>.o</code></td>
+        </tr>
+        <tr>
+          <td>4. Link</td>
+          <td>Joins your code to the code it borrows</td>
+          <td><code>.o</code></td>
+          <td>your program</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>You can keep all the middle files instead of throwing them away:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>clang --save-temps sum.c -o sum</code></pre>
+  </div>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>ls
+<span class="out">sum  sum.bc  sum.c  sum.i  sum.o  sum.s</span></code></pre>
+  </div>
+
+  <p>
+    There they all are. Now let us make each one on purpose, and look inside it.
+  </p>
+
+  <h2 id="preprocess">Stage 1 — the preprocessor</h2>
+
+  <p>
+    <code>-E</code> tells clang to preprocess and then stop.
+  </p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>clang -E sum.c -o sum.i</code></pre>
+  </div>
+
+  <p>Count the lines in what came out:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>wc -l sum.i
+<span class="out">847 sum.i</span></code></pre>
+  </div>
+
+  <p>
+    Your twenty-one lines became eight hundred and forty-seven. That is what
+    <code>#include &lt;stdio.h&gt;</code> did. The preprocessor found that file
+    and pasted its entire contents into yours, and everything
+    <code>stdio.h</code> includes as well.
+  </p>
+
+  <p>Your own code is still there, right at the end:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>tail -n 5 sum.i
+<span class="out">    printf("The sum of two numbers is %i.\n", num1);</span>
+<span class="out"></span>
+<span class="out">    return 0;</span>
+<span class="out">}</span></code></pre>
+  </div>
+
+  <div class="callout note">
+    <div class="callout-title">The preprocessor does not understand C</div>
+    <p>
+      It only moves text about. It pastes files in, replaces names you defined
+      with <code>#define</code>, and drops parts you switched off. It has no idea
+      what a function or a variable is.
+    </p>
+    <p>
+      That is why an error inside a header file can produce a strange message.
+      By the time the compiler complains, that text is part of your file.
+    </p>
+  </div>
+
+  <h2 id="ir">Stage 2, part one — clang's own language</h2>
+
+  <p>
+    Before clang writes instructions for your processor, it writes them in a
+    half-way language of its own. It is called <strong>LLVM IR</strong>. IR
+    stands for intermediate representation — a step in the middle.
+  </p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>clang -S -emit-llvm sum.c -o sum.ll</code></pre>
+  </div>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>wc -l sum.ll
+<span class="out">47 sum.ll</span></code></pre>
+  </div>
+
+  <p>Open it and you will find your <code>main</code> function, written differently:</p>
+
+  <div class="codeblock" data-label="inside sum.ll">
+<pre><code>define dso_local i32 @main() #0 {</code></pre>
+  </div>
+
+  <p>
+    <code>i32</code> means a 32-bit whole number — the <code>int</code> that
+    <code>main</code> returns.
+  </p>
+
+  <p>
+    This middle language is not tied to any processor. It is where clang does
+    its thinking and its improvements. The same IR can then be turned into
+    instructions for an Intel chip, an ARM chip, or something else entirely.
+  </p>
+
+  <div class="callout note">
+    <div class="callout-title">Two files, one idea</div>
+    <p>
+      <code>--save-temps</code> gave you <code>sum.bc</code> rather than
+      <code>sum.ll</code>. They hold the same thing. <code>.bc</code> is the
+      compact form for machines, <code>.ll</code> is the readable form for
+      people.
+    </p>
+  </div>
+
+  <h2 id="assembly">Stage 2, part two — assembly</h2>
+
+  <p>
+    <code>-S</code> stops after the compiler has produced instructions for
+    <em>your</em> processor, written as text.
+  </p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>clang -S sum.c -o sum.s</code></pre>
+  </div>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>head -n 8 sum.s
+<span class="out">	.text</span>
+<span class="out">	.file	"sum.c"</span>
+<span class="out">	.globl	main</span>
+<span class="out">	.p2align	4, 0x90</span>
+<span class="out">	.type	main,@function</span>
+<span class="out">main:</span>
+<span class="out">	.cfi_startproc</span>
+<span class="out"># %bb.0:</span></code></pre>
+  </div>
+
+  <p>
+    This is <strong>assembly</strong>: one line for roughly one instruction the
+    processor can carry out. It is the last stage a person can comfortably read.
+  </p>
+
+  <p>
+    Notice the very first line, <code>.text</code>. That is the name of the
+    section your code goes into. It matters again shortly.
+  </p>
+
+  <div class="callout note">
+    <div class="callout-title">Your file will not match this exactly</div>
+    <p>
+      Assembly is written for one kind of processor. On a normal laptop you will
+      see Intel instructions like <code>pushq</code> and <code>movq</code>. On an
+      ARM machine the same C produces completely different words.
+    </p>
+    <p>
+      The C file did not change. Only the processor it is being aimed at did.
+    </p>
+  </div>
+
+  <h2 id="object">Stage 3 — the assembler makes an object file</h2>
+
+  <p><code>-c</code> compiles and assembles, then stops before linking.</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>clang -c sum.c -o sum.o</code></pre>
+  </div>
+
+  <p>
+    <code>sum.o</code> is called an <strong>object file</strong>. It holds real
+    machine instructions, as numbers. But it is not a program yet, and the system
+    knows it:
+  </p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>file sum.o
+<span class="out">sum.o: ELF 64-bit LSB relocatable, x86-64, version 1 (SYSV), not stripped</span></code></pre>
+  </div>
+
+  <p>
+    The word is <strong>relocatable</strong>, not <em>executable</em>. Something
+    is still missing, and you can see exactly what:
+  </p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>nm sum.o
+<span class="out">                 U __isoc99_scanf</span>
+<span class="out">                 U printf</span></code></pre>
+  </div>
+
+  <p>
+    <code>U</code> means <strong>undefined</strong>. Your file uses
+    <code>printf</code> and <code>scanf</code>, but it does not contain them. You
+    never wrote them. They live in the C library, somewhere else on the machine.
+  </p>
+
+  <h2 id="link">Stage 4 — the linker finishes the job</h2>
+
+  <p>The <strong>linker</strong> finds that missing code and joins everything together.</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>clang sum.o -o sum</code></pre>
+  </div>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>file sum
+<span class="out">sum: ELF 64-bit LSB pie executable, x86-64, dynamically linked, ...</span></code></pre>
+  </div>
+
+  <p>
+    Now it says <strong>executable</strong>. Compare the sizes, and you can see
+    work was done:
+  </p>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>File</th><th>Size</th><th>What it is</th></tr></thead>
+      <tbody>
+        <tr><td><code>sum.o</code></td><td>1856 bytes</td><td>your code only, with holes in it</td></tr>
+        <tr><td><code>sum</code></td><td>16064 bytes</td><td>a program that can start on its own</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    The extra is the code that runs before <code>main</code> and after it — the
+    part that sets things up, calls your <code>main</code>, and hands its answer
+    back to the system.
+  </p>
+
+  <div class="callout tip">
+    <div class="callout-title">This is the stage that produces the strangest errors</div>
+    <p>
+      A message that mentions <em>undefined reference</em> is the linker
+      speaking. Your code compiled perfectly. The linker then went looking for
+      something you called, and could not find it anywhere.
+    </p>
+  </div>
+
+  <h2 id="inside">What is inside the program</h2>
+
+  <p>Your program is not one lump. It is split into sections, by kind.</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>size sum
+<span class="out">   text	   data	    bss	    dec	    hex	filename</span>
+<span class="out">   1609	    592	      8	   2209	    8a1	sum</span></code></pre>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Section</th><th>Holds</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>text</strong></td>
+          <td>the code — the instructions the processor will carry out</td>
+        </tr>
+        <tr>
+          <td><strong>data</strong></td>
+          <td>values that are known before the program starts, such as your messages</td>
+        </tr>
+        <tr>
+          <td><strong>bss</strong></td>
+          <td>room set aside for values that begin as zero</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    "text" is an old name for the code section. You saw it earlier as the first
+    line of <code>sum.s</code>.
+  </p>
+
+  <p>Your messages really are sitting in the file, and you can find them:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>strings sum | grep numbers
+<span class="out">To add two numbers.</span>
+<span class="out">The sum of two numbers is %i.</span></code></pre>
+  </div>
+
+  <h2 id="running">What happens when you type ./sum</h2>
+
+  <p>The program is a file on the disk. Running it takes four steps.</p>
+
+  <ol>
+    <li>
+      The shell asks the operating system to run the file.
+    </li>
+    <li>
+      The system reads the sections out of the file and puts them into
+      <strong>RAM</strong>. The code goes in one place, the data in another.
+    </li>
+    <li>
+      The system finds the address of <code>main</code> and puts it into a
+      register inside the processor. That register holds the address of the next
+      instruction to carry out. It is called the <strong>program counter</strong>
+      on some processors and the <strong>instruction pointer</strong> on others.
+      Same job, different name.
+    </li>
+    <li>
+      The processor reads the instruction at that address, carries it out, moves
+      to the next one, and keeps going.
+    </li>
+  </ol>
+
+  <p>
+    That is the whole idea. Chapter 1 said the CPU reads one instruction, does
+    it, and reads the next. Now you know where those instructions came from and
+    how the processor was pointed at the first one.
+  </p>
+
+  <div class="callout note">
+    <div class="callout-title">A simplification, on purpose</div>
+    <p>
+      The addresses your program uses are not really addresses in the memory
+      chips. Every program gets its own set of numbers, and the machine quietly
+      maps them onto real memory. It is called <strong>virtual memory</strong>.
+    </p>
+    <p>
+      It means two programs can both use the address 4096 and never touch each
+      other's data. A later chapter takes this apart properly. For now, the
+      picture above is close enough and correct in shape.
+    </p>
+  </div>
+
+  <h2 id="exit">Where the exit code comes from</h2>
+
+  <p>Look at the last line of your program:</p>
+
+  <div class="codeblock" data-label="sum.c">
+<pre><code>    return 0;</code></pre>
+  </div>
+
+  <p>
+    That is not decoration. <code>main</code> hands that number back to the
+    system, and the system passes it to your shell. It is the
+    <strong>exit code</strong> from <a href="../04-the-shell/">chapter 4</a>:
+    zero for success, anything else for a problem.
+  </p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>./sum
+<span class="out">To add two numbers.</span>
+<span class="out">Enter the first number: </span>3
+<span class="out">Enter the second number: </span>4
+<span class="out">The sum of two numbers is 7.</span></code></pre>
+  </div>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>echo $?
+<span class="out">0</span></code></pre>
+  </div>
+
+  <p>Prove the link. Change that one line to <code>return 3;</code>, build again, and run it:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>clang sum.c -o sum</code></pre>
+  </div>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>./sum
+<span class="prompt">$ </span>echo $?
+<span class="out">3</span></code></pre>
+  </div>
+
+  <p>
+    The number you wrote in your C file came back out of the shell. That is the
+    same number <code>&amp;&amp;</code> and <code>||</code> look at, and the same
+    number the setup scripts check after every step.
+  </p>
+
+  <h2 id="try">Try it</h2>
+
+  <p>Build the whole thing one stage at a time and look at each result:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>clang -E sum.c -o sum.i &amp;&amp; wc -l sum.i</code></pre>
+  </div>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>clang -S -emit-llvm sum.c -o sum.ll &amp;&amp; wc -l sum.ll</code></pre>
+  </div>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>clang -S sum.c -o sum.s &amp;&amp; wc -l sum.s</code></pre>
+  </div>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>clang -c sum.c -o sum.o &amp;&amp; file sum.o</code></pre>
+  </div>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>clang sum.o -o sum &amp;&amp; file sum</code></pre>
+  </div>
+
+  <p>Then compare the three text files. Same program, three languages:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>wc -l sum.c sum.i sum.ll sum.s</code></pre>
+  </div>
+
+  <h2 id="learned">You can now explain</h2>
+
+  <ul>
+    <li>Why <code>clang sum.c</code> produces a file called <code>a.out</code>, and why to use <code>-o</code> instead</li>
+    <li>The four stages, and which option stops clang after each one</li>
+    <li>What <code>#include</code> actually does, and why 21 lines became 847</li>
+    <li>What LLVM IR is, and why a middle language is useful</li>
+    <li>Why an object file is "relocatable" and not yet a program</li>
+    <li>What <code>U printf</code> means, and what the linker does about it</li>
+    <li>What the code and data sections hold</li>
+    <li>What the system does when you type <code>./sum</code></li>
+    <li>Where the exit code comes from, and how to change it</li>
+  </ul>
+
+  <nav class="page-nav">
+    <a href="../05-where-software-comes-from/"><span class="dir">Chapter 5</span><span class="title">← Where software comes from</span></a>
+    <a class="next" href="../../03_install_c/"><span class="dir">Do it</span><span class="title">Step 3: clang and lldb →</span></a>
+  </nav>
+
+</div>
+</main>
+
+<footer class="site-footer">
+  <div class="inner">
+    <span>system_setup — <a href="https://aikaryashala.com">aikaryashala</a></span>
+    <span class="spacer"><a href="https://github.com/aikaryashala/system_setup">Source on GitHub</a></span>
+  </div>
+</footer>
+
+<script src="../../assets/site.js"></script>
+</body>
+</html>
