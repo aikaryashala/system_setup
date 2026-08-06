@@ -1,0 +1,1 @@
+in chapter-4 "You have already used a pipe in step 2, with jq:" jq is not being used like that in step-2. Instead of that use the command used to install in step-2 which is: 'curl -fsSL https://aikaryashala.com/system_setup/scripts/install_cmds.sh | bash'. Fix this

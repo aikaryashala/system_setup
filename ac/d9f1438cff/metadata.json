@@ -1,0 +1,26 @@
+{
+  "cli_version": "0.9.0",
+  "checkpoint_id": "acd9f1438cff",
+  "strategy": "manual-commit",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "docs/book/04-the-shell/index.html"
+  ],
+  "sessions": [
+    {
+      "metadata": "/ac/d9f1438cff/0/metadata.json",
+      "transcript": "/ac/d9f1438cff/0/full.jsonl",
+      "compact_transcript": "/ac/d9f1438cff/0/transcript.jsonl",
+      "content_hash": "/ac/d9f1438cff/0/content_hash.txt",
+      "prompt": "/ac/d9f1438cff/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 7,
+    "cache_creation_tokens": 7468,
+    "cache_read_tokens": 2669731,
+    "output_tokens": 3047,
+    "api_call_count": 4
+  }
+}
