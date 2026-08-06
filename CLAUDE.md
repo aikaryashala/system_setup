@@ -334,9 +334,18 @@ book.
 ### Chapter layout
 
 Every chapter opens with a `.toc` block listing **all** of its `<h2>` sections,
-between the lede and the first heading. Generate it from the headings rather than
-writing it by hand — a partial or stale contents list is worse than none, and
-nothing in CI checks it.
+sitting directly above the first heading. The step pages carry the same block.
+Generate it from the headings rather than writing it by hand — a partial or stale
+contents list is worse than none, and nothing in CI checks it.
+
+Two rules the generator follows:
+
+- A heading with `id="next"` is left out. It is navigation, and the `page-nav`
+  block at the foot of the page already carries it.
+- `<li class="toc-key">` marks the one section a reader is most likely to have
+  arrived hunting for — step 1's *Forgotten your Ubuntu password?* is the only
+  one so far. It renders bold with an arrow. Use it sparingly; if everything is
+  highlighted, nothing is.
 
 Each chapter ends with two sections: **Try it**, pointing at the step that
 practises the ideas, and **You can now explain**, a short self-check list. No
