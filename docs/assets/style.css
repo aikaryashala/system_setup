@@ -680,3 +680,56 @@ td code { white-space: nowrap; }
 
 .stat .stat-label { font-size: .95rem; font-weight: 620; margin-top: .4rem; }
 .stat .stat-note  { font-size: .82rem; color: var(--fg-muted); margin-top: .1rem; }
+
+/* ------------------------------------------------------------------- toc */
+
+/* "On this page" box. Worth having on any page long enough that someone
+   arrives looking for one specific section - step 1 in particular, where a
+   locked-out student needs the password reset and nothing else. */
+
+.toc {
+    background: var(--bg-sunken);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: .9rem 1.2rem 1rem;
+    margin: 0 0 2.2rem;
+}
+
+.toc-title {
+    font-size: .76rem;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    font-weight: 640;
+    color: var(--fg-muted);
+    margin-bottom: .5rem;
+}
+
+.toc ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    columns: 2;
+    column-gap: 2rem;
+}
+
+.toc li {
+    margin: 0 0 .3rem;
+    break-inside: avoid;
+    font-size: .93rem;
+}
+
+.toc a { text-decoration: none; }
+.toc a:hover { text-decoration: underline; }
+
+/* The entry someone is most likely to have come looking for. */
+.toc .toc-key a { font-weight: 620; }
+.toc .toc-key a::after {
+    content: "←";
+    margin-left: .4rem;
+    color: var(--fg-faint);
+    font-weight: 400;
+}
+
+@media (max-width: 560px) {
+    .toc ul { columns: 1; }
+}
