@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 #
-# check_links.sh - two checks over docs/:
+# check_links.sh - three checks over docs/:
 #
 #   1. Every relative href and src points at a file that exists.
 #   2. Every page-nav label still describes the page it links to.
+#   3. Every "On this page" list is complete and every entry resolves.
 #
 # The second check exists because the first one cannot catch a whole class of
 # mistake. Rename a page's heading and its links keep working perfectly - they
@@ -21,6 +22,7 @@ DOCS_DIR="${1:-docs}"
 status=0
 checked=0
 nav_checked=0
+toc_checked=0
 
 [ -d "$DOCS_DIR" ] || { echo "No such directory: $DOCS_DIR" >&2; exit 1; }
 
@@ -169,10 +171,57 @@ while IFS= read -r page; do
 done < <(find "$DOCS_DIR" -name '*.html' | sort)
 
 # ---------------------------------------------------------------------------
+# 3. Is every "On this page" list complete, and does every entry resolve?
+#
+# A contents list that is missing sections is the failure nobody notices: the
+# page looks fine, every link works, and the list quietly stops describing it.
+# That is what happens when the list is written by hand and the page grows.
+
+# The ids listed in a page's toc block, one per line, sorted.
+toc_entries() {
+    sed -n '/<nav class="toc"/,/<\/nav>/p' "$1" \
+        | grep -oE 'href="#[^"]*"' \
+        | sed 's/href="#//; s/"$//' \
+        | grep -v '^next$' \
+        | sort
+}
+
+# The ids of the sections actually on the page, sorted. "next" is deliberately
+# left out of contents lists - it is navigation, and page-nav already has it.
+section_ids() {
+    grep -oE '<h2 id="[^"]*"' "$1" \
+        | sed 's/<h2 id="//; s/"$//' \
+        | grep -v '^next$' \
+        | sort
+}
+
+while IFS= read -r page; do
+    grep -q '<nav class="toc"' "$page" || continue
+    toc_checked=$((toc_checked + 1))
+
+    listed="$(toc_entries "$page")"
+    present="$(section_ids "$page")"
+
+    while IFS= read -r id; do
+        [ -n "$id" ] || continue
+        echo "contents entry points at no such section: $page -> #$id"
+        status=1
+    done < <(comm -23 <(printf '%s\n' "$listed") <(printf '%s\n' "$present"))
+
+    while IFS= read -r id; do
+        [ -n "$id" ] || continue
+        echo "section missing from the contents list: $page -> #$id"
+        status=1
+    done < <(comm -13 <(printf '%s\n' "$listed") <(printf '%s\n' "$present"))
+
+done < <(find "$DOCS_DIR" -name '*.html' | sort)
+
+# ---------------------------------------------------------------------------
 
 if [ "$status" -eq 0 ]; then
     echo "All $checked local links resolve."
     echo "All $nav_checked page-nav labels match the page they point at."
+    echo "All $toc_checked contents lists are complete."
 else
     echo "Problems found." >&2
 fi

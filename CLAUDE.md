@@ -227,11 +227,20 @@ python3 -m http.server 8000 --directory docs   # then click through every page
 CI runs all three in `.github/workflows/lint.yml`, plus PSScriptAnalyzer on the
 PowerShell installer.
 
-`check_links.sh` does two things. The second is the one worth knowing about: it
-compares every `page-nav` label against the `<h1>` of the page it points at, and
-fails when the label contains a word the heading has nothing to do with. Renaming
-a page silently leaves its inbound labels describing something that no longer
-exists — plain link checking cannot see that, because the URL still works.
+`check_links.sh` does three things. The second and third are the ones worth
+knowing about.
+
+It compares every `page-nav` label against the `<h1>` of the page it points at,
+and fails when the label contains a word the heading has nothing to do with.
+Renaming a page silently leaves its inbound labels describing something that no
+longer exists — plain link checking cannot see that, because the URL still works.
+
+It also checks every `.toc` block **in both directions**: no entry may point at a
+section that is not there, and no section may be left out of the list. The second
+half is the one that matters. A contents list that is missing sections looks
+perfectly fine — every link works — it has just quietly stopped describing the
+page. That is what happens when a list is written by hand and the page grows
+afterwards.
 
 The rule is a subset, not an overlap: **every** meaningful word in the label must
 appear in the target heading. Overlap is too weak — "Python with uv" and
