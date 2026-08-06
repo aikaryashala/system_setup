@@ -205,35 +205,33 @@
     how many programs are in that folder.
   </p>
 
-  <p>You have already used a pipe in step 2, with <code>jq</code>:</p>
+  <p>You have already used a pipe. It is how you installed step 2:</p>
 
   <div class="codeblock" data-label="ubuntu terminal">
-<pre><code><span class="prompt">$ </span>curl -s https://api.github.com/repos/aikaryashala/system_setup | jq -r .full_name</code></pre>
+<pre><code><span class="prompt">$ </span>curl -fsSL https://aikaryashala.com/system_setup/scripts/install_cmds.sh | bash</code></pre>
   </div>
 
   <p>
-    <code>curl</code> fetches the text. <code>jq</code> reads it and picks out
-    one field. Neither program knows the other exists. The shell joined them.
+    <code>curl</code> fetches the text of a script. <code>bash</code> receives
+    that text and runs it, line by line. Neither program knows the other exists.
+    The shell joined them.
   </p>
 
   <div class="callout tip">
     <div class="callout-title">This is why small tools are useful</div>
     <p>
       No single program here does very much. <code>ls</code> lists.
-      <code>wc</code> counts. <code>jq</code> reads JSON. The power comes from
+      <code>wc</code> counts. <code>curl</code> fetches. The power comes from
       joining them, and the pipe is the join.
     </p>
   </div>
 
   <h2 id="one-liner">Reading the command you have typed ten times</h2>
 
-  <p>Now the payoff. Here is the line at the top of every step:</p>
-
-  <div class="codeblock" data-label="ubuntu terminal">
-<pre><code><span class="prompt">$ </span>curl -fsSL https://aikaryashala.com/system_setup/scripts/install_c.sh | bash</code></pre>
-  </div>
-
-  <p>Take it apart with what you now know.</p>
+  <p>
+    Now the payoff. Take that same line apart, piece by piece, with what you now
+    know.
+  </p>
 
   <div class="table-wrap">
     <table>
