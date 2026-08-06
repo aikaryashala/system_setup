@@ -1,0 +1,27 @@
+{
+  "cli_version": "0.9.0",
+  "checkpoint_id": "880db867a4ce",
+  "strategy": "manual-commit",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "docs/book/08-stopping-time/index.html",
+    "docs/examples/msd.c"
+  ],
+  "sessions": [
+    {
+      "metadata": "/88/0db867a4ce/0/metadata.json",
+      "transcript": "/88/0db867a4ce/0/full.jsonl",
+      "compact_transcript": "/88/0db867a4ce/0/transcript.jsonl",
+      "content_hash": "/88/0db867a4ce/0/content_hash.txt",
+      "prompt": "/88/0db867a4ce/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 813,
+    "cache_creation_tokens": 3865194,
+    "cache_read_tokens": 177652128,
+    "output_tokens": 572288,
+    "api_call_count": 434
+  }
+}
