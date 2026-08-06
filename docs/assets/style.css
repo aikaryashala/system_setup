@@ -627,3 +627,56 @@ td code { white-space: nowrap; }
     outline-offset: 2px;
     border-radius: 3px;
 }
+
+/* ------------------------------------------------------- figures & diagrams */
+
+.figure { margin: 0 0 1.6rem; }
+.figure svg { width: 100%; height: auto; display: block; }
+
+.figcaption {
+    font-size: .85rem;
+    color: var(--fg-muted);
+    margin-top: .6rem;
+    line-height: 1.5;
+}
+
+/* Diagram tokens. Inline SVG inherits these, so a diagram follows the theme
+   without a second copy for dark mode. */
+.dg-box      { fill: var(--bg-raised); stroke: var(--border-strong); stroke-width: 1.5; }
+.dg-box-warm { fill: var(--amber-soft); stroke: var(--amber); stroke-width: 1.5; }
+.dg-box-key  { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 1.5; }
+.dg-text     { fill: var(--fg); font-family: var(--font-sans); font-size: 13px; }
+.dg-mono     { fill: var(--fg); font-family: var(--font-mono); font-size: 12px; }
+.dg-muted    { fill: var(--fg-muted); font-family: var(--font-sans); font-size: 11px; }
+.dg-row      { fill: var(--accent); font-family: var(--font-mono); font-size: 13px; font-weight: 700; }
+.dg-line     { stroke: var(--fg-faint); stroke-width: 1.5; fill: none; }
+.dg-head     { fill: var(--fg-faint); }
+.dg-divide   { stroke: var(--border-strong); stroke-width: 1.5; stroke-dasharray: 5 5; }
+
+/* ------------------------------------------------------------- stat tiles */
+
+.stat-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+    margin: 0 0 1.2rem;
+}
+
+.stat {
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem 1.1rem;
+}
+
+.stat .stat-value {
+    font-family: var(--font-mono);
+    font-size: 1.9rem;
+    font-weight: 650;
+    line-height: 1.05;
+    letter-spacing: -.02em;
+    color: var(--accent);
+}
+
+.stat .stat-label { font-size: .95rem; font-weight: 620; margin-top: .4rem; }
+.stat .stat-note  { font-size: .82rem; color: var(--fg-muted); margin-top: .1rem; }

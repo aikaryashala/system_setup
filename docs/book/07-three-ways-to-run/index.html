@@ -1,0 +1,562 @@
+<!doctype html>
+<html lang="en" data-theme="">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chapter 7 — Three ways to run code · system_setup</title>
+<meta name="description" content="The same program in C, Python and Java, and the one question that explains every difference between them.">
+<link rel="stylesheet" href="../../assets/style.css">
+<script>
+(function(){try{var t=localStorage.getItem('system-setup-theme');if(t){document.documentElement.setAttribute('data-theme',t);}}catch(e){}}());
+</script>
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <div class="inner">
+    <a class="brand" href="../../"><span class="mark">&gt;_</span> system_setup</a>
+    <nav class="header-nav">
+      <a href="../">Book</a>
+      <a href="../../scripts/">Scripts</a>
+      <a href="https://github.com/aikaryashala/system_setup">GitHub</a>
+      <button class="theme-toggle" type="button" aria-label="Switch theme">☽</button>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+<div class="prose">
+
+  <p class="breadcrumb"><a href="../../">system_setup</a> / <a href="../">The Book</a> / Chapter 7</p>
+
+  <p class="eyebrow">Chapter 7</p>
+  <h1>Three ways to run code</h1>
+  <p class="lede">
+    You have installed three languages. They look like three separate subjects.
+    They are not. They are three answers to one question:
+    <strong>when does your code get turned into instructions the processor can
+    carry out?</strong>
+  </p>
+
+  <h2 id="same-program">The same program, three times</h2>
+
+  <p>
+    Here is the program from <a href="../06-source-to-program/">chapter 6</a>,
+    written three ways. Read them side by side. They do exactly the same thing.
+  </p>
+
+  <div class="codeblock" data-label="sum.c">
+<pre><code>#include &lt;stdio.h&gt;
+
+int main()
+{
+    int num1;
+    int num2;
+
+    printf("To add two numbers.\n");
+
+    printf("Enter the first number: ");
+    scanf("%i", &amp;num1);
+
+    printf("Enter the second number: ");
+    scanf("%i", &amp;num2);
+
+    num1 = num1 + num2;
+
+    printf("The sum of two numbers is %i.\n", num1);
+
+    return 0;
+}</code></pre>
+  </div>
+
+  <div class="codeblock" data-label="sum.py">
+<pre><code>print("To add two numbers.")
+
+num1 = int(input("Enter the first number: "))
+num2 = int(input("Enter the second number: "))
+
+num1 = num1 + num2
+
+print(f"The sum of two numbers is {num1}.")</code></pre>
+  </div>
+
+  <div class="codeblock" data-label="Sum.java">
+<pre><code>import java.util.Scanner;
+
+public class Sum {
+    public static void main(String[] args) {
+        Scanner in = new Scanner(System.in);
+
+        System.out.println("To add two numbers.");
+
+        System.out.print("Enter the first number: ");
+        int num1 = in.nextInt();
+
+        System.out.print("Enter the second number: ");
+        int num2 = in.nextInt();
+
+        num1 = num1 + num2;
+
+        System.out.printf("The sum of two numbers is %d.%n", num1);
+    }
+}</code></pre>
+  </div>
+
+  <p>All three print the same thing:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="out">To add two numbers.</span>
+<span class="out">Enter the first number: </span>3
+<span class="out">Enter the second number: </span>4
+<span class="out">The sum of two numbers is 7.</span></code></pre>
+  </div>
+
+  <h2 id="how-to-run">But you start them differently</h2>
+
+  <p>C needs two commands. One to build, one to run:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>clang sum.c -o sum
+<span class="prompt">$ </span>./sum</code></pre>
+  </div>
+
+  <p>Python needs one. There is nothing to build:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>python3 sum.py</code></pre>
+  </div>
+
+  <p>Java needs two, but the second one is not your program — it is a machine that runs your program:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>javac Sum.java
+<span class="prompt">$ </span>java Sum</code></pre>
+  </div>
+
+  <p>Those small differences are the whole chapter. Here they are in one picture.</p>
+
+  <h2 id="picture">The three roads</h2>
+
+  <figure class="figure">
+    <svg viewBox="0 0 820 300" role="img" aria-labelledby="roads-title roads-desc">
+      <title id="roads-title">Three roads from source code to the processor</title>
+      <desc id="roads-desc">C translates everything before you run it. Java translates to bytecode before, and to machine code while it runs. Python translates everything while it runs.</desc>
+
+      <defs>
+        <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5"
+                markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="#8b93a6" class="dg-head"/>
+        </marker>
+      </defs>
+
+      <!-- the dividing line: the moment you press Enter -->
+      <line x1="468" y1="34" x2="468" y2="292" stroke="#cdc7bb" fill="none" class="dg-divide"/>
+      <text x="300" y="22" text-anchor="middle" fill="#5c6478" class="dg-muted">BEFORE you run it</text>
+      <text x="640" y="22" text-anchor="middle" fill="#5c6478" class="dg-muted">WHILE it runs</text>
+
+      <!-- ---------------- C ---------------- -->
+      <text x="4" y="66" fill="#4f46b8" class="dg-row">C</text>
+      <rect x="40"  y="42" width="96"  height="44" rx="7" fill="#ffffff" stroke="#cdc7bb" class="dg-box"/>
+      <text x="88"  y="69" text-anchor="middle" fill="#1f2430" class="dg-mono">sum.c</text>
+
+      <line x1="140" y1="64" x2="176" y2="64" stroke="#8b93a6" fill="none" class="dg-line" marker-end="url(#ah)"/>
+      <rect x="180" y="42" width="90"  height="44" rx="7" fill="#ece9ff" stroke="#4f46b8" class="dg-box-key"/>
+      <text x="225" y="69" text-anchor="middle" fill="#1f2430" class="dg-mono">clang</text>
+
+      <line x1="274" y1="64" x2="310" y2="64" stroke="#8b93a6" fill="none" class="dg-line" marker-end="url(#ah)"/>
+      <rect x="314" y="42" width="132" height="44" rx="7" fill="#ffffff" stroke="#cdc7bb" class="dg-box"/>
+      <text x="380" y="62" text-anchor="middle" fill="#1f2430" class="dg-mono">sum</text>
+      <text x="380" y="78" text-anchor="middle" fill="#5c6478" class="dg-muted">machine code</text>
+
+      <line x1="450" y1="64" x2="700" y2="64" stroke="#8b93a6" fill="none" class="dg-line" marker-end="url(#ah)"/>
+      <rect x="704" y="42" width="96" height="44" rx="7" fill="#fdf1dc" stroke="#b45309" class="dg-box-warm"/>
+      <text x="752" y="69" text-anchor="middle" fill="#1f2430" class="dg-text">CPU</text>
+
+      <!-- ---------------- Java ---------------- -->
+      <text x="4" y="160" fill="#4f46b8" class="dg-row">Java</text>
+      <rect x="40"  y="136" width="96"  height="44" rx="7" fill="#ffffff" stroke="#cdc7bb" class="dg-box"/>
+      <text x="88"  y="163" text-anchor="middle" fill="#1f2430" class="dg-mono">Sum.java</text>
+
+      <line x1="140" y1="158" x2="176" y2="158" stroke="#8b93a6" fill="none" class="dg-line" marker-end="url(#ah)"/>
+      <rect x="180" y="136" width="90"  height="44" rx="7" fill="#ece9ff" stroke="#4f46b8" class="dg-box-key"/>
+      <text x="225" y="163" text-anchor="middle" fill="#1f2430" class="dg-mono">javac</text>
+
+      <line x1="274" y1="158" x2="310" y2="158" stroke="#8b93a6" fill="none" class="dg-line" marker-end="url(#ah)"/>
+      <rect x="314" y="136" width="132" height="44" rx="7" fill="#ffffff" stroke="#cdc7bb" class="dg-box"/>
+      <text x="380" y="156" text-anchor="middle" fill="#1f2430" class="dg-mono">Sum.class</text>
+      <text x="380" y="172" text-anchor="middle" fill="#5c6478" class="dg-muted">bytecode</text>
+
+      <line x1="450" y1="158" x2="524" y2="158" stroke="#8b93a6" fill="none" class="dg-line" marker-end="url(#ah)"/>
+      <rect x="528" y="136" width="140" height="44" rx="7" fill="#ece9ff" stroke="#4f46b8" class="dg-box-key"/>
+      <text x="598" y="156" text-anchor="middle" fill="#1f2430" class="dg-mono">java</text>
+      <text x="598" y="172" text-anchor="middle" fill="#5c6478" class="dg-muted">the JVM, with JIT</text>
+
+      <line x1="672" y1="158" x2="700" y2="158" stroke="#8b93a6" fill="none" class="dg-line" marker-end="url(#ah)"/>
+      <rect x="704" y="136" width="96" height="44" rx="7" fill="#fdf1dc" stroke="#b45309" class="dg-box-warm"/>
+      <text x="752" y="163" text-anchor="middle" fill="#1f2430" class="dg-text">CPU</text>
+
+      <!-- ---------------- Python ---------------- -->
+      <text x="4" y="254" fill="#4f46b8" class="dg-row">Py</text>
+      <rect x="40"  y="230" width="96"  height="44" rx="7" fill="#ffffff" stroke="#cdc7bb" class="dg-box"/>
+      <text x="88"  y="257" text-anchor="middle" fill="#1f2430" class="dg-mono">sum.py</text>
+
+      <line x1="140" y1="252" x2="524" y2="252" stroke="#8b93a6" fill="none" class="dg-line" marker-end="url(#ah)"/>
+      <text x="330" y="243" text-anchor="middle" fill="#5c6478" class="dg-muted">nothing is built</text>
+
+      <rect x="528" y="230" width="140" height="44" rx="7" fill="#ece9ff" stroke="#4f46b8" class="dg-box-key"/>
+      <text x="598" y="250" text-anchor="middle" fill="#1f2430" class="dg-mono">python3</text>
+      <text x="598" y="266" text-anchor="middle" fill="#5c6478" class="dg-muted">reads it line by line</text>
+
+      <line x1="672" y1="252" x2="700" y2="252" stroke="#8b93a6" fill="none" class="dg-line" marker-end="url(#ah)"/>
+      <rect x="704" y="230" width="96" height="44" rx="7" fill="#fdf1dc" stroke="#b45309" class="dg-box-warm"/>
+      <text x="752" y="257" text-anchor="middle" fill="#1f2430" class="dg-text">CPU</text>
+    </svg>
+    <figcaption>
+      The dashed line is the moment you press Enter. Everything to the left
+      happens once, before the program starts. Everything to the right happens
+      every time it runs. C sits entirely on the left, Python entirely on the
+      right, and Java has a foot on each side.
+    </figcaption>
+  </figure>
+
+  <h2 id="video">Watch it explained</h2>
+
+  <p>
+    This four-minute video covers the same idea with animations. It opens in a
+    new tab:
+  </p>
+
+  <p>
+    <a href="https://www.youtube.com/watch?v=hnlz0YYCpBU" target="_blank" rel="noopener">
+      Watch: Python vs C++ vs Java
+    </a>
+  </p>
+
+  <div class="callout note">
+    <div class="callout-title">Two parts to skip</div>
+    <p>
+      The video opens with about fifteen seconds where the author talks about his
+      own books, and it ends with an advertisement for a newsletter. The four
+      minutes in between are what matter.
+    </p>
+    <p>
+      It says C++ where we say C. For everything in this chapter, the two behave
+      the same way: both are compiled all the way to machine code before you run
+      them.
+    </p>
+  </div>
+
+  <div class="callout tip">
+    <div class="callout-title">Follow this channel</div>
+    <p>
+      The video comes from <strong>ByteByteGo</strong>:
+      <a href="https://www.youtube.com/@ByteByteGo">youtube.com/@ByteByteGo</a>
+    </p>
+    <p>
+      It explains how real software is built, and how large systems work across
+      many machines at once. The drawings are clear and the videos are short. For
+      anyone learning to build software, it is one of the best places to watch.
+    </p>
+    <p>
+      A habit worth starting now, and keeping:
+    </p>
+    <ul>
+      <li>Watch <strong>one video every week</strong>.</li>
+      <li>Write short notes in your own words while you watch.</li>
+      <li>Then try the idea out yourself, even in a very small way.</li>
+    </ul>
+    <p>
+      Watching teaches you a little. Writing it down teaches you more. Trying it
+      is what makes it stay.
+    </p>
+  </div>
+
+  <h2 id="c">C — translated once, before</h2>
+
+  <p>
+    <code>clang</code> turns your whole file into machine code and saves it. That
+    finished file is the program. When you run it, no translating happens at all
+    — the processor is handed instructions it already understands.
+  </p>
+
+  <p>Two things follow from that, and you can see both.</p>
+
+  <p><strong>The source is no longer needed.</strong> Copy just the program somewhere else and run it:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>mkdir ~/ship &amp;&amp; cp sum ~/ship/
+<span class="prompt">$ </span>cd ~/ship &amp;&amp; ls
+<span class="out">sum</span></code></pre>
+  </div>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>./sum
+<span class="out">To add two numbers.</span></code></pre>
+  </div>
+
+  <p>
+    No <code>sum.c</code> in that folder, and it still runs. This is how most
+    software is delivered: you get the machine code, not the source.
+  </p>
+
+  <p>
+    <strong>Change the source and nothing changes</strong> until you build again.
+    The program is a photograph of your code, taken when you ran
+    <code>clang</code>.
+  </p>
+
+  <h2 id="python">Python — translated as it goes</h2>
+
+  <p>
+    There is no build step, and no second file. <code>python3</code> is a program
+    that reads your file and does what each line says, one line at a time, every
+    single time you run it.
+  </p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>ls
+<span class="out">sum.py</span></code></pre>
+  </div>
+
+  <p>
+    One file in, nothing new out. That is why Python feels quick to work with:
+    edit, run, edit, run, with nothing in between.
+  </p>
+
+  <p>
+    It also explains something from <a href="../../04_install_py/">step 4</a>.
+    <code>pdb</code> can stop your program in the middle of a line and show you
+    the value of a variable, because at that moment something is still
+    <em>reading</em> your program. The source is right there, being followed.
+  </p>
+
+  <div class="callout warn">
+    <div class="callout-title">The cost is paid every time</div>
+    <p>
+      A loop that runs a million times has its lines worked out a million times.
+      C worked them out once, before the program started.
+    </p>
+    <p>That is where the speed difference below comes from.</p>
+  </div>
+
+  <h2 id="java">Java — a bit of both</h2>
+
+  <p>Java splits the difference, and this is why it needs two commands.</p>
+
+  <p>
+    <code>javac</code> translates your source into <strong>bytecode</strong>.
+    Bytecode is instructions, but not for your processor — for an imaginary
+    machine that does not exist in hardware.
+  </p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>javac Sum.java
+<span class="prompt">$ </span>file Sum.class
+<span class="out">Sum.class: compiled Java class data, version 65.0</span></code></pre>
+  </div>
+
+  <p>
+    You met that file already. In <a href="../../05_install_java/">step 5</a> you
+    looked at its first bytes:
+  </p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>xxd -l 8 Sum.class
+<span class="out">00000000: cafe babe 0000 0041                      .......A</span></code></pre>
+  </div>
+
+  <p>
+    <code>cafe babe</code> is the marker that says "this is Java bytecode", the
+    same way <code>7f 45 4c 46</code> says "this is a Linux program".
+  </p>
+
+  <p>
+    Then <code>java</code> starts the <strong>JVM</strong> — the Java Virtual
+    Machine. It is a program that pretends to be that imaginary processor. It
+    reads your bytecode and carries it out.
+  </p>
+
+  <p>
+    And it does one more thing. When it notices a piece of bytecode being used
+    over and over, it translates that piece into real machine code, right then,
+    and uses the fast version from that point on. This is called
+    <strong>JIT</strong>, short for just-in-time compilation.
+  </p>
+
+  <div class="callout tip">
+    <div class="callout-title">Why bother with an imaginary processor?</div>
+    <p>
+      Because the same <code>Sum.class</code> runs anywhere a JVM exists — a
+      laptop, a phone, a server — with no rebuilding. Your <code>sum</code> from
+      C runs only on the kind of processor and system it was built for.
+    </p>
+    <p>
+      That portability is why Java is used for large systems that must run on
+      many different machines.
+    </p>
+  </div>
+
+  <h2 id="speed">What it costs</h2>
+
+  <p>
+    Same task in all three: add up every whole number from 1 to 10,000,000, and
+    print the total. Measured on one machine, on the same day.
+  </p>
+
+  <div class="stat-row">
+    <div class="stat">
+      <div class="stat-value">0.04s</div>
+      <div class="stat-label">C</div>
+      <div class="stat-note">already machine code</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value">0.61s</div>
+      <div class="stat-label">Java</div>
+      <div class="stat-note">JVM start, then JIT</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value">6.26s</div>
+      <div class="stat-label">Python</div>
+      <div class="stat-note">every line, every time</div>
+    </div>
+  </div>
+
+  <p>
+    Python took about <strong>150 times</strong> as long as C. Java landed
+    between them, and a good part of its time was starting the JVM at all —
+    on a longer job, JIT closes much of the gap.
+  </p>
+
+  <div class="callout note">
+    <div class="callout-title">Do not read this as "Python is bad"</div>
+    <p>
+      This loop is the worst possible case for Python: ten million tiny steps and
+      no real work in any of them. Most real programs spend their time waiting
+      for a disk, a network or a person, where the language makes no difference
+      at all.
+    </p>
+    <p>
+      Six seconds of computer time can easily save an hour of your time. That is
+      often a good trade.
+    </p>
+  </div>
+
+  <h2 id="disk">What each one leaves on the disk</h2>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Language</th><th>You write</th><th>Build makes</th><th>To run it you need</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>C</td>
+          <td><code>sum.c</code> — 326 bytes</td>
+          <td><code>sum</code> — 16064 bytes</td>
+          <td>nothing else</td>
+        </tr>
+        <tr>
+          <td>Java</td>
+          <td><code>Sum.java</code> — 471 bytes</td>
+          <td><code>Sum.class</code> — 899 bytes</td>
+          <td>a JVM</td>
+        </tr>
+        <tr>
+          <td>Python</td>
+          <td><code>sum.py</code> — 188 bytes</td>
+          <td>nothing</td>
+          <td>python3, and the source</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    Notice the C program is fifty times bigger than its source. That is the C
+    library joined in by the linker, as
+    <a href="../06-source-to-program/">chapter 6</a> described.
+  </p>
+
+  <h2 id="summary">The whole chapter in one table</h2>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th></th><th>C</th><th>Java</th><th>Python</th></tr></thead>
+      <tbody>
+        <tr><td>Translated when</td><td>before you run</td><td>partly before, partly during</td><td>while it runs</td></tr>
+        <tr><td>Called</td><td>compiled</td><td>bytecode + JIT</td><td>interpreted</td></tr>
+        <tr><td>Build step</td><td>yes</td><td>yes</td><td>no</td></tr>
+        <tr><td>Speed</td><td>fastest</td><td>close behind</td><td>slowest</td></tr>
+        <tr><td>Runs on another machine</td><td>only the same kind</td><td>anywhere with a JVM</td><td>anywhere with Python</td></tr>
+        <tr><td>Good for</td><td>speed, small hardware</td><td>large systems, many machines</td><td>getting it working quickly</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    Other languages fit the same three shapes. Go and Rust are compiled like C.
+    Ruby and JavaScript are interpreted like Python. C# is bytecode like Java.
+    Learn the three shapes and a new language is far less new than it looks.
+  </p>
+
+  <h2 id="try">Try it</h2>
+
+  <p>Build the C program, then remove the source and prove it still runs:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>clang sum.c -o sum &amp;&amp; mkdir -p ~/ship &amp;&amp; cp sum ~/ship/</code></pre>
+  </div>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>cd ~/ship &amp;&amp; ls &amp;&amp; ./sum</code></pre>
+  </div>
+
+  <p>Now try the same trick with Python. Copy only the "program" — except there isn't one:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>python3 /does/not/exist/sum.py</code></pre>
+  </div>
+
+  <p>Look at what each build step produced:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>file sum sum.c sum.py Sum.java Sum.class</code></pre>
+  </div>
+
+  <p>And find the marker at the front of the Java bytecode:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>xxd -l 8 Sum.class</code></pre>
+  </div>
+
+  <h2 id="learned">You can now explain</h2>
+
+  <ul>
+    <li>The one question that separates the three languages</li>
+    <li>Why C needs two commands and Python needs one</li>
+    <li>Why a C program still runs after you delete its source</li>
+    <li>What bytecode is, and why an imaginary processor is useful</li>
+    <li>What the JVM does, and what JIT adds</li>
+    <li>Why <code>pdb</code> can stop Python in the middle of a line</li>
+    <li>Why Python is slower, and when that does not matter</li>
+    <li>Which of the three shapes a new language is likely to fit</li>
+  </ul>
+
+  <nav class="page-nav">
+    <a href="../06-source-to-program/"><span class="dir">Chapter 6</span><span class="title">← From source to a running program</span></a>
+    <a class="next" href="../../04_install_py/"><span class="dir">Do it</span><span class="title">Step 4: Python and pdb →</span></a>
+  </nav>
+
+</div>
+</main>
+
+<footer class="site-footer">
+  <div class="inner">
+    <span>system_setup — <a href="https://aikaryashala.com">aikaryashala</a></span>
+    <span class="spacer"><a href="https://github.com/aikaryashala/system_setup">Source on GitHub</a></span>
+  </div>
+</footer>
+
+<script src="../../assets/site.js"></script>
+</body>
+</html>

@@ -158,6 +158,18 @@ so readers do not need a build file to try something.
 
 - No external requests of any kind: no CDN scripts, no Google Fonts, no remote
   images, no analytics. Everything ships from `docs/assets/`.
+- **Videos are plain links**, opened with `target="_blank" rel="noopener"`.
+  Never an `<iframe>`, and never a click-to-load placeholder either — both were
+  tried and removed as more machinery than the job needs. A link keeps the
+  no-external-requests rule absolute, with nothing to maintain.
+- Diagrams are inline SVG using the `.dg-*` classes in `style.css`, so they
+  follow the theme without a second dark-mode copy. No image files.
+- **Every SVG shape also carries a plain `fill` (and `stroke`) attribute.**
+  Presentation attributes lose to any CSS rule, so the stylesheet still themes
+  the diagram — but if it is missing, stale in a cache, or the SVG is viewed on
+  its own, the shapes stay readable. Without them an unstyled `<rect>` or
+  `<circle>` renders solid black, which is how this was found. Test by pointing
+  the page at an empty stylesheet before shipping a new diagram.
 - Shared styling lives in `docs/assets/style.css`; shared behaviour in
   `docs/assets/site.js`. Do not inline per-page `<style>` or `<script>` blocks
   when the rule belongs in the shared file. The one deliberate exception is the
