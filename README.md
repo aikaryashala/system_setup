@@ -11,9 +11,9 @@ working **Ubuntu (WSL2)** development environment with toolchains for **C**,
 Everything is designed for someone starting from zero: run one command per step,
 in order, and read the matching page on the website if you want to know what it did.
 
-There is also a [book](docs/book) — short chapters in plain English explaining
-what the steps are doing and why. The steps tell you what to type; the book tells
-you what is happening.
+There is also a **[book](docs/book)** — understanding behind the scenes, what is happening internally and how the whole systems and programs work. Short
+chapters in plain English: the steps tell you what to type, the book tells you
+what is happening.
 
 ---
 
