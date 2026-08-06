@@ -160,6 +160,82 @@
     </p>
   </div>
 
+  <h2 id="forgot-password">Forgotten your password?</h2>
+
+  <p>
+    It happens, and it locks you out of every command that starts with
+    <code>sudo</code>. You do not need to reinstall anything. Windows can open
+    Ubuntu as the <strong>root</strong> account, which is allowed to set anyone's
+    password without knowing the old one.
+  </p>
+
+  <p>
+    Open <strong>PowerShell</strong> or <strong>Command Prompt</strong> — this
+    part happens on the Windows side, not inside Ubuntu.
+  </p>
+
+  <p>Start Ubuntu as root:</p>
+
+  <div class="codeblock" data-label="powershell">
+<pre><code>wsl -u root</code></pre>
+  </div>
+
+  <p>
+    You are now inside Ubuntu, and the prompt ends with <code>#</code> instead of
+    <code>$</code>. That hash mark means you are root.
+  </p>
+
+  <p>Set a new password, putting your own username in place of the example:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal (as root)">
+<pre><code>passwd lokesh</code></pre>
+  </div>
+
+  <p>
+    Type the new password, press Enter, then type it again to confirm. As
+    always, nothing appears on screen while you type.
+  </p>
+
+  <p>Leave the root session:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal (as root)">
+<pre><code>exit</code></pre>
+  </div>
+
+  <p>
+    Now open Ubuntu normally from the Start menu. Your new password works
+    everywhere <code>sudo</code> asks for one.
+  </p>
+
+  <div class="callout tip">
+    <div class="callout-title">Forgotten the username too?</div>
+    <p>
+      After <code>wsl -u root</code>, list the home folders:
+    </p>
+    <div class="codeblock">
+<pre><code>ls /home</code></pre>
+    </div>
+    <p>
+      You may see more than one name. <code>ubuntu</code> is a built-in account
+      that comes with the system — yours is the other one, the name you chose at
+      first launch.
+    </p>
+  </div>
+
+  <div class="callout note">
+    <div class="callout-title">If you have more than one Ubuntu installed</div>
+    <p>
+      <code>wsl -u root</code> opens whichever one is the default. To reach a
+      specific one, name it:
+    </p>
+    <div class="codeblock">
+<pre><code>wsl -d Ubuntu-24.04 -u root</code></pre>
+    </div>
+    <p>
+      <code>wsl --list --verbose</code> shows the names you can use.
+    </p>
+  </div>
+
   <h2 id="verify">Check it worked</h2>
 
   <p>In your Ubuntu window:</p>
@@ -246,6 +322,13 @@
     Virtualization is switched off in your computer's firmware. Restart, enter
     the BIOS/UEFI settings, and enable <em>Intel VT-x</em> or <em>AMD-V</em>
     (often listed as <em>SVM Mode</em> or <em>Virtualization Technology</em>).
+  </p>
+
+  <h3>“Sorry, try again” whenever I use sudo</h3>
+  <p>
+    That is the password prompt refusing what you typed. If you cannot remember
+    it, see <a href="#forgot-password">forgotten your password</a> above — it can
+    be reset from Windows in about a minute.
   </p>
 
   <h3>“The term 'wsl' is not recognized”</h3>
