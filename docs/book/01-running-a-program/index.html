@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="en" data-theme="">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chapter 1 — What happens when you run a program · system_setup</title>
+<meta name="description" content="What a program is, what running one means, and what the shell does when you press Enter. Written in plain English.">
+<link rel="stylesheet" href="../../assets/style.css">
+<script>
+(function(){try{var t=localStorage.getItem('system-setup-theme');if(t){document.documentElement.setAttribute('data-theme',t);}}catch(e){}}());
+</script>
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <div class="inner">
+    <a class="brand" href="../../"><span class="mark">&gt;_</span> system_setup</a>
+    <nav class="header-nav">
+      <a href="../">Book</a>
+      <a href="../../scripts/">Scripts</a>
+      <a href="https://github.com/aikaryashala/system_setup">GitHub</a>
+      <button class="theme-toggle" type="button" aria-label="Switch theme">☽</button>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+<div class="prose">
+
+  <p class="breadcrumb"><a href="../../">system_setup</a> / <a href="../">The Book</a> / Chapter 1</p>
+
+  <p class="eyebrow">Chapter 1</p>
+  <h1>What happens when you run a program</h1>
+  <p class="lede">
+    You type a word. You press Enter. Something happens. This chapter explains
+    what, step by step, from the metal upwards.
+  </p>
+
+  <h2 id="instructions">A computer only follows instructions</h2>
+
+  <p>
+    Inside your machine is a chip called the <strong>CPU</strong>. It does all
+    the thinking. Its job is simple, and it never changes:
+  </p>
+
+  <ul>
+    <li>read one instruction</li>
+    <li>do what it says</li>
+    <li>read the next one</li>
+  </ul>
+
+  <p>
+    That is all. The instructions are tiny. "Add these two numbers." "Put this
+    number here." "If that number is zero, jump to a different instruction."
+  </p>
+
+  <p>
+    A CPU does this billions of times a second. That speed is the only thing
+    that makes it feel clever. Each single step is very small.
+  </p>
+
+  <div class="callout note">
+    <div class="callout-title">The computer never guesses</div>
+    <p>
+      It does exactly what it is told. Not what you meant. When a program does
+      the wrong thing, the computer did not make a mistake — it followed your
+      instructions correctly, and your instructions were wrong.
+    </p>
+    <p>This is worth remembering. It is the whole reason bugs exist.</p>
+  </div>
+
+  <h2 id="program">A program is a file of instructions</h2>
+
+  <p>
+    A <strong>program</strong> is a file. Inside it is a long list of those tiny
+    instructions, saved on the disk, waiting.
+  </p>
+
+  <p>
+    The <code>ls</code> command you have been typing is a program. It is a real
+    file, and you can look at it like any other file:
+  </p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>which ls
+<span class="out">/usr/bin/ls</span></code></pre>
+  </div>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>ls -l /usr/bin/ls
+<span class="out">-rwxr-xr-x 1 root root 199464 Jan 23  2026 /usr/bin/ls</span></code></pre>
+  </div>
+
+  <p>
+    That number, <code>199464</code>, is its size in bytes. About two hundred
+    thousand bytes of instructions, sitting on your disk, so that you can list a
+    folder.
+  </p>
+
+  <p>
+    Nothing about <code>ls</code> is special. It is a file, in a folder, like
+    the files you made in <a href="../../01_5_navigate/">step 1.5</a>.
+  </p>
+
+  <h2 id="memory">Disk keeps, memory works</h2>
+
+  <p>Your machine has two places to put things, and they do different jobs.</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th></th><th>Disk</th><th>Memory</th></tr></thead>
+      <tbody>
+        <tr><td>Also called</td><td>storage, SSD, hard drive</td><td>RAM</td></tr>
+        <tr><td>Speed</td><td>slow</td><td>very fast</td></tr>
+        <tr><td>When power goes off</td><td>keeps everything</td><td>loses everything</td></tr>
+        <tr><td>Holds</td><td>your files, and programs waiting</td><td>programs that are running now</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    <strong>Running</strong> a program means copying it from the disk into
+    memory, and pointing the CPU at the first instruction. The CPU then works
+    through the list.
+  </p>
+
+  <p>
+    A program sitting on the disk is just a file. The same program, copied into
+    memory and being worked through, is called a <strong>process</strong>. One
+    program can be running twice, as two processes, at the same time.
+  </p>
+
+  <h2 id="numbers">The CPU only understands numbers</h2>
+
+  <p>
+    Those instructions are numbers. The CPU knows nothing else. It cannot read
+    <code>printf</code> or <code>if</code> or your variable names.
+  </p>
+
+  <p>
+    But people cannot write numbers all day. So we write words, and something
+    turns our words into numbers. There are two ways to do that:
+  </p>
+
+  <ul>
+    <li>
+      Translate the whole file once, ahead of time, and save the result as a
+      program. This is what <code>clang</code> does in
+      <a href="../../03_install_c/">step 3</a>.
+    </li>
+    <li>
+      Translate it line by line, while it runs. This is what
+      <code>python3</code> does in <a href="../../04_install_py/">step 4</a>.
+    </li>
+  </ul>
+
+  <p>
+    That single difference explains most of what feels different about C and
+    Python. Chapter 7 comes back to it properly.
+  </p>
+
+  <h2 id="os">The operating system shares the machine</h2>
+
+  <p>
+    You have one CPU, but many programs want to run. Something must decide who
+    gets a turn. That something is the <strong>operating system</strong>.
+  </p>
+
+  <p>Its job is to:</p>
+
+  <ul>
+    <li>give each program a turn on the CPU, switching very fast between them</li>
+    <li>give each program its own piece of memory, and keep the pieces apart</li>
+    <li>own the disk, the screen and the network, and hand them out</li>
+  </ul>
+
+  <p>
+    Keeping programs apart matters. It is why one program crashing does not take
+    the whole machine with it.
+  </p>
+
+  <p>
+    Windows is an operating system. Linux is another one. Ubuntu is a way of
+    getting Linux, which chapter 3 explains.
+  </p>
+
+  <h2 id="shell">The shell is a program that starts programs</h2>
+
+  <p>
+    Now the last piece. The <strong>shell</strong> is a program too. Its whole
+    job is to start other programs for you.
+  </p>
+
+  <p>When you type <code>ls</code> and press Enter, the shell:</p>
+
+  <ol>
+    <li>reads what you typed</li>
+    <li>looks for a program with that name, and finds <code>/usr/bin/ls</code></li>
+    <li>asks the operating system to run it</li>
+    <li>waits while it runs</li>
+    <li>shows you the prompt again</li>
+  </ol>
+
+  <p>
+    That is the loop, over and over. Everything you do in a terminal is some
+    version of it.
+  </p>
+
+  <div class="callout note">
+    <div class="callout-title">How the shell knows where to look</div>
+    <p>
+      You typed <code>ls</code>, not <code>/usr/bin/ls</code>. The shell has a
+      list of folders it searches, in order. That list is called
+      <code>PATH</code>, and chapter 5 explains it.
+    </p>
+    <p>
+      It also explains the most common message a beginner sees:
+      <em>command not found</em>. It rarely means the program is missing. It
+      usually means the shell looked in its list and the program was not in any
+      of those folders.
+    </p>
+  </div>
+
+  <h2 id="prompt">What the prompt is telling you</h2>
+
+  <p>
+    That <code>$</code> is the shell saying: <em>I am not busy. Type
+    something.</em>
+  </p>
+
+  <p>
+    While a program is running, there is no prompt. The shell is waiting, so it
+    has nothing to say. When the program finishes, the prompt comes back.
+  </p>
+
+  <div class="callout tip">
+    <div class="callout-title">This explains the "stuck" feeling</div>
+    <p>
+      A student opens <code>less</code> or <code>htop</code>, and the prompt
+      disappears. Nothing is broken and nothing is frozen. A program is running,
+      and it will not give the terminal back until it ends.
+    </p>
+    <p>
+      Press <kbd>q</kbd> to ask it to finish, or <kbd>Ctrl</kbd>+<kbd>C</kbd> to
+      ask the operating system to stop it. Then the prompt returns.
+    </p>
+  </div>
+
+  <h2 id="try">Try it</h2>
+
+  <p>Find out where a command lives:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>which ls</code></pre>
+  </div>
+
+  <p>See that it really is a file, with a size:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>ls -l /usr/bin/ls</code></pre>
+  </div>
+
+  <p>Now watch the prompt go away and come back. This program does nothing for five seconds:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>sleep 5</code></pre>
+  </div>
+
+  <p>
+    Run it again and press <kbd>Ctrl</kbd>+<kbd>C</kbd> before the five seconds
+    are up. The prompt comes straight back, because you asked the operating
+    system to stop the program early.
+  </p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>sleep 30</code></pre>
+  </div>
+
+  <h2 id="learned">You can now explain</h2>
+
+  <ul>
+    <li>What a CPU does, and why it never guesses</li>
+    <li>That a program is a file of instructions, and <code>ls</code> is one</li>
+    <li>The difference between disk and memory</li>
+    <li>What the word <em>process</em> means</li>
+    <li>Why our words have to be turned into numbers before a CPU can use them</li>
+    <li>What an operating system is for</li>
+    <li>What the shell does when you press Enter</li>
+    <li>Why the prompt disappears while a program is running</li>
+  </ul>
+
+  <nav class="page-nav">
+    <a href="../"><span class="dir">Back</span><span class="title">Contents</span></a>
+    <a class="next" href="../02-files-and-folders/"><span class="dir">Chapter 2</span><span class="title">Files, folders, and the tree →</span></a>
+  </nav>
+
+</div>
+</main>
+
+<footer class="site-footer">
+  <div class="inner">
+    <span>system_setup — <a href="https://aikaryashala.com">aikaryashala</a></span>
+    <span class="spacer"><a href="https://github.com/aikaryashala/system_setup">Source on GitHub</a></span>
+  </div>
+</footer>
+
+<script src="../../assets/site.js"></script>
+</body>
+</html>

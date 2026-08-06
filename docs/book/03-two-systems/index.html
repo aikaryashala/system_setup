@@ -1,0 +1,314 @@
+<!doctype html>
+<html lang="en" data-theme="">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chapter 3 — Two systems, one machine · system_setup</title>
+<meta name="description" content="What WSL really is, how Windows and Linux share one machine, and why your files live in two different places. Written in plain English.">
+<link rel="stylesheet" href="../../assets/style.css">
+<script>
+(function(){try{var t=localStorage.getItem('system-setup-theme');if(t){document.documentElement.setAttribute('data-theme',t);}}catch(e){}}());
+</script>
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <div class="inner">
+    <a class="brand" href="../../"><span class="mark">&gt;_</span> system_setup</a>
+    <nav class="header-nav">
+      <a href="../">Book</a>
+      <a href="../../scripts/">Scripts</a>
+      <a href="https://github.com/aikaryashala/system_setup">GitHub</a>
+      <button class="theme-toggle" type="button" aria-label="Switch theme">☽</button>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+<div class="prose">
+
+  <p class="breadcrumb"><a href="../../">system_setup</a> / <a href="../">The Book</a> / Chapter 3</p>
+
+  <p class="eyebrow">Chapter 3</p>
+  <h1>Two systems, one machine</h1>
+  <p class="lede">
+    Your laptop runs Windows. In <a href="../../01_install_ubuntu/">step 1</a> you
+    put Linux on it as well, and both run at the same time. This chapter explains
+    how that works, and why your files end up in two different places.
+  </p>
+
+  <h2 id="os">One machine usually runs one system</h2>
+
+  <p>
+    Chapter 1 said the operating system shares the machine between programs. It
+    owns the CPU, the memory and the disk, and hands them out.
+  </p>
+
+  <p>
+    That is a big job, and normally only one system does it. Windows owns your
+    laptop. Linux would want to own the same parts. Two owners, one machine — so
+    something has to give.
+  </p>
+
+  <h2 id="three-ways">Three ways to have both</h2>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Way</th><th>How it works</th><th>The cost</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Dual boot</strong></td>
+          <td>Both are installed. You pick one when the machine starts.</td>
+          <td>Only one runs at a time. To switch, you restart.</td>
+        </tr>
+        <tr>
+          <td><strong>Virtual machine</strong></td>
+          <td>Windows pretends to be a whole computer, and Linux runs inside that pretend computer.</td>
+          <td>Slow, and heavy on memory. Sharing files is awkward.</td>
+        </tr>
+        <tr>
+          <td><strong>WSL</strong></td>
+          <td>A real Linux runs beside Windows, and the two are joined together.</td>
+          <td>A few rough edges, which this chapter is about.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    <strong>WSL</strong> stands for Windows Subsystem for Linux. It is the third
+    way, and it is what step 1 set up.
+  </p>
+
+  <h2 id="what-wsl-is">What WSL actually is</h2>
+
+  <p>
+    WSL runs a real Linux, with a real Linux kernel, at the same time as Windows.
+    It is not a pretend Linux, and it is not a Windows program that copies Linux
+    behaviour. The programs you install are the same programs a Linux server
+    runs.
+  </p>
+
+  <p>
+    Windows sets it up so both systems share the machine without fighting. You
+    move between them by clicking a window. Nothing restarts.
+  </p>
+
+  <div class="callout note">
+    <div class="callout-title">This is why the later steps work at all</div>
+    <p>
+      <code>apt</code>, <code>clang</code>, <code>python3</code> and the rest are
+      ordinary Linux programs. They are not Windows versions or special builds.
+      What you learn here works the same way on any Linux machine, including a
+      server you may use later.
+    </p>
+  </div>
+
+  <h2 id="two-filesystems">Two sets of files</h2>
+
+  <p>
+    Each system stores files in its own way. So your machine now has two sets of
+    files, and they live in different places.
+  </p>
+
+  <div class="codeblock" data-label="how they fit together">
+<pre><code>Windows side                     Linux side
+------------                     ----------
+C:\Users\you\Desktop             /home/you
+C:\Program Files                 /usr/bin
+                                 /etc
+
+      seen from Linux as              seen from Windows as
+      /mnt/c/Users/you/Desktop        \\wsl$\Ubuntu-24.04\home\you</code></pre>
+  </div>
+
+  <p>
+    Chapter 2 explained that Linux keeps everything in one tree, starting at
+    <code>/</code>. Your Windows disk is joined onto that tree at
+    <code>/mnt/c</code>. So from Linux you can reach your Windows files by
+    walking down the tree, as if they had always been there.
+  </p>
+
+  <p>
+    Your Linux files are not inside <code>C:</code>. They sit in their own
+    storage, which Windows can reach through a special name beginning
+    <code>\\wsl$</code>.
+  </p>
+
+  <h2 id="slow">Why <code>/mnt/c</code> is slow</h2>
+
+  <p>
+    The two systems write files to disk in different ways. They disagree about
+    names, about capital letters, about who is allowed to read what.
+  </p>
+
+  <p>
+    So every time Linux touches a file under <code>/mnt/c</code>, the request has
+    to be translated into something Windows understands, and the answer
+    translated back. One file, once, is fine. You will not notice.
+  </p>
+
+  <p>
+    But building a program opens hundreds of small files, one after another.
+    Every one pays the translation cost. The same build that takes five seconds
+    in your home folder can take a minute under <code>/mnt/c</code>.
+  </p>
+
+  <div class="callout tip">
+    <div class="callout-title">The rule that follows from this</div>
+    <p>
+      Keep your own work in your Linux home folder — the one <code>~</code>
+      points at. Use <code>/mnt/c</code> for copying files in and out, and
+      nothing else.
+    </p>
+    <p>
+      This is the reason every step here puts its samples in
+      <code>~/python-samples</code> and <code>~/java-samples</code>, and never on
+      your Windows desktop.
+    </p>
+  </div>
+
+  <h2 id="seeing">Each side can see the other</h2>
+
+  <p>Look at your Windows drive from Linux:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>ls /mnt/c/Users</code></pre>
+  </div>
+
+  <p>Open your current Linux folder in the Windows file browser:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>explorer.exe .</code></pre>
+  </div>
+
+  <p>
+    That second one is worth a moment. <code>explorer.exe</code> is a Windows
+    program, and you started it from a Linux shell, and it opened at the Linux
+    folder you were standing in. The join between the two systems runs in both
+    directions.
+  </p>
+
+  <h2 id="distribution">What a "distribution" is</h2>
+
+  <p>
+    Linux by itself is only the <strong>kernel</strong> — the core part that
+    shares the machine. It is not something you can sit down and use.
+  </p>
+
+  <p>
+    To be useful it needs a shell, a way to install software, and a few hundred
+    small programs. Someone has to choose those, test them together and package
+    them up. That bundle is a <strong>distribution</strong>.
+  </p>
+
+  <p>
+    Ubuntu is a distribution. So are Debian, Fedora and many others. They all
+    have the same Linux kernel inside, with different choices around it.
+  </p>
+
+  <p>
+    WSL can hold more than one at a time, so each needs a name. That is why step
+    1 asks for <code>Ubuntu-24.04</code> and not just "Linux".
+  </p>
+
+  <div class="callout note">
+    <div class="callout-title">Why the version is pinned</div>
+    <p>
+      Asking for plain <code>Ubuntu</code> gives you whatever Microsoft has
+      chosen as the current default, and that changes over time. Two students
+      installing months apart would end up with different systems, and different
+      package names.
+    </p>
+    <p>
+      <a href="../../01_install_ubuntu/">Step 1</a> asks for
+      <code>Ubuntu-24.04</code> by name, so everyone gets the same machine.
+      <strong>LTS</strong> in its full name means Long Term Support: it keeps
+      getting security fixes for five years.
+    </p>
+  </div>
+
+  <h2 id="restart">When something goes strange</h2>
+
+  <p>
+    Sometimes WSL misbehaves — a folder will not respond, or a program hangs for
+    no reason. Nearly always, the fix is to stop Linux and start it again. Run
+    this in <em>Windows</em> PowerShell, not in Ubuntu:
+  </p>
+
+  <div class="codeblock" data-label="powershell">
+<pre><code>wsl --shutdown</code></pre>
+  </div>
+
+  <p>
+    Then open Ubuntu again. Your files are safe — this stops the running system,
+    it does not remove anything.
+  </p>
+
+  <h2 id="try">Try it</h2>
+
+  <p>Ask the system what it is. The word <code>Linux</code> comes first:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>uname -a</code></pre>
+  </div>
+
+  <p>
+    Look at the kernel more closely. On WSL you will see the word
+    <em>microsoft</em> in it, because Microsoft builds the kernel WSL uses:
+  </p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>cat /proc/version</code></pre>
+  </div>
+
+  <p>Ask which distribution this is:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>cat /etc/os-release</code></pre>
+  </div>
+
+  <p>Now compare the two sides. Your Linux home:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>ls -a ~</code></pre>
+  </div>
+
+  <p>And your Windows user folder, reached through the same tree:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>ls /mnt/c/Users</code></pre>
+  </div>
+
+  <h2 id="learned">You can now explain</h2>
+
+  <ul>
+    <li>Why one machine normally runs one operating system</li>
+    <li>The difference between dual boot, a virtual machine, and WSL</li>
+    <li>That WSL runs a real Linux, not an imitation of one</li>
+    <li>Where your Linux files live, and where your Windows files appear</li>
+    <li>Why work under <code>/mnt/c</code> is slow, and where to keep your work instead</li>
+    <li>What a distribution is, and why Ubuntu has a version number in its name</li>
+    <li>What <code>wsl --shutdown</code> does, and that it is safe</li>
+  </ul>
+
+  <nav class="page-nav">
+    <a href="../02-files-and-folders/"><span class="dir">Chapter 2</span><span class="title">← Files, folders, and the tree</span></a>
+    <a class="next" href="../04-the-shell/"><span class="dir">Chapter 4</span><span class="title">The shell as a language →</span></a>
+  </nav>
+
+</div>
+</main>
+
+<footer class="site-footer">
+  <div class="inner">
+    <span>system_setup — <a href="https://aikaryashala.com">aikaryashala</a></span>
+    <span class="spacer"><a href="https://github.com/aikaryashala/system_setup">Source on GitHub</a></span>
+  </div>
+</footer>
+
+<script src="../../assets/site.js"></script>
+</body>
+</html>

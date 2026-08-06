@@ -1,0 +1,372 @@
+<!doctype html>
+<html lang="en" data-theme="">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chapter 5 — Where software comes from · system_setup</title>
+<meta name="description" content="Packages, apt, sudo, PATH and .bashrc — how software arrives on your machine and how the shell finds it. In plain English.">
+<link rel="stylesheet" href="../../assets/style.css">
+<script>
+(function(){try{var t=localStorage.getItem('system-setup-theme');if(t){document.documentElement.setAttribute('data-theme',t);}}catch(e){}}());
+</script>
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <div class="inner">
+    <a class="brand" href="../../"><span class="mark">&gt;_</span> system_setup</a>
+    <nav class="header-nav">
+      <a href="../">Book</a>
+      <a href="../../scripts/">Scripts</a>
+      <a href="https://github.com/aikaryashala/system_setup">GitHub</a>
+      <button class="theme-toggle" type="button" aria-label="Switch theme">☽</button>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+<div class="prose">
+
+  <p class="breadcrumb"><a href="../../">system_setup</a> / <a href="../">The Book</a> / Chapter 5</p>
+
+  <p class="eyebrow">Chapter 5</p>
+  <h1>Where software comes from</h1>
+  <p class="lede">
+    On Windows you download a program and double-click it. Linux does something
+    different, and better. This chapter explains how software arrives, where it
+    lands, and how the shell then finds it.
+  </p>
+
+  <h2 id="package">A package is a program plus its paperwork</h2>
+
+  <p>
+    Software on Ubuntu comes in <strong>packages</strong>. A package is one file
+    that holds:
+  </p>
+
+  <ul>
+    <li>the program itself</li>
+    <li>where each of its files should go</li>
+    <li>a list of other packages it needs in order to work</li>
+    <li>a version number</li>
+  </ul>
+
+  <p>
+    That third item matters most. Almost no program stands alone. It needs
+    libraries, which are lumps of code shared between many programs. The package
+    says what it needs, so the system can fetch those too.
+  </p>
+
+  <div class="callout note">
+    <div class="callout-title">This is why one small install pulls in others</div>
+    <p>
+      In <a href="../../03_install_c/">step 3</a> you asked for
+      <code>clang</code>, and a long list of other names went past. Those were
+      its dependencies — the pieces clang cannot work without. You did not have
+      to know their names. The package did.
+    </p>
+  </div>
+
+  <h2 id="repository">Packages live in a shop</h2>
+
+  <p>
+    Ubuntu keeps its packages on servers called <strong>repositories</strong>.
+    Think of a repository as a shop with a catalogue: tens of thousands of
+    programs, all built and tested to work together.
+  </p>
+
+  <p>Your machine holds a copy of the catalogue, not the shop. This explains a command you have run without thinking:</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Command</th><th>What it does</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><code>apt-get update</code></td>
+          <td>Fetch a fresh catalogue. Downloads no programs at all.</td>
+        </tr>
+        <tr>
+          <td><code>apt-get install nano</code></td>
+          <td>Look in the catalogue, fetch nano and whatever it needs, and put it in place.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    <code>update</code> before <code>install</code> is a habit worth keeping. An
+    old catalogue points at versions the shop has already replaced, and the
+    install fails for a reason that looks like nonsense.
+  </p>
+
+  <h2 id="sudo">Why you have to type <code>sudo</code></h2>
+
+  <p>
+    A program installed this way goes into a system folder such as
+    <code>/usr/bin</code>. Those folders do not belong to you. They belong to an
+    account called <strong>root</strong>, which is allowed to change anything.
+  </p>
+
+  <p>
+    <code>sudo</code> means: <em>run this one command as root</em>. It asks for
+    your password to check that it is really you sitting there.
+  </p>
+
+  <p>
+    This is a safety feature, not an obstacle. Because your normal account
+    cannot write to system folders, a mistake you make — or a bad program you
+    run by accident — can only damage your own files, not the whole machine.
+  </p>
+
+  <div class="callout tip">
+    <div class="callout-title">A useful test</div>
+    <p>
+      If a command needs <code>sudo</code>, it is about to change the machine
+      for everybody. If it does not, it only touches your own files. That is a
+      good moment to read the line once more before pressing Enter.
+    </p>
+  </div>
+
+  <h2 id="signing">How Ubuntu knows a package is genuine</h2>
+
+  <p>
+    Packages arrive over the internet. Something must check that they came from
+    who they claim, and were not changed on the way.
+  </p>
+
+  <p>
+    Each repository signs its catalogue with a <strong>key</strong>. Your machine
+    keeps the matching key and checks every download against it. If the check
+    fails, the install stops.
+  </p>
+
+  <p>
+    This is what <a href="../../05_install_java/">step 5</a> is doing when it
+    adds a key before installing Java. The JDK comes from Adoptium, not from
+    Ubuntu, so your machine has to be told that Adoptium can be trusted — once,
+    on purpose, in the open.
+  </p>
+
+  <h2 id="where">Where the program ends up</h2>
+
+  <p>Programs from packages nearly always land in one place:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>which python3
+<span class="out">/usr/bin/python3</span></code></pre>
+  </div>
+
+  <p>
+    As chapter 1 showed, that is simply a file. The package put it there, and
+    <code>sudo</code> is why it was allowed to.
+  </p>
+
+  <h2 id="path">PATH is the shell's list of places to look</h2>
+
+  <p>
+    You type <code>python3</code>, not <code>/usr/bin/python3</code>. So how does
+    the shell find it?
+  </p>
+
+  <p>
+    It keeps a list of folders to search, in order. The list is called
+    <strong>PATH</strong>. When you type a name, the shell walks the list, folder
+    by folder, and runs the first match it finds.
+  </p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>echo $PATH
+<span class="out">/usr/local/bin:/usr/bin:/bin:/usr/games</span></code></pre>
+  </div>
+
+  <p>The colons separate the folders. Read it as a list:</p>
+
+  <ul>
+    <li>look in <code>/usr/local/bin</code></li>
+    <li>then <code>/usr/bin</code></li>
+    <li>then <code>/bin</code></li>
+    <li>then <code>/usr/games</code></li>
+    <li>if it is in none of them, give up</li>
+  </ul>
+
+  <div class="callout note">
+    <div class="callout-title">Now <code>./hello</code> makes complete sense</div>
+    <p>
+      The folder you are standing in is <strong>not</strong> on that list. So
+      typing <code>hello</code> makes the shell search four folders, none of
+      which hold your new program, and report <em>command not found</em>.
+    </p>
+    <p>
+      <code>./hello</code> is not a name to search for. It is a path. It tells
+      the shell to skip the list and look exactly here.
+    </p>
+  </div>
+
+  <h2 id="local-bin">A folder of your own</h2>
+
+  <p>
+    Not every program needs <code>sudo</code>. Some are installed just for you,
+    into a folder inside your home:
+  </p>
+
+  <div class="codeblock">
+<pre><code>~/.local/bin</code></pre>
+  </div>
+
+  <p>
+    That is where <code>uv</code> goes in <a href="../../08_install_uv/">step
+    8</a>, and where <code>bat</code> and <code>fd</code> get their proper names
+    in <a href="../../06_install_more_cmds/">step 6</a>. No <code>sudo</code>
+    needed, because it is your own folder.
+  </p>
+
+  <p>
+    But it only works if that folder is on your PATH. On a fresh Ubuntu it often
+    is not, which is why several of the setup scripts add it.
+  </p>
+
+  <h2 id="bashrc">.bashrc runs every time you open a terminal</h2>
+
+  <p>
+    PATH is not carved in stone. It is set up fresh for every shell you start.
+    The shell builds it by reading a settings file in your home folder called
+    <code>.bashrc</code> — hidden, because its name starts with a dot.
+  </p>
+
+  <p>When a script adds a line like this to <code>.bashrc</code>:</p>
+
+  <div class="codeblock" data-label="a line in ~/.bashrc">
+<pre><code>export PATH="$HOME/.local/bin:$PATH"</code></pre>
+  </div>
+
+  <p>
+    it is saying: <em>from now on, look in my own folder first, then everywhere
+    you were already looking.</em>
+  </p>
+
+  <div class="callout warn">
+    <div class="callout-title">The most common surprise in the whole setup</div>
+    <p>
+      A script edits <code>.bashrc</code> and finishes. You type the new command
+      and get <em>command not found</em>. Nothing is broken.
+    </p>
+    <p>
+      Your shell read <code>.bashrc</code> when it started, minutes ago. It has
+      not read it again. The new line is in the file but not in this shell.
+    </p>
+  </div>
+
+  <p>Two ways to fix it. Read the file into the shell you are in:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>source ~/.bashrc</code></pre>
+  </div>
+
+  <p>Or simply close the terminal and open a new one, which reads it anyway.</p>
+
+  <h2 id="not-found">What "command not found" really means</h2>
+
+  <p>It almost never means the program is missing. It means one of these:</p>
+
+  <ul>
+    <li>the program is not installed</li>
+    <li>it is installed, but in a folder that is not on your PATH</li>
+    <li>it is on your PATH, but this shell has not reloaded <code>.bashrc</code> yet</li>
+    <li>you spelled it wrongly</li>
+  </ul>
+
+  <p>Work through them in that order and you will find it every time.</p>
+
+  <h2 id="not-apt">Not everything comes from apt</h2>
+
+  <p>Two steps deliberately go outside the shop, and it is worth knowing why.</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Tool</th><th>Where it comes from</th><th>Why</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><code>uv</code></td>
+          <td>its own installer script</td>
+          <td>It is new and moves quickly. Ubuntu's catalogue would always be behind.</td>
+        </tr>
+        <tr>
+          <td><code>gradle</code></td>
+          <td>downloaded from Gradle</td>
+          <td>Ubuntu's version is usually several years old.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    The trade is simple. From the shop you get checking, dependency handling and
+    tidy removal, but sometimes an older version. From outside you get today's
+    version, and you take responsibility for trusting the source yourself.
+  </p>
+
+  <h2 id="try">Try it</h2>
+
+  <p>See your search list:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>echo $PATH</code></pre>
+  </div>
+
+  <p>Find which folder a program came from:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>which bash</code></pre>
+  </div>
+
+  <p>Ask the catalogue about a package, without installing anything:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>apt-cache policy bash</code></pre>
+  </div>
+
+  <p>Count how many packages are already installed on your machine:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>dpkg --get-selections | wc -l</code></pre>
+  </div>
+
+  <p>Look at the lines the setup scripts added to your settings file:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>grep system_setup ~/.bashrc</code></pre>
+  </div>
+
+  <h2 id="learned">You can now explain</h2>
+
+  <ul>
+    <li>What a package holds, and what a dependency is</li>
+    <li>Why <code>apt-get update</code> downloads no programs</li>
+    <li>What <code>sudo</code> does, and why not needing it is a good sign</li>
+    <li>Why a new repository has to add a key first</li>
+    <li>What PATH is, and how the shell uses it</li>
+    <li>Why <code>./hello</code> is needed for a program you just built</li>
+    <li>Why <code>.bashrc</code> has to be reloaded before a new command appears</li>
+    <li>The four reasons for <em>command not found</em></li>
+  </ul>
+
+  <nav class="page-nav">
+    <a href="../04-the-shell/"><span class="dir">Chapter 4</span><span class="title">← The shell as a language</span></a>
+    <a class="next" href="../../02_install_cmds/"><span class="dir">Do it</span><span class="title">Step 2: Core commands →</span></a>
+  </nav>
+
+</div>
+</main>
+
+<footer class="site-footer">
+  <div class="inner">
+    <span>system_setup — <a href="https://aikaryashala.com">aikaryashala</a></span>
+    <span class="spacer"><a href="https://github.com/aikaryashala/system_setup">Source on GitHub</a></span>
+  </div>
+</footer>
+
+<script src="../../assets/site.js"></script>
+</body>
+</html>

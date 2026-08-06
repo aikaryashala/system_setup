@@ -1,0 +1,444 @@
+<!doctype html>
+<html lang="en" data-theme="">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chapter 4 — The shell as a language · system_setup</title>
+<meta name="description" content="Commands, options, pipes, redirection and exit codes, explained in plain English.">
+<link rel="stylesheet" href="../../assets/style.css">
+<script>
+(function(){try{var t=localStorage.getItem('system-setup-theme');if(t){document.documentElement.setAttribute('data-theme',t);}}catch(e){}}());
+</script>
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <div class="inner">
+    <a class="brand" href="../../"><span class="mark">&gt;_</span> system_setup</a>
+    <nav class="header-nav">
+      <a href="../">Book</a>
+      <a href="../../scripts/">Scripts</a>
+      <a href="https://github.com/aikaryashala/system_setup">GitHub</a>
+      <button class="theme-toggle" type="button" aria-label="Switch theme">☽</button>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+<div class="prose">
+
+  <p class="breadcrumb"><a href="../../">system_setup</a> / <a href="../">The Book</a> / Chapter 4</p>
+
+  <p class="eyebrow">Chapter 4</p>
+  <h1>The shell as a language</h1>
+  <p class="lede">
+    The shell is not just a box you type names into. It has grammar. Once you
+    see the grammar, long commands stop looking frightening — including the one
+    you have run at the start of every step.
+  </p>
+
+  <h2 id="sentence">A command is a sentence</h2>
+
+  <p>Every command has the same shape:</p>
+
+  <div class="codeblock">
+<pre><code>program   what to work on</code></pre>
+  </div>
+
+  <p>The first word is always the name of a program. Everything after it is passed to that program as extra information.</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>cat hello.txt</code></pre>
+  </div>
+
+  <p>
+    Here <code>cat</code> is the program. <code>hello.txt</code> is an
+    <strong>argument</strong> — a word handed to the program so it knows what to
+    work on.
+  </p>
+
+  <p>
+    The shell does not read the file. The shell only starts <code>cat</code> and
+    passes the word along. <code>cat</code> does the rest.
+  </p>
+
+  <h2 id="options">Options change how a program behaves</h2>
+
+  <p>
+    Some arguments are not things to work on. They are switches that change what
+    the program does. These are called <strong>options</strong>, or
+    <strong>flags</strong>.
+  </p>
+
+  <p>They start with a dash, and come in two styles:</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Style</th><th>Looks like</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>Short</td>
+          <td><code>-l</code></td>
+          <td>One dash, one letter. Quick to type.</td>
+        </tr>
+        <tr>
+          <td>Long</td>
+          <td><code>--version</code></td>
+          <td>Two dashes, a whole word. Easier to read later.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>Short options can usually be joined together. These two lines do the same thing:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>ls -l -a</code></pre>
+  </div>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>ls -la</code></pre>
+  </div>
+
+  <div class="callout note">
+    <div class="callout-title">The dash is a habit, not a rule</div>
+    <p>
+      Nothing forces a program to use dashes. It is a very old habit that nearly
+      everyone follows. A few programs go their own way — <code>tar</code> and
+      <code>find</code> are famous for it — and that is why they feel odd.
+    </p>
+  </div>
+
+  <h2 id="spaces">The shell cuts your line at every space</h2>
+
+  <p>
+    Before anything runs, the shell chops your line into words, using spaces as
+    the scissors. Then it hands those words over.
+  </p>
+
+  <p>So this command passes <em>two</em> arguments, not one:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>cat my notes.txt</code></pre>
+  </div>
+
+  <p>
+    <code>cat</code> is told to open a file called <code>my</code> and a file
+    called <code>notes.txt</code>. Both fail. This is the real reason chapter 2
+    warned you about spaces in file names.
+  </p>
+
+  <p>Quotes glue words back together:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>cat "my notes.txt"</code></pre>
+  </div>
+
+  <h2 id="doors">Every program has three doors</h2>
+
+  <p>
+    A running program has three ways for text to come in and go out. They have
+    plain names.
+  </p>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Door</th><th>Name</th><th>Used for</th></tr></thead>
+      <tbody>
+        <tr><td>In</td><td><strong>standard input</strong></td><td>text going into the program</td></tr>
+        <tr><td>Out</td><td><strong>standard output</strong></td><td>the program's normal answers</td></tr>
+        <tr><td>Errors</td><td><strong>standard error</strong></td><td>complaints and warnings</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    Normally the last two both go to your screen, so they look like one thing.
+    They are not. Keeping errors separate means you can save a program's answers
+    to a file while still seeing its complaints.
+  </p>
+
+  <p>You may see them written as numbers: <code>0</code> for in, <code>1</code> for out, <code>2</code> for errors.</p>
+
+  <h2 id="redirect">Sending output to a file</h2>
+
+  <p>
+    You met <code>&gt;</code> in <a href="../../01_5_navigate/">step 1.5</a>. Now
+    it has a proper explanation: it takes the "out" door and points it at a file
+    instead of the screen.
+  </p>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Written</th><th>Means</th></tr></thead>
+      <tbody>
+        <tr><td><code>&gt; file</code></td><td>send output to the file, throwing away what was there</td></tr>
+        <tr><td><code>&gt;&gt; file</code></td><td>add output to the end of the file</td></tr>
+        <tr><td><code>2&gt; file</code></td><td>send only the errors to the file</td></tr>
+        <tr><td><code>&gt; file 2&gt;&amp;1</code></td><td>send output to the file, and put the errors in with it</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    That last one looks strange. Read it as: send door 1 to the file, then send
+    door 2 to wherever door 1 is now going.
+  </p>
+
+  <h2 id="pipe">Joining two programs with a pipe</h2>
+
+  <p>
+    A <strong>pipe</strong>, written <code>|</code>, connects the out door of one
+    program to the in door of the next. The text never touches the screen or the
+    disk. It goes straight across.
+  </p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>ls /usr/bin | wc -l</code></pre>
+  </div>
+
+  <p>
+    <code>ls</code> lists the programs. Instead of printing them,
+    <code>wc -l</code> receives them and counts the lines. You get one number:
+    how many programs are in that folder.
+  </p>
+
+  <p>You have already used a pipe in step 2, with <code>jq</code>:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>curl -s https://api.github.com/repos/aikaryashala/system_setup | jq -r .full_name</code></pre>
+  </div>
+
+  <p>
+    <code>curl</code> fetches the text. <code>jq</code> reads it and picks out
+    one field. Neither program knows the other exists. The shell joined them.
+  </p>
+
+  <div class="callout tip">
+    <div class="callout-title">This is why small tools are useful</div>
+    <p>
+      No single program here does very much. <code>ls</code> lists.
+      <code>wc</code> counts. <code>jq</code> reads JSON. The power comes from
+      joining them, and the pipe is the join.
+    </p>
+  </div>
+
+  <h2 id="one-liner">Reading the command you have typed ten times</h2>
+
+  <p>Now the payoff. Here is the line at the top of every step:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>curl -fsSL https://aikaryashala.com/system_setup/scripts/install_c.sh | bash</code></pre>
+  </div>
+
+  <p>Take it apart with what you now know.</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Piece</th><th>What it does</th></tr></thead>
+      <tbody>
+        <tr><td><code>curl</code></td><td>the program: fetch something from the internet</td></tr>
+        <tr><td><code>-f</code></td><td>if the server sends an error page, do not print it as if it were the file</td></tr>
+        <tr><td><code>-s</code></td><td>silent: no progress bar</td></tr>
+        <tr><td><code>-S</code></td><td>but do still show real errors</td></tr>
+        <tr><td><code>-L</code></td><td>if the address has moved, follow it</td></tr>
+        <tr><td>the address</td><td>the argument: what to fetch</td></tr>
+        <tr><td><code>|</code></td><td>send what came back into the next program</td></tr>
+        <tr><td><code>bash</code></td><td>the shell itself, reading those lines and running them</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    So the whole line means: <em>fetch this text quietly, and run it as shell
+    commands.</em> Nothing more mysterious than that.
+  </p>
+
+  <div class="callout warn">
+    <div class="callout-title">And this is why it deserves care</div>
+    <p>
+      The last step runs whatever arrived. If the address were wrong, or the site
+      were not trustworthy, you would be running someone else's instructions on
+      your machine.
+    </p>
+    <p>
+      That is why every script on this site is plain text you can open in a
+      browser first. Chapter 9 comes back to this properly.
+    </p>
+  </div>
+
+  <h2 id="exit">Did it work? The exit code</h2>
+
+  <p>
+    When a program finishes it hands back one number, called the <strong>exit
+    code</strong>. The rule is short:
+  </p>
+
+  <ul>
+    <li><code>0</code> means it worked</li>
+    <li>anything else means it did not</li>
+  </ul>
+
+  <p>
+    Zero for success feels backwards. The reason is that there is only one way
+    to succeed, but many ways to fail, so the other numbers are free to describe
+    which failure it was.
+  </p>
+
+  <p>You can see the last one with <code>$?</code>:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>ls /home
+<span class="prompt">$ </span>echo $?
+<span class="out">0</span></code></pre>
+  </div>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>ls /nothing-here
+<span class="prompt">$ </span>echo $?
+<span class="out">2</span></code></pre>
+  </div>
+
+  <p>
+    You will rarely type <code>$?</code> yourself. But scripts read it after
+    every important step, and that is how the installers in these steps know
+    whether to carry on or to stop and tell you something went wrong.
+  </p>
+
+  <h2 id="and-or">Only if the last one worked</h2>
+
+  <p>Two joins use the exit code to decide what happens next.</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Written</th><th>Means</th></tr></thead>
+      <tbody>
+        <tr><td><code>a &amp;&amp; b</code></td><td>run b only if a worked</td></tr>
+        <tr><td><code>a || b</code></td><td>run b only if a failed</td></tr>
+        <tr><td><code>a ; b</code></td><td>run b either way</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>This is why steps often show a line like this one:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>cd ~/python-samples &amp;&amp; python3 report.py</code></pre>
+  </div>
+
+  <p>
+    If the folder does not exist, <code>cd</code> fails and Python never runs.
+    Without <code>&amp;&amp;</code>, Python would run in the wrong folder and
+    give a confusing error instead of a clear one.
+  </p>
+
+  <h2 id="wildcards">Stars stand for names</h2>
+
+  <p>
+    A <code>*</code> in a name means "anything". The shell replaces it with every
+    matching file name <em>before</em> the program starts.
+  </p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>ls *.txt</code></pre>
+  </div>
+
+  <p>
+    If the folder holds <code>a.txt</code> and <code>b.txt</code>, the program
+    actually receives <code>ls a.txt b.txt</code>. <code>ls</code> never sees the
+    star.
+  </p>
+
+  <div class="callout stop">
+    <div class="callout-title">This is why <code>rm *</code> is dangerous</div>
+    <p>
+      The shell expands the star first, into every name in the folder. Then
+      <code>rm</code> is handed all of them at once, and removes them all,
+      immediately.
+    </p>
+    <p>
+      Before deleting with a star, run the same thing with <code>ls</code> first.
+      What <code>ls</code> lists is exactly what <code>rm</code> would remove.
+    </p>
+  </div>
+
+  <h2 id="try">Try it</h2>
+
+  <p>Count how many programs are in one folder:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>ls /usr/bin | wc -l</code></pre>
+  </div>
+
+  <p>Watch the two output doors behave differently. This prints an error to the screen:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>ls /nothing-here</code></pre>
+  </div>
+
+  <p>Now send the normal output to a file. The error still appears, because it uses the other door:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>ls /nothing-here &gt; out.txt</code></pre>
+  </div>
+
+  <p>And now silence the error instead, by sending door 2 to a place that throws everything away:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>ls /nothing-here 2&gt; /dev/null</code></pre>
+  </div>
+
+  <p>Look at an exit code after something that works, and something that does not:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>true; echo $?</code></pre>
+  </div>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>false; echo $?</code></pre>
+  </div>
+
+  <p>See the difference between the two joins:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>false &amp;&amp; echo "you will not see this"</code></pre>
+  </div>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>false || echo "but you will see this"</code></pre>
+  </div>
+
+  <h2 id="learned">You can now explain</h2>
+
+  <ul>
+    <li>Why the first word of a command is always a program</li>
+    <li>The difference between an argument and an option</li>
+    <li>Why a space in a file name causes trouble</li>
+    <li>What standard input, output and error are</li>
+    <li>The difference between <code>&gt;</code>, <code>&gt;&gt;</code> and <code>2&gt;</code></li>
+    <li>What a pipe does, and why small tools are worth having</li>
+    <li>Every piece of <code>curl -fsSL … | bash</code></li>
+    <li>What an exit code is, and why zero means success</li>
+    <li>Why <code>rm *</code> deserves a check with <code>ls</code> first</li>
+  </ul>
+
+  <nav class="page-nav">
+    <a href="../03-two-systems/"><span class="dir">Chapter 3</span><span class="title">← Two systems, one machine</span></a>
+    <a class="next" href="../05-where-software-comes-from/"><span class="dir">Chapter 5</span><span class="title">Where software comes from →</span></a>
+  </nav>
+
+</div>
+</main>
+
+<footer class="site-footer">
+  <div class="inner">
+    <span>system_setup — <a href="https://aikaryashala.com">aikaryashala</a></span>
+    <span class="spacer"><a href="https://github.com/aikaryashala/system_setup">Source on GitHub</a></span>
+  </div>
+</footer>
+
+<script src="../../assets/site.js"></script>
+</body>
+</html>
