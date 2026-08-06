@@ -39,6 +39,7 @@ independent extras
   09_install_maven_gradle → install_maven_gradle.sh
   10_jq_practice        →  (no script - practice page only)
   11_clang_options      →  install_sanitizers.sh
+  12_python_debugging   →  install_py_debug.sh
 ```
 
 Not every step installs something. Step 10 is a practice page for a tool step 2
@@ -51,12 +52,12 @@ Adding a step means adding all three: the numbered page directory, the script in
 Renumbering is disruptive — it changes public URLs — so append rather than insert
 unless there is a real reason.
 
-### Steps 6 to 11 are independent — keep them that way
+### Steps 6 to 12 are independent — keep them that way
 
 They exist so the main sequence stays short. Two rules follow, and both are easy
 to break by accident:
 
-- **No script in the main sequence may link to steps 6 to 11.** The `finish`
+- **No script in the main sequence may link to steps 6 to 12.** The `finish`
   message of `install_cmds.sh` points at step 3, `install_c.sh` at step 4,
   `install_py.sh` at step 5, and `install_java.sh` ends the sequence. Do not add
   "and then install the extras" to any of them.
@@ -86,15 +87,17 @@ tools went. The restriction is about the scripted install chain, not navigation.
   `-fsanitize=address` to step 3 — those are step 11. A tool that operates on
   the *output* of compiling — hex viewers, `objdump`, `valgrind`, `strace`,
   `make` — belongs in step 7.
-- **Step 4** is `python3` and `pdb` — running a script and tracing it. Anything
-  involving packages, environments or extra interpreter versions is step 8.
+- **Step 4** is `python3` alone — writing a program and running it. Debugging
+  with `pdb` is step 12; packages, environments and extra interpreter versions
+  are step 8.
 - **Step 5** is `javac`, `java` and `jshell` — compiling and running source
   files. Build tools (Maven, Gradle) are step 9.
 
-Each of steps 3, 4 and 5 ships **two sample files** that the installer writes to
+Step 5 and step 12 each ship **two sample files** that the installer writes to
 the user's home directory, because the interesting debugging skill is following
-execution from one file into another. Keep the copy in the script and the copy in
-`docs/examples/` identical.
+execution from one file into another. Steps 3 and 4 ship one file each, the same
+`sum` program in two languages, so they can be compared directly. Keep the copy
+in the script and the copy in `docs/examples/` identical.
 
 Note that `binutils` arrives as a dependency of `clang`, so `objdump`, `nm` and
 `readelf` exist after step 3 even though step 7 is what documents them. That is

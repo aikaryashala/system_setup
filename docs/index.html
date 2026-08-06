@@ -78,9 +78,9 @@
 
     <li><a class="step-card platform-ubuntu" href="04_install_py/">
       <span class="num">STEP 4</span>
-      <h3>Python and pdb</h3>
-      <p>Run a script, then stop it mid-flight and trace it line by line with the debugger built into Python.</p>
-      <span class="tools">python3 pdb trace</span>
+      <h3>Python 3</h3>
+      <p>No compiler, nothing to build. Write a file and run it — the same sum program as step 3, in one command.</p>
+      <span class="tools">python3</span>
     </a></li>
 
     <li><a class="step-card platform-ubuntu" href="05_install_java/">
@@ -110,7 +110,7 @@
 
     <h2 id="extras">Optional extras</h2>
     <p>
-      These six stand on their own. Nothing in steps 1 to 5 needs them, and
+      These seven stand on their own. Nothing in steps 1 to 5 needs them, and
       they are not part of the install-everything command below. Add them
       whenever you want what they contain.
     </p>
@@ -153,6 +153,13 @@
       <span class="tools">jq practice</span>
     </a></li>
 
+    <li><a class="step-card platform-ubuntu" href="12_python_debugging/">
+      <span class="num">STEP 12</span>
+      <h3>Debugging Python with pdb</h3>
+      <p>Stop a program in the middle, read its variables, and walk it forward one line at a time. Nothing to install.</p>
+      <span class="tools">pdb breakpoint trace</span>
+    </a></li>
+
     <li><a class="step-card platform-ubuntu" href="11_clang_options/">
       <span class="num">STEP 11</span>
       <h3>Compiler options that find bugs</h3>
@@ -178,12 +185,12 @@
     <p>
       That is everything most people need. The extras below are
       <strong>optional</strong> — skip this second command entirely unless you
-      want what steps 6 to 11 contain, and you can always come back and run it
+      want what steps 6 to 12 contain, and you can always come back and run it
       later.
     </p>
 
     <div class="codeblock" data-label="ubuntu terminal — optional extras">
-<pre><code><span class="prompt">$ </span>curl -fsSL https://aikaryashala.com/system_setup/scripts/install_all.sh | STEPS="more_cmds binary uv maven_gradle sanitizers" bash</code></pre>
+<pre><code><span class="prompt">$ </span>curl -fsSL https://aikaryashala.com/system_setup/scripts/install_all.sh | STEPS="more_cmds binary uv maven_gradle sanitizers py_debug" bash</code></pre>
     </div>
 
     <div class="callout note">
@@ -222,8 +229,8 @@
           </tr>
           <tr>
             <td>Python <span class="muted">(step 4)</span></td>
-            <td><code>python3</code>, <code>pdb</code></td>
-            <td>The interpreter, and the debugger that ships inside it. Enough to write, run and trace a program.</td>
+            <td><code>python3</code></td>
+            <td>The interpreter. Enough to write a program and run it. The debugger is step 12.</td>
           </tr>
           <tr>
             <td>Python packages <span class="muted">(step 8)</span></td>

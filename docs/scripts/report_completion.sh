@@ -6,9 +6,9 @@
 # reports the result.
 #
 # It does not merely look for the commands. It compiles and runs a C program,
-# runs a Python script under pdb, compiles and runs a Java program, and asks
-# jshell to evaluate an expression - the same tests each installer runs. A
-# command that exists but cannot do its job is reported as a failure.
+# runs a Python script, compiles and runs a Java program, and asks jshell to
+# evaluate an expression - the same tests each installer runs. A command that
+# exists but cannot do its job is reported as a failure.
 #
 # Run inside Ubuntu, after finishing step 5:
 #   curl -fsSL https://aikaryashala.com/system_setup/scripts/report_completion.sh | bash
@@ -159,10 +159,10 @@ EOF
 }
 
 # ---------------------------------------------------------------------------
-# Step 4 - python3 and pdb
+# Step 4 - python3
 
 check_step4() {
-    banner "Step 4 - Python and pdb"
+    banner "Step 4 - Python"
 
     if ! have python3; then
         fail_check "python3 is missing" "step4 python3 missing"
@@ -178,20 +178,12 @@ for n in range(1, 5):
 print(f"python works total={total}")
 EOF
 
+    # pdb is step 12, an independent extra, so it is deliberately not checked
+    # here. This verifies the main sequence only.
     if python3 "$WORK/check.py" 2>/dev/null | grep -q "total=10"; then
-        ok "python3 ran a script"
+        ok "python3 ran a script and got the right answer"
     else
         fail_check "python3 could not run a script" "step4 python3 cannot run"
-        return 0
-    fi
-
-    python3 -m pdb -c "break 5" -c continue -c "print(f'PDBTOTAL={total}')" -c quit \
-        "$WORK/check.py" >"$WORK/pdb_out" 2>&1
-
-    if grep -q "PDBTOTAL=10" "$WORK/pdb_out"; then
-        ok "pdb stopped at a breakpoint and read the program's state"
-    else
-        fail_check "pdb did not stop at a breakpoint" "step4 pdb not working"
     fi
 }
 

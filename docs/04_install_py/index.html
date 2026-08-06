@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Step 4 — Python 3 and the pdb debugger · system_setup</title>
-<meta name="description" content="Install Python 3 on Ubuntu, run a script, and trace it line by line with pdb — the debugger built into Python.">
+<title>Step 4 — Python 3 · system_setup</title>
+<meta name="description" content="Install Python 3 on Ubuntu and run your first program.">
 <link rel="stylesheet" href="../assets/style.css">
 <script>
 (function(){try{var t=localStorage.getItem('system-setup-theme');if(t){document.documentElement.setAttribute('data-theme',t);}}catch(e){}}());
@@ -32,11 +32,10 @@
   <p class="breadcrumb"><a href="../">system_setup</a> / Step 4</p>
 
   <p class="eyebrow">Step 4 · Ubuntu</p>
-  <h1>Python 3, and tracing it with pdb</h1>
+  <h1>Python 3</h1>
   <p class="lede">
-    Enough Python to write a script and run it — and the debugger that comes
-    with it, so you can stop the program mid-run and see exactly what it is
-    doing. No third-party tools, nothing to configure.
+    Python is the fastest way to get a working program. There is no compiler to
+    run and nothing to build — you write a file and run it.
   </p>
 
   <h2 id="run">Run this</h2>
@@ -46,288 +45,129 @@
   </div>
 
   <p>
-    It installs <code>python3</code> and writes two sample files into
-    <code>~/python-samples</code> for the debugging exercise below.
+    It installs <code>python3</code> and writes a sample program into
+    <code>~/python-samples</code>.
   </p>
 
+  <h2 id="whats-installed">What gets installed</h2>
+
+  <ul class="cmd-list">
+    <li><code>python3</code><span>The interpreter. It reads your file and does what each line says.</span></li>
+  </ul>
+
+  <p class="muted">
+    That is the whole list. Stopping a program in the middle to see what it is
+    doing is <a href="../12_python_debugging/">step 12</a>, and installing
+    libraries is <a href="../08_install_uv/">step 8</a>. Neither is needed to
+    write a program and run it.
+  </p>
+
+  <h2 id="sample">The sample program</h2>
+
+  <p>
+    This is the same program as <code>sum.c</code> from
+    <a href="../03_install_c/">step 3</a>, written in Python. You will find it at
+    <code>~/python-samples/sum.py</code>, and you can also
+    <a href="../examples/sum.py">download it</a>.
+  </p>
+
+  <div class="codeblock" data-label="sum.py">
+<pre><code>print("To add two numbers.")
+
+num1 = int(input("Enter the first number: "))
+num2 = int(input("Enter the second number: "))
+
+num1 = num1 + num2
+
+print(f"The sum of two numbers is {num1}.")</code></pre>
+  </div>
+
+  <p>Go to the folder:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>cd ~/python-samples</code></pre>
+  </div>
+
+  <p>And run it:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>python3 sum.py
+<span class="out">To add two numbers.</span>
+<span class="out">Enter the first number: </span>3
+<span class="out">Enter the second number: </span>4
+<span class="out">The sum of two numbers is 7.</span></code></pre>
+  </div>
+
   <div class="callout note">
-    <div class="callout-title">pdb is already there</div>
+    <div class="callout-title">Compare that with step 3</div>
     <p>
-      The debugger is part of Python's standard library. There is nothing to
-      install, no extension to add, and it works on any machine that has Python
-      — including a server you have just logged into over ssh.
+      In C the same program needed two commands: one to build it, one to run it.
+      Here there is only one, and no new file appeared. Nothing was built.
+    </p>
+    <p>
+      <code>python3</code> reads your file and carries out each line as it goes.
+      <a href="../book/07-three-ways-to-run/">Chapter 7 of the book</a> explains
+      what that costs and what it buys you.
     </p>
   </div>
 
-  <h2 id="run-a-script">Run a script</h2>
+  <h2 id="write">Write your own</h2>
+
+  <p>Make a new file with <code>nano</code>:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>nano hello.py</code></pre>
+  </div>
+
+  <p>
+    Type this in, then press <kbd>Ctrl</kbd>+<kbd>O</kbd> and <kbd>Enter</kbd> to
+    save, and <kbd>Ctrl</kbd>+<kbd>X</kbd> to leave:
+  </p>
 
   <div class="codeblock" data-label="hello.py">
-<pre><code>import sys
+<pre><code>name = input("What is your name? ")
 
-def main() -&gt; None:
-    print(f"Hello from Python {sys.version.split()[0]}")
-
-if __name__ == "__main__":
-    main()</code></pre>
+print(f"Namasthey, {name}!")</code></pre>
   </div>
 
   <div class="codeblock" data-label="ubuntu terminal">
-<pre><code><span class="prompt">$ </span>python3 hello.py
-<span class="out">Hello from Python 3.12.3</span>
-
-<span class="comment"># or an interactive prompt, to try one line at a time</span>
-<span class="prompt">$ </span>python3</code></pre>
+<pre><code><span class="prompt">$ </span>python3 hello.py</code></pre>
   </div>
 
-  <h2 id="samples">The two sample files</h2>
-
   <p>
-    Debugging gets interesting the moment a program spans more than one file, so
-    the exercise uses two. Both are in <code>~/python-samples</code> after the
-    install, and downloadable here:
-    <a href="../examples/report.py">report.py</a> and
-    <a href="../examples/stats.py">stats.py</a>.
+    Edit, run, edit, run, with nothing in between. That short loop is why Python
+    is used so widely for learning, and for getting a first version working.
   </p>
 
-  <div class="codeblock" data-label="stats.py — the module">
-<pre><code>def mean(numbers):
-    """The average. Raises ZeroDivisionError on an empty list."""
-    return sum(numbers) / len(numbers)
-
-
-def median(numbers):
-    """The middle value once the numbers are in order."""
-    ordered = sorted(numbers)
-    middle = len(ordered) // 2
-
-    if len(ordered) % 2 == 1:
-        return ordered[middle]
-    return (ordered[middle - 1] + ordered[middle]) / 2
-
-
-def spread(numbers):
-    """How far apart the largest and smallest values are."""
-    return max(numbers) - min(numbers)
-
-
-def summarise(numbers):
-    """Everything above, in one dictionary."""
-    return {
-        "count": len(numbers),
-        "mean": mean(numbers),
-        "median": median(numbers),
-        "spread": spread(numbers),
-    }</code></pre>
-  </div>
-
-  <div class="codeblock" data-label="report.py — the program">
-<pre><code>import stats
-
-READINGS = [12, 7, 3, 21, 9, 15]
-
-
-def show(title, numbers):
-    summary = stats.summarise(numbers)
-    print(f"--- {title} ---")
-    for key, value in summary.items():
-        print(f"{key:&gt;7}: {value}")
-
-
-def main():
-    show("readings", READINGS)
-
-    # This one is empty, and mean() divides by len(numbers).
-    missing = []
-    show("missing", missing)
-
-
-if __name__ == "__main__":
-    main()</code></pre>
-  </div>
-
-  <p>Run it as-is and it prints one report, then crashes:</p>
-
-  <div class="codeblock" data-label="ubuntu terminal">
-<pre><code><span class="prompt">$ </span>cd ~/python-samples
-<span class="prompt">$ </span>python3 report.py
-<span class="out">--- readings ---</span>
-<span class="out">  count: 6</span>
-<span class="out">   mean: 11.166666666666666</span>
-<span class="out"> median: 10.5</span>
-<span class="out"> spread: 18</span>
-<span class="out">Traceback (most recent call last):</span>
-<span class="out">  ...</span>
-<span class="out">  File "stats.py", line 10, in mean</span>
-<span class="out">    return sum(numbers) / len(numbers)</span>
-<span class="out">ZeroDivisionError: division by zero</span></code></pre>
-  </div>
-
-  <p>The crash is deliberate. Finding out why, without adding a single <code>print</code>, is the exercise.</p>
-
-  <div class="callout note">
-    <div class="callout-title">Notice what is <em>missing</em> from that output</div>
-    <p>
-      There is no <code>--- missing ---</code> heading. The program asked for the
-      second report, but never got as far as printing its title — because
-      <code>show()</code> calls <code>stats.summarise()</code> on its first line,
-      and that is where it died.
-    </p>
-    <p>
-      That absence is your first clue, and reading output for what is
-      <em>not</em> there is a real debugging skill. The traceback confirms it:
-      the last line names <code>stats.py</code>, not <code>report.py</code>.
-    </p>
-  </div>
-
-  <h2 id="pdb">Trace it with pdb</h2>
-
-  <h3>Start the program under the debugger</h3>
-
-  <div class="codeblock" data-label="ubuntu terminal">
-<pre><code><span class="prompt">$ </span>python3 -m pdb report.py
-<span class="out">&gt; /home/you/python-samples/report.py(1)&lt;module&gt;()</span>
-<span class="out">-&gt; import stats</span>
-<span class="out">(Pdb) </span></code></pre>
-  </div>
+  <h2 id="interactive">Try one line at a time</h2>
 
   <p>
-    It stops before the first line runs. From here you drive it one command at a
-    time:
-  </p>
-
-  <div class="codeblock" data-label="inside pdb">
-<pre><code><span class="out">(Pdb) </span>b report.py:20          <span class="comment"># break where show() is called with READINGS</span>
-<span class="out">(Pdb) </span>c                       <span class="comment"># continue until it gets there</span>
-<span class="out">(Pdb) </span>l                       <span class="comment"># list the source around this line</span>
-<span class="out">(Pdb) </span>s                       <span class="comment"># step INTO show()</span>
-<span class="out">(Pdb) </span>s                       <span class="comment"># step again - now inside stats.py</span>
-<span class="out">(Pdb) </span>w                       <span class="comment"># where am I? show the call stack</span>
-<span class="out">(Pdb) </span>a                       <span class="comment"># what arguments did this function get?</span>
-<span class="out">(Pdb) </span>p numbers               <span class="comment"># print one value</span>
-<span class="out">(Pdb) </span>pp summary              <span class="comment"># pretty-print a bigger one</span>
-<span class="out">(Pdb) </span>r                       <span class="comment"># run until this function returns</span>
-<span class="out">(Pdb) </span>c                       <span class="comment"># continue to the next breakpoint or the end</span>
-<span class="out">(Pdb) </span>q                       <span class="comment"># quit</span></code></pre>
-  </div>
-
-  <div class="callout tip">
-    <div class="callout-title"><code>s</code> versus <code>n</code> — the distinction that matters</div>
-    <p>
-      <code>n</code> (next) runs the whole of a function call and stops on the
-      following line. <code>s</code> (step) goes <em>inside</em> it. Stepping
-      into <code>stats.summarise()</code> from <code>report.py</code> is how you
-      cross from one file into another.
-    </p>
-  </div>
-
-  <h3>Let it crash, then look around</h3>
-
-  <p>
-    The fastest way to understand an exception is to catch the program at the
-    moment it died, with every variable still in place:
+    Run <code>python3</code> with no file and it waits for you to type. This is
+    handy for checking what something does before you put it in a program.
   </p>
 
   <div class="codeblock" data-label="ubuntu terminal">
-<pre><code><span class="prompt">$ </span>python3 -m pdb -c continue report.py
-<span class="out">--- readings ---</span>
-<span class="out">...</span>
-<span class="out">ZeroDivisionError: division by zero</span>
-<span class="out">&gt; /home/you/python-samples/stats.py(7)mean()</span>
-<span class="out">-&gt; return sum(numbers) / len(numbers)</span>
-<span class="out">(Pdb) </span>p numbers
-<span class="out">[]</span>
-<span class="out">(Pdb) </span>p len(numbers)
-<span class="out">0</span>
-<span class="out">(Pdb) </span>w</code></pre>
-  </div>
-
-  <p>
-    <code>-c continue</code> tells pdb to run straight through and only take
-    control when something goes wrong. It drops you into
-    <em>post-mortem</em> mode, stopped inside <code>mean()</code> in
-    <code>stats.py</code> with <code>numbers</code> still visible as
-    <code>[]</code>. <code>w</code> shows the chain of calls that led there —
-    <code>main</code> → <code>show</code> → <code>summarise</code> →
-    <code>mean</code>.
-  </p>
-
-  <h3>Stop at an exact spot in the code</h3>
-
-  <p>
-    Instead of remembering a line number, write
-    <code>breakpoint()</code> where you want to stop and just run the file
-    normally:
-  </p>
-
-  <div class="codeblock" data-label="report.py">
-<pre><code>def main():
-    show("readings", READINGS)
-
-    missing = []
-    breakpoint()          # execution stops here, and pdb takes over
-    show("missing", missing)</code></pre>
-  </div>
-
-  <div class="codeblock" data-label="ubuntu terminal">
-<pre><code><span class="prompt">$ </span>python3 report.py</code></pre>
-  </div>
-
-  <h2 id="commands">pdb commands worth memorising</h2>
-
-  <div class="table-wrap">
-    <table>
-      <thead><tr><th>Command</th><th>Short</th><th>What it does</th></tr></thead>
-      <tbody>
-        <tr><td><code>list</code></td><td><code>l</code></td><td>Show the source around the current line</td></tr>
-        <tr><td><code>longlist</code></td><td><code>ll</code></td><td>Show the whole current function</td></tr>
-        <tr><td><code>next</code></td><td><code>n</code></td><td>Run the next line, stepping over calls</td></tr>
-        <tr><td><code>step</code></td><td><code>s</code></td><td>Run the next line, stepping into calls</td></tr>
-        <tr><td><code>return</code></td><td><code>r</code></td><td>Run until the current function returns</td></tr>
-        <tr><td><code>until 30</code></td><td><code>unt 30</code></td><td>Run until line 30 — useful for escaping a loop</td></tr>
-        <tr><td><code>continue</code></td><td><code>c</code></td><td>Carry on until the next breakpoint</td></tr>
-        <tr><td><code>break report.py:20</code></td><td><code>b report.py:20</code></td><td>Break at a line in a file</td></tr>
-        <tr><td><code>break stats.mean</code></td><td><code>b stats.mean</code></td><td>Break whenever a function is entered</td></tr>
-        <tr><td><code>break stats.py:7, len(numbers) == 0</code></td><td></td><td>Break only when a condition holds</td></tr>
-        <tr><td><code>tbreak</code></td><td></td><td>A breakpoint that fires once, then removes itself</td></tr>
-        <tr><td><code>clear</code></td><td><code>cl</code></td><td>Remove breakpoints</td></tr>
-        <tr><td><code>print expr</code></td><td><code>p expr</code></td><td>Evaluate and show one expression</td></tr>
-        <tr><td><code>pp expr</code></td><td></td><td>The same, pretty-printed — good for dicts and lists</td></tr>
-        <tr><td><code>args</code></td><td><code>a</code></td><td>The arguments this function was called with</td></tr>
-        <tr><td><code>where</code></td><td><code>w</code></td><td>The call stack: how did we get here?</td></tr>
-        <tr><td><code>up</code> / <code>down</code></td><td><code>u</code> / <code>d</code></td><td>Move to the calling frame and back</td></tr>
-        <tr><td><code>display total</code></td><td></td><td>Show this value automatically every time you stop</td></tr>
-        <tr><td><code>interact</code></td><td></td><td>Open a full Python prompt with the current variables</td></tr>
-        <tr><td><code>quit</code></td><td><code>q</code></td><td>Stop debugging</td></tr>
-      </tbody>
-    </table>
+<pre><code><span class="prompt">$ </span>python3
+<span class="out">&gt;&gt;&gt; </span>2 + 3
+<span class="out">5</span>
+<span class="out">&gt;&gt;&gt; </span>"hello".upper()
+<span class="out">'HELLO'</span>
+<span class="out">&gt;&gt;&gt; </span>numbers = [12, 7, 3, 21]
+<span class="out">&gt;&gt;&gt; </span>sum(numbers)
+<span class="out">43</span>
+<span class="out">&gt;&gt;&gt; </span>len(numbers)
+<span class="out">4</span>
+<span class="out">&gt;&gt;&gt; </span>exit()</code></pre>
   </div>
 
   <div class="callout warn">
-    <div class="callout-title">A variable named like a command</div>
+    <div class="callout-title">Getting out again</div>
     <p>
-      If you have a variable called <code>n</code>, <code>c</code> or
-      <code>l</code>, typing its name runs the command instead of showing the
-      value. Use <code>p n</code> — or <code>!n</code>, which forces pdb to treat
-      the rest of the line as Python.
+      Type <code>exit()</code> and press Enter, or press
+      <kbd>Ctrl</kbd>+<kbd>D</kbd>. The <code>&gt;&gt;&gt;</code> prompt is
+      Python waiting, not your shell — your normal commands will not work while
+      it is showing.
     </p>
-  </div>
-
-  <h2 id="trace">Tracing every line, without stopping</h2>
-
-  <p>
-    Sometimes you do not want to step — you want to see the whole path the
-    program took. Python ships that too:
-  </p>
-
-  <div class="codeblock" data-label="ubuntu terminal">
-<pre><code><span class="comment"># print every line as it executes</span>
-<span class="prompt">$ </span>python3 -m trace --trace report.py
-
-<span class="comment"># just count how many times each line ran</span>
-<span class="prompt">$ </span>python3 -m trace --count -C . report.py
-
-<span class="comment"># show which functions called which</span>
-<span class="prompt">$ </span>python3 -m trace --trackcalls report.py</code></pre>
   </div>
 
   <h2 id="verify">Check it worked</h2>
@@ -338,51 +178,29 @@ if __name__ == "__main__":
 <pre><code><span class="prompt">$ </span>python3 --version</code></pre>
   </div>
 
-  <p>That the debugger is there:</p>
-
-  <div class="codeblock" data-label="ubuntu terminal">
-<pre><code><span class="prompt">$ </span>python3 -c "import pdb; print('pdb ok')"</code></pre>
-  </div>
-
-  <p>That your sample files arrived:</p>
+  <p>That your sample arrived:</p>
 
   <div class="codeblock" data-label="ubuntu terminal">
 <pre><code><span class="prompt">$ </span>ls ~/python-samples</code></pre>
   </div>
 
-  <p>
-    And — the one that actually proves Python works — that a program runs and
-    produces the right numbers:
-  </p>
+  <p>And the one that really proves Python works — a program that runs and gives the right answer:</p>
 
   <div class="codeblock" data-label="ubuntu terminal">
-<pre><code><span class="prompt">$ </span>cd ~/python-samples &amp;&amp; python3 report.py</code></pre>
-  </div>
-
-  <p>
-    You should see the report, then the deliberate crash. Both halves matter: the
-    numbers mean <code>stats.py</code> was found and its arithmetic ran, and the
-    <code>ZeroDivisionError</code> means you have something real to practise the
-    debugger on.
-  </p>
-
-  <div class="callout tip">
-    <div class="callout-title">The install script already checked this</div>
-    <p>
-      Before it finished, the installer ran <code>report.py</code> itself,
-      confirmed the report and the expected error, and drove pdb through the
-      post-mortem exercise. If it printed <span class="mono">Done.</span> with no
-      warnings, everything on this page works on your machine.
-    </p>
+<pre><code><span class="prompt">$ </span>cd ~/python-samples &amp;&amp; python3 sum.py</code></pre>
   </div>
 
   <div class="callout note">
-    <div class="callout-title">Need to install a library?</div>
+    <div class="callout-title">Where to go for more</div>
     <p>
-      That is <a href="../08_install_uv/">step 8</a>, which installs
-      <strong>uv</strong> — one tool covering packages, projects and Python
-      versions. Do not use <code>pip</code> against the system Python; Ubuntu
-      depends on it and modern releases refuse the change anyway.
+      To stop a program in the middle and look at its variables, go to
+      <a href="../12_python_debugging/">step 12</a>.
+    </p>
+    <p>
+      To install a library such as <code>requests</code>, go to
+      <a href="../08_install_uv/">step 8</a>. Do not use <code>pip</code> against
+      the system Python — Ubuntu depends on it, and modern releases refuse the
+      change anyway.
     </p>
   </div>
 

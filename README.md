@@ -37,7 +37,7 @@ curl -fsSL https://aikaryashala.com/system_setup/scripts/install_all.sh | bash
 # …or one step at a time
 curl -fsSL https://aikaryashala.com/system_setup/scripts/install_cmds.sh | bash   # core commands
 curl -fsSL https://aikaryashala.com/system_setup/scripts/install_c.sh    | bash   # clang + lldb
-curl -fsSL https://aikaryashala.com/system_setup/scripts/install_py.sh   | bash   # python3 + pdb
+curl -fsSL https://aikaryashala.com/system_setup/scripts/install_py.sh   | bash   # python3
 curl -fsSL https://aikaryashala.com/system_setup/scripts/install_java.sh | bash   # JDK: javac java jshell
 ```
 
@@ -48,6 +48,8 @@ curl -fsSL https://aikaryashala.com/system_setup/scripts/install_more_cmds.sh   
 curl -fsSL https://aikaryashala.com/system_setup/scripts/install_binary.sh       | bash  # xxd objdump valgrind make …
 curl -fsSL https://aikaryashala.com/system_setup/scripts/install_uv.sh           | bash  # uv uvx ruff
 curl -fsSL https://aikaryashala.com/system_setup/scripts/install_maven_gradle.sh | bash  # mvn gradle
+curl -fsSL https://aikaryashala.com/system_setup/scripts/install_sanitizers.sh   | bash  # -fsanitize=address
+curl -fsSL https://aikaryashala.com/system_setup/scripts/install_py_debug.sh     | bash  # pdb practice files
 ```
 
 Prefer to read before you run? Every script is plain text — open the URL in a
@@ -65,11 +67,11 @@ Steps 1–5 are the main sequence and run in order.
 | 1.5 | [Finding your way around](docs/01_5_navigate) | Nothing — `cd` `ls` `mkdir` `touch` `cp` `mv` `rm` `cat` `less` come with Ubuntu |
 | 2 | [Core commands](docs/02_install_cmds) | `curl` `ssh` `ip` `ping` `dig` `git` `nano` `vim` `less` `file` `jq` `tree` `zip` `unzip` `htop` |
 | 3 | [C: clang and lldb](docs/03_install_c) | `clang` `lldb` `lld` — `clang -g hello.c -o hello`, then debug it |
-| 4 | [Python and pdb](docs/04_install_py) | `python3` and `pdb` — run a script, and trace it line by line |
+| 4 | [Python 3](docs/04_install_py) | `python3` — write a program and run it |
 | 5 | [Java: javac and jshell](docs/05_install_java) | Temurin JDK (LTS), `javac` `java` `jshell` `jar` `javap` |
 | 5.5 | [Check and report](docs/05_5_report) | Installs nothing — tests steps 2–5 by using them, then reports the result |
 
-Steps 6–11 are **independent extras**. Nothing in steps 1–5 needs them, no script
+Steps 6–12 are **independent extras**. Nothing in steps 1–5 needs them, no script
 in the main sequence links to them, and `install_all.sh` does not run them unless
 asked. Install any of them at any time.
 
@@ -81,14 +83,15 @@ asked. Install any of them at any time.
 | 9 | [Java build tools](docs/09_install_maven_gradle) | Maven, Gradle — needs the JDK from step 5 |
 | 10 | [Doing more with jq](docs/10_jq_practice) | Practice only, no install — filtering and reshaping JSON |
 | 11 | [Compiler options that find bugs](docs/11_clang_options) | `-Wall` `-Wextra` `-fsanitize=address` — needs clang from step 3 |
+| 12 | [Debugging Python with pdb](docs/12_python_debugging) | Nothing to install — pdb ships with Python |
 
 ### Tooling choices, and why
 
 - **`clang` + `lldb`** rather than `gcc` + `gdb`. Clang's diagnostics are far
   friendlier to a beginner, and LLDB pairs with it naturally.
-- **`python3` + `pdb` first, `uv` when you need packages.** Step 4 is just the
-  interpreter and the debugger that ships inside it — enough to write, run and
-  trace a program with nothing installed. When a project needs a library,
+- **`python3` first, `uv` when you need packages.** Step 4 is just the
+  interpreter — enough to write a program and run it with nothing else
+  installed. Debugging with `pdb` is step 12. When a project needs a library,
   step 8's `uv` replaces `pip`, `venv`, `virtualenv`, `pyenv`, `pipx` and
   `poetry` in one fast binary, and manages interpreters too. No example in this
   project uses `pip`.
@@ -125,6 +128,7 @@ asked. Install any of them at any time.
     │   ├── install_uv.sh            # step 8  (independent)
     │   ├── install_maven_gradle.sh  # step 9  (independent)
     │   ├── install_sanitizers.sh    # step 11 (independent)
+    │   ├── install_py_debug.sh      # step 12 (independent)
     │   └── install_all.sh           # steps 2–5, in order
     ├── 01_install_ubuntu/index.html
     ├── 01_5_navigate/index.html       # practice page, no script
@@ -138,7 +142,8 @@ asked. Install any of them at any time.
     ├── 08_install_uv/index.html
     ├── 09_install_maven_gradle/index.html
     ├── 10_jq_practice/index.html      # practice page, no script
-    └── 11_clang_options/index.html
+    ├── 11_clang_options/index.html
+    └── 12_python_debugging/index.html
 ```
 
 The numbered directories are both the site's URL structure and the intended
