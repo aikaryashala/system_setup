@@ -11,6 +11,10 @@ working **Ubuntu (WSL2)** development environment with toolchains for **C**,
 Everything is designed for someone starting from zero: run one command per step,
 in order, and read the matching page on the website if you want to know what it did.
 
+There is also a [book](docs/book) — short chapters in plain English explaining
+what the steps are doing and why. The steps tell you what to type; the book tells
+you what is happening.
+
 ---
 
 ## Quick start
@@ -58,6 +62,7 @@ Steps 1–5 are the main sequence and run in order.
 | Step | Page | Installs |
 | --- | --- | --- |
 | 1 | [Install Ubuntu](docs/01_install_ubuntu) | WSL2, **Ubuntu 24.04 LTS** (pinned; skipped if any Ubuntu is already installed), virtualization features |
+| 1.5 | [Finding your way around](docs/01_5_navigate) | Nothing — `cd` `ls` `mkdir` `touch` `cp` `mv` `rm` `cat` `less` come with Ubuntu |
 | 2 | [Core commands](docs/02_install_cmds) | `curl` `ssh` `ip` `ping` `dig` `git` `nano` `vim` `less` `file` `jq` `tree` `zip` `unzip` `htop` |
 | 3 | [C: clang and lldb](docs/03_install_c) | `clang` `lldb` `lld` — `clang -g hello.c -o hello`, then debug it |
 | 4 | [Python and pdb](docs/04_install_py) | `python3` and `pdb` — run a script, and trace it line by line |
@@ -105,6 +110,7 @@ asked. Install any of them at any time.
 └── docs/                            # ← GitHub Pages root
     ├── index.html                   # landing page
     ├── assets/                      # shared css + js (no external CDNs)
+    ├── book/                        # the book - chapter pages, plain English
     ├── examples/                    # downloadable versions of the sample programs
     ├── scripts/                     # every installer, publicly curl-able
     │   ├── common.sh                # shared helpers, sourced by the others
@@ -121,6 +127,7 @@ asked. Install any of them at any time.
     │   ├── install_sanitizers.sh    # step 11 (independent)
     │   └── install_all.sh           # steps 2–5, in order
     ├── 01_install_ubuntu/index.html
+    ├── 01_5_navigate/index.html       # practice page, no script
     ├── 02_install_cmds/index.html
     ├── 03_install_c/index.html
     ├── 04_install_py/index.html

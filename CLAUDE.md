@@ -25,6 +25,7 @@ structure. They must stay aligned:
 ```
 main sequence, runs in order
   01_install_ubuntu   →  install_ubuntu_wsl.ps1
+  01_5_navigate       →  (no script - practice page only)
   02_install_cmds     →  install_cmds.sh
   03_install_c        →  install_c.sh
   04_install_py       →  install_py.sh
@@ -69,6 +70,12 @@ tools went. The restriction is about the scripted install chain, not navigation.
 
 ### What belongs where
 
+- **Step 1.5** teaches the filesystem: `pwd cd ls mkdir touch cp mv rm rmdir
+  cat head less`, plus `.` `..` `~` `/` and Tab completion. These ship with
+  Ubuntu, so there is nothing to install and no script. It exists because every
+  step from 3 onwards says things like "create hello.c" and assumes a student
+  can. Do not use `nano` here — it only arrives in step 2, so this page uses
+  `touch` and `echo >` instead.
 - **Step 2** is the irreducible set: `curl ssh ip ping dig git nano vim less
   file jq tree zip unzip htop`. Anything else that is a general-purpose command
   belongs in step 6. `jq` is here, but **only** as a JSON validity check
@@ -283,6 +290,41 @@ are load-bearing:
 
 `DRY_RUN=1` runs every check and sends nothing. Use it for any testing — do not
 submit test rows to the live form.
+
+## The book (`docs/book/`)
+
+Chapter pages that explain *why* the steps work. The split matters:
+
+- **Steps** answer "what do I type?" — read at a keyboard, a few minutes each.
+- **Book** answers "why does that work?" — read away from the keyboard.
+
+Never duplicate. A step may link to a chapter and a chapter may link to a step,
+but the same explanation must not live in both.
+
+### Very simple English, on purpose
+
+Many readers are learning computing and English at the same time. This is a hard
+constraint on the book, not a preference:
+
+- Short sentences. One idea per sentence.
+- Common words. Write "folder", not "hierarchy"; "list", not "enumerate".
+- No idioms, no metaphors that need cultural knowledge to decode.
+- Every technical word appears in **bold** the first time and is explained in the
+  next sentence. The reader should never need to look anything up.
+- Prefer a concrete example over an abstract rule.
+
+The step pages have a slightly richer voice. Do not carry that voice into the
+book.
+
+### Chapter layout
+
+Each chapter ends with two sections: **Try it**, pointing at the step that
+practises the ideas, and **You can now explain**, a short self-check list. No
+quizzes and no grading — the book is not assessed.
+
+Chapters live in `docs/book/NN-slug/`, numbered to match the contents page. A
+chapter that is not written yet is listed on the contents page as plain muted
+text, not a link.
 
 ## Tone of the website copy
 

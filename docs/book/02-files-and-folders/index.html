@@ -1,0 +1,380 @@
+<!doctype html>
+<html lang="en" data-theme="">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chapter 2 — Files, folders, and the tree · system_setup</title>
+<meta name="description" content="What a file is, what a folder is, and how Linux keeps everything in one tree. Written in plain English.">
+<link rel="stylesheet" href="../../assets/style.css">
+<script>
+(function(){try{var t=localStorage.getItem('system-setup-theme');if(t){document.documentElement.setAttribute('data-theme',t);}}catch(e){}}());
+</script>
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <div class="inner">
+    <a class="brand" href="../../"><span class="mark">&gt;_</span> system_setup</a>
+    <nav class="header-nav">
+      <a href="../">Book</a>
+      <a href="../../scripts/">Scripts</a>
+      <a href="https://github.com/aikaryashala/system_setup">GitHub</a>
+      <button class="theme-toggle" type="button" aria-label="Switch theme">☽</button>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+<div class="prose">
+
+  <p class="breadcrumb"><a href="../../">system_setup</a> / <a href="../">The Book</a> / Chapter 2</p>
+
+  <p class="eyebrow">Chapter 2</p>
+  <h1>Files, folders, and the tree</h1>
+  <p class="lede">
+    Everything on your computer is kept in files. Files are kept in folders.
+    Folders are kept in other folders. This chapter explains how that is put
+    together, and how you tell the computer where something is.
+  </p>
+
+  <h2 id="file">What a file is</h2>
+
+  <p>
+    A <strong>file</strong> is a saved lump of data with a name. A photo is a
+    file. A song is a file. The C program you will write is a file.
+  </p>
+
+  <p>
+    The computer does not know what is inside a file until it looks. To the
+    disk, every file is just a long line of numbers. What those numbers
+    <em>mean</em> depends on the program that reads them.
+  </p>
+
+  <div class="callout note">
+    <div class="callout-title">The name does not decide what a file is</div>
+    <p>
+      On Windows, a name ending in <code>.txt</code> feels like a kind of file.
+      On Linux, that ending is only part of the name. Nothing more.
+    </p>
+    <p>
+      You can rename a photo to <code>notes.txt</code>. It is still a photo. You
+      have only changed its name. This is why
+      <a href="../../02_install_cmds/">step 2</a> installs a command called
+      <code>file</code>: it opens the file, looks at the first few numbers, and
+      tells you what it really is.
+    </p>
+  </div>
+
+  <h2 id="folder">What a folder is</h2>
+
+  <p>
+    A <strong>folder</strong> holds files. It can also hold other folders. You
+    will see the word <strong>directory</strong> used for the same thing.
+    Directory is the older word, and most commands use it. Folder and directory
+    mean the same.
+  </p>
+
+  <p>
+    A folder does not really contain your files, the way a box contains books.
+    It is a list. The folder holds a list of names, and where to find each one
+    on the disk. This is a small point, but it explains a few things later.
+  </p>
+
+  <h2 id="tree">One tree, not many drives</h2>
+
+  <p>
+    Windows gives each disk a letter. Your main disk is <code>C:</code>. A pen
+    drive might be <code>D:</code>. Each one starts its own tree.
+  </p>
+
+  <p>
+    Linux does not do this. There is <strong>one</strong> tree. It starts at a
+    single point called the <strong>root</strong>, written as one slash:
+    <code>/</code>. Everything on the machine hangs somewhere below it.
+  </p>
+
+  <div class="codeblock" data-label="the tree, simplified">
+<pre><code>/                     the root - the top of everything
+├── bin               programs that come with the system
+├── etc               settings files
+├── home
+│   └── yourname      your own folder
+│       ├── practice
+│       └── notes
+├── mnt
+│   └── c             your Windows disk, if you use WSL
+├── tmp               space for junk, cleared often
+└── usr               more programs and their files</code></pre>
+  </div>
+
+  <p>
+    Look at <code>/mnt/c</code> in that picture. Your Windows disk is not a
+    separate world. It is a branch of the same tree. That is why you can reach
+    your Windows files from Linux without doing anything special.
+  </p>
+
+  <h2 id="path">A path is a set of directions</h2>
+
+  <p>
+    A <strong>path</strong> tells the computer where something is. You build one
+    by naming each folder on the way down, with a slash between the names.
+  </p>
+
+  <div class="codeblock">
+<pre><code>/home/yourname/notes/day1.txt</code></pre>
+  </div>
+
+  <p>Read it from left to right:</p>
+
+  <ul>
+    <li>start at <code>/</code>, the root</li>
+    <li>go into <code>home</code></li>
+    <li>go into <code>yourname</code></li>
+    <li>go into <code>notes</code></li>
+    <li>and there is the file, <code>day1.txt</code></li>
+  </ul>
+
+  <div class="callout note">
+    <div class="callout-title">The first slash and the middle slashes do different jobs</div>
+    <p>
+      The slash at the start means <em>the root</em>. The other slashes only
+      separate names. So <code>/home/yourname</code> starts at the root.
+      <code>home/yourname</code> does not.
+    </p>
+  </div>
+
+  <h2 id="two-kinds">Two ways to write a path</h2>
+
+  <p>
+    The shell always remembers one folder you are "in". It is called your
+    <strong>current directory</strong>. The command <code>pwd</code> prints it.
+  </p>
+
+  <p>
+    Once there is a current directory, there are two ways to point at a file.
+  </p>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Kind</th><th>Starts with</th><th>Means</th><th>Example</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Absolute</strong></td>
+          <td><code>/</code></td>
+          <td>The full way from the root. Works from anywhere.</td>
+          <td><code>/home/asha/notes/day1.txt</code></td>
+        </tr>
+        <tr>
+          <td><strong>Relative</strong></td>
+          <td>a name</td>
+          <td>The way from where you are now.</td>
+          <td><code>notes/day1.txt</code></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    An absolute path is like giving your full address. A relative path is like
+    saying "two doors down". The second one is shorter, but it only works if the
+    other person knows where you are standing.
+  </p>
+
+  <div class="callout tip">
+    <div class="callout-title">This is why the same command can work and then fail</div>
+    <p>
+      A student types <code>cat notes/day1.txt</code> and it works. Later the
+      same command says <em>No such file</em>. Nothing is broken. They have moved
+      to a different folder, and the relative path now points somewhere else.
+    </p>
+    <p>
+      When a file cannot be found, run <code>pwd</code> first. Most of the time
+      the answer is there.
+    </p>
+  </div>
+
+  <h2 id="shortcuts">Four short names</h2>
+
+  <p>Four names come up again and again. They are not folders you made. The system provides them.</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Name</th><th>Means</th></tr></thead>
+      <tbody>
+        <tr><td><code>/</code></td><td>the root, the top of the tree</td></tr>
+        <tr><td><code>.</code></td><td>the folder I am in now</td></tr>
+        <tr><td><code>..</code></td><td>the folder one level up</td></tr>
+        <tr><td><code>~</code></td><td>my home folder</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    Every folder holds <code>.</code> and <code>..</code>, even a folder you
+    just made and left empty. They are put there for you. That is why
+    <code>cd ..</code> works everywhere.
+  </p>
+
+  <div class="callout note">
+    <div class="callout-title">Why you must type <code>./hello</code></div>
+    <p>
+      In <a href="../../03_install_c/">step 3</a> you build a program and run it
+      with <code>./hello</code>, not <code>hello</code>.
+    </p>
+    <p>
+      When you type a bare name, the shell looks for it in a fixed list of
+      system folders. Your new program is not in that list. Writing
+      <code>./hello</code> gives a path instead of a name, and a path says
+      exactly where to look: <em>here</em>.
+    </p>
+  </div>
+
+  <h2 id="home">Your home folder</h2>
+
+  <p>
+    Every user on the machine gets one folder of their own, under
+    <code>/home</code>. Yours is <code>/home/</code> plus your username. You can
+    write files there. You cannot write in most other places without special
+    permission.
+  </p>
+
+  <p>
+    This is why the setup steps put things in your home folder:
+    <code>~/python-samples</code>, <code>~/java-samples</code>,
+    <code>~/c-samples</code>. They belong to you, so nothing has to ask
+    permission.
+  </p>
+
+  <h2 id="hidden">Hidden files</h2>
+
+  <p>
+    A file whose name starts with a dot is <strong>hidden</strong>. Plain
+    <code>ls</code> does not show it. <code>ls -a</code> does.
+  </p>
+
+  <p>
+    Nothing is being kept secret. It is only a way to keep settings files out of
+    sight. You have one already, called <code>.bashrc</code>. It holds settings
+    for your shell, and several of the setup scripts add a line to it.
+  </p>
+
+  <h2 id="names">Three rules about names</h2>
+
+  <h3>Capital letters matter</h3>
+
+  <p>
+    <code>Report.java</code> and <code>report.java</code> are two different
+    files on Linux. On Windows they are the same file. This surprises people who
+    come from Windows.
+  </p>
+
+  <p>
+    It also explains a rule in <a href="../../05_install_java/">step 5</a>: a
+    Java class called <code>Report</code> must be in a file called
+    <code>Report.java</code>, with the same capital R.
+  </p>
+
+  <h3>Spaces cause trouble</h3>
+
+  <p>
+    The shell uses spaces to separate one word from the next. A file called
+    <code>my notes.txt</code> looks like two things to the shell:
+    <code>my</code> and <code>notes.txt</code>.
+  </p>
+
+  <p>
+    You can work around it with quotes. It is easier not to have the problem.
+    Use a dash or an underscore instead: <code>my-notes.txt</code> or
+    <code>my_notes.txt</code>.
+  </p>
+
+  <h3>The ending is only a habit</h3>
+
+  <p>
+    <code>.txt</code>, <code>.c</code>, <code>.java</code> are useful to
+    <em>people</em>, and some programs do look at them. But Linux does not force
+    it. The ending is part of the name, nothing more.
+  </p>
+
+  <h2 id="delete">What deleting really does</h2>
+
+  <p>
+    Remember that a folder is a list of names. When you delete a file, the
+    system removes its name from that list and marks the space as free.
+  </p>
+
+  <p>
+    There is no Recycle Bin in the terminal. Nothing is moved anywhere first.
+    The name is simply gone, and the space will be used by the next thing that
+    needs it.
+  </p>
+
+  <div class="callout stop">
+    <div class="callout-title">This is why <code>rm</code> has no undo</div>
+    <p>
+      There is nothing to undo <em>to</em>. The file was not put in a holding
+      place. Read the whole line before you press Enter, every time.
+    </p>
+  </div>
+
+  <h2 id="practise">Try it</h2>
+
+  <p>
+    <a href="../../01_5_navigate/">Step 1.5</a> walks through these commands with
+    a copy button on each one. If you have not done it yet, do it now. This
+    chapter makes far more sense once your hands have done the work.
+  </p>
+
+  <p>Two small things to try that are not on that page:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>cd /home/../home/../etc</code></pre>
+  </div>
+
+  <p>
+    That is a silly path on purpose. It goes up and down and lands in
+    <code>/etc</code> anyway. Run <code>pwd</code> after it. Paths are followed
+    one step at a time, so a strange one still works.
+  </p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>ls -a ~</code></pre>
+  </div>
+
+  <p>
+    Count how many names begin with a dot. Those were all made for you when your
+    account was created.
+  </p>
+
+  <h2 id="learned">You can now explain</h2>
+
+  <ul>
+    <li>What a file is, and why its name does not decide what it holds</li>
+    <li>Why Linux has one tree and no drive letters</li>
+    <li>The difference between an absolute path and a relative one</li>
+    <li>What <code>.</code>, <code>..</code>, <code>~</code> and <code>/</code> mean</li>
+    <li>Why you must type <code>./hello</code> and not <code>hello</code></li>
+    <li>Why <code>Report.java</code> and <code>report.java</code> are different files</li>
+    <li>Why a deleted file cannot be brought back</li>
+  </ul>
+
+  <nav class="page-nav">
+    <a href="../"><span class="dir">Back</span><span class="title">Contents</span></a>
+    <a class="next" href="../../01_5_navigate/"><span class="dir">Practise it</span><span class="title">Step 1.5: Finding your way around →</span></a>
+  </nav>
+
+</div>
+</main>
+
+<footer class="site-footer">
+  <div class="inner">
+    <span>system_setup — <a href="https://aikaryashala.com">aikaryashala</a></span>
+    <span class="spacer"><a href="https://github.com/aikaryashala/system_setup">Source on GitHub</a></span>
+  </div>
+</footer>
+
+<script src="../../assets/site.js"></script>
+</body>
+</html>

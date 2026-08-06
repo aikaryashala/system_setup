@@ -105,11 +105,15 @@ while IFS= read -r page; do
         href="$(printf '%s' "$anchor" | sed -E 's/.*href="([^"]*)".*/\1/')"
         label="$(printf '%s' "$anchor" | sed -E 's/.*<span class="title">([^<]*)<\/span>.*/\1/')"
 
-        # Only compare against real step pages. "../" is the site index and
-        # "../scripts/" is a reference list; their labels are meant to say
-        # "go back", not to repeat a heading.
+        # Only compare against numbered pages - steps and book chapters. Links
+        # to "../", "../../" and "../scripts/" are "go back" links, and their
+        # labels are meant to be generic rather than repeat a heading.
+        #
+        # Three shapes, because pages sit at different depths: a book chapter
+        # reaches a step with ../../, and the contents page reaches a chapter
+        # with no prefix at all.
         case "$href" in
-            ../[0-9]*/) : ;;
+            [0-9]*/|../[0-9]*/|../../[0-9]*/) : ;;
             *) continue ;;
         esac
 

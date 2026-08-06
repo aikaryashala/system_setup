@@ -1,0 +1,463 @@
+<!doctype html>
+<html lang="en" data-theme="">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Step 1.5 — Finding your way around · system_setup</title>
+<meta name="description" content="Move around the Ubuntu filesystem and create, read, copy and delete files and folders — the commands every later step assumes you know.">
+<link rel="stylesheet" href="../assets/style.css">
+<script>
+(function(){try{var t=localStorage.getItem('system-setup-theme');if(t){document.documentElement.setAttribute('data-theme',t);}}catch(e){}}());
+</script>
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <div class="inner">
+    <a class="brand" href="../"><span class="mark">&gt;_</span> system_setup</a>
+    <nav class="header-nav">
+      <a href="../book/">Book</a>
+      <a href="../scripts/">Scripts</a>
+      <a href="https://github.com/aikaryashala/system_setup">GitHub</a>
+      <button class="theme-toggle" type="button" aria-label="Switch theme">☽</button>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+<div class="prose">
+
+  <p class="breadcrumb"><a href="../">system_setup</a> / Step 1.5</p>
+
+  <p class="eyebrow">Step 1.5 · Ubuntu · Nothing to install</p>
+  <h1>Finding your way around</h1>
+  <p class="lede">
+    You have a terminal open. Before installing anything into it, learn to move
+    around, and to make, read and remove files. Every later step assumes you can
+    do this — step 3 will simply say “create <code>hello.c</code>” and expect you
+    to know how.
+  </p>
+
+  <div class="callout note">
+    <div class="callout-title">There is no command to run for this step</div>
+    <p>
+      Everything here is already on your machine. These commands come with
+      Ubuntu itself, which is why no installer is needed. Just work through the
+      page, typing as you go — twenty minutes is enough.
+    </p>
+  </div>
+
+  <h2 id="where">Where am I?</h2>
+
+  <p>
+    A terminal is always sitting <em>somewhere</em> in the filesystem. This tells
+    you where.
+  </p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>pwd
+<span class="out">/home/yourname</span></code></pre>
+  </div>
+
+  <p>
+    <code>pwd</code> means <strong>print working directory</strong>. That
+    <code>/home/yourname</code> is your home folder — where you start, and where
+    your own files belong.
+  </p>
+
+  <h2 id="whats-here">What is in here?</h2>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>ls</code></pre>
+  </div>
+
+  <p>A fresh account has almost nothing, so that may print nothing at all. Ask for more detail:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>ls -l</code></pre>
+  </div>
+
+  <p>And to include hidden files:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>ls -la</code></pre>
+  </div>
+
+  <div class="callout note">
+    <div class="callout-title">Hidden files start with a dot</div>
+    <p>
+      <code>.bashrc</code> is hidden. There is nothing secret about it — Linux
+      simply treats any name beginning with <code>.</code> as something to keep
+      out of the way, because these are settings files you rarely need to see.
+      That is the same <code>.bashrc</code> the installers add lines to.
+    </p>
+  </div>
+
+  <h2 id="moving">Moving around</h2>
+
+  <p>Go into a folder:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>cd /etc</code></pre>
+  </div>
+
+  <p>Look at where you landed:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>pwd</code></pre>
+  </div>
+
+  <p>Go back up one level, towards the top of the tree:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>cd ..</code></pre>
+  </div>
+
+  <p>Go straight home from anywhere:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>cd ~</code></pre>
+  </div>
+
+  <p>Or plain <code>cd</code> on its own, which does the same thing:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>cd</code></pre>
+  </div>
+
+  <h2 id="paths">The four symbols worth learning now</h2>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Symbol</th><th>Means</th><th>Example</th></tr></thead>
+      <tbody>
+        <tr><td><code>.</code></td><td>the folder I am in right now</td><td><code>./hello</code></td></tr>
+        <tr><td><code>..</code></td><td>the folder above this one</td><td><code>cd ..</code></td></tr>
+        <tr><td><code>~</code></td><td>my home folder</td><td><code>cd ~</code></td></tr>
+        <tr><td><code>/</code></td><td>the very top of the tree</td><td><code>cd /</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    A path that starts with <code>/</code> says exactly where something is, from
+    the top: <code>/home/yourname/notes</code>. A path that does not is read
+    from wherever you currently are: <code>notes</code> means “the
+    <code>notes</code> folder here”.
+  </p>
+
+  <div class="callout note">
+    <div class="callout-title">One tree, no drive letters</div>
+    <p>
+      Windows has <code>C:</code> and <code>D:</code>. Linux has a single tree
+      starting at <code>/</code>, and everything — including your Windows drive,
+      at <code>/mnt/c</code> — hangs somewhere inside it.
+    </p>
+  </div>
+
+  <h2 id="making">Making folders and files</h2>
+
+  <p>Make a folder:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>mkdir practice</code></pre>
+  </div>
+
+  <p>Go into it:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>cd practice</code></pre>
+  </div>
+
+  <p>Make a folder and any parent folders it needs, in one go:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>mkdir -p notes/january</code></pre>
+  </div>
+
+  <p>Create an empty file:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>touch hello.txt</code></pre>
+  </div>
+
+  <p>Put a line of text into a file:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>echo "my first line" &gt; hello.txt</code></pre>
+  </div>
+
+  <p>Add another line to the end of it:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>echo "a second line" &gt;&gt; hello.txt</code></pre>
+  </div>
+
+  <div class="callout warn">
+    <div class="callout-title"><code>&gt;</code> replaces, <code>&gt;&gt;</code> adds</div>
+    <p>
+      <code>echo</code> normally prints to the screen. <code>&gt;</code> sends
+      that text into a file instead — <strong>throwing away whatever the file
+      held before</strong>. <code>&gt;&gt;</code> adds to the end and keeps what
+      was there. One extra character, and a great deal of difference.
+    </p>
+  </div>
+
+  <p class="muted">
+    That is enough for a line or two. For writing a real file you want an editor,
+    and <code>nano</code> arrives in <a href="../02_install_cmds/">step 2</a>.
+  </p>
+
+  <h2 id="reading">Reading a file</h2>
+
+  <p>Print the whole thing:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>cat hello.txt
+<span class="out">my first line</span>
+<span class="out">a second line</span></code></pre>
+  </div>
+
+  <p>
+    Just the first few lines — useful when a file is long.
+    <code>/etc/passwd</code> is a real system file listing the accounts on this
+    machine, so there is something to look at:
+  </p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>head -n 5 /etc/passwd</code></pre>
+  </div>
+
+  <p>Or the last few lines — your own account will be near the bottom:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>tail -n 3 /etc/passwd</code></pre>
+  </div>
+
+  <div class="callout note">
+    <div class="callout-title">Two more file tools arrive in step 2</div>
+    <p>
+      <code>less</code>, for paging through something too long for one screen,
+      and <code>nano</code>, for editing a file properly, are not on a fresh
+      Ubuntu. <a href="../02_install_cmds/">Step 2</a> installs both. Until then
+      <code>cat</code>, <code>head</code> and <code>tail</code> are enough.
+    </p>
+  </div>
+
+  <h2 id="copy-move">Copying and renaming</h2>
+
+  <p>Copy a file:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>cp hello.txt backup.txt</code></pre>
+  </div>
+
+  <p>Copy a whole folder and everything inside it:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>cp -r notes notes-backup</code></pre>
+  </div>
+
+  <p>Rename something:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>mv backup.txt old-hello.txt</code></pre>
+  </div>
+
+  <p>Move it into a folder:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>mv old-hello.txt notes/</code></pre>
+  </div>
+
+  <div class="callout note">
+    <div class="callout-title">Renaming and moving are the same thing</div>
+    <p>
+      There is no separate rename command. <code>mv</code> changes where
+      something is and what it is called — and those turn out to be the same
+      question.
+    </p>
+  </div>
+
+  <h2 id="deleting">Deleting</h2>
+
+  <div class="callout stop">
+    <div class="callout-title">There is no Recycle Bin</div>
+    <p>
+      <code>rm</code> does not move a file anywhere. It removes it, immediately
+      and permanently. There is no undo, and nothing to restore from.
+    </p>
+    <p>
+      Read the whole line before pressing <kbd>Enter</kbd> — especially when it
+      contains <code>-r</code> or a <code>*</code>.
+    </p>
+  </div>
+
+  <p>Delete a file:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>rm old-hello.txt</code></pre>
+  </div>
+
+  <p>Delete an empty folder:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>rmdir notes/january</code></pre>
+  </div>
+
+  <p>Delete a folder and everything inside it:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>rm -r notes-backup</code></pre>
+  </div>
+
+  <p>Ask before each deletion — a good habit while you are learning:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>rm -ri notes-backup</code></pre>
+  </div>
+
+  <h2 id="keys">Four keys that save you</h2>
+
+  <ul class="cmd-list">
+    <li><kbd>Tab</kbd><span>Completes what you are typing. Type <code>cd pra</code> then Tab and the shell finishes it. Use it constantly — it also stops you mistyping names.</span></li>
+    <li><kbd>↑</kbd><span>Brings back the last command. Press it again for the one before.</span></li>
+    <li><kbd>Ctrl</kbd>+<kbd>C</kbd><span>Stops whatever is running and gives you the prompt back.</span></li>
+    <li><kbd>Ctrl</kbd>+<kbd>L</kbd><span>Clears the screen. So does typing <code>clear</code>.</span></li>
+  </ul>
+
+  <div class="callout tip">
+    <div class="callout-title">Tab is not a shortcut, it is the way</div>
+    <p>
+      Experienced people almost never type a full filename. They type three
+      letters and press Tab. If Tab does not complete, the name is wrong or you
+      are in the wrong folder — which makes it a spell-checker as well.
+    </p>
+  </div>
+
+  <h2 id="practice">Practice</h2>
+
+  <p>
+    Work through these in order. Together they build a small tree, look at it,
+    and take it apart again.
+  </p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>cd ~</code></pre>
+  </div>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>mkdir -p practice/notes</code></pre>
+  </div>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>cd practice</code></pre>
+  </div>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>echo "day one" &gt; notes/day1.txt</code></pre>
+  </div>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>echo "day two" &gt; notes/day2.txt</code></pre>
+  </div>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>ls -l notes</code></pre>
+  </div>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>cat notes/day1.txt</code></pre>
+  </div>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>cp notes/day1.txt notes/day1-copy.txt</code></pre>
+  </div>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>mv notes/day1-copy.txt notes/day3.txt</code></pre>
+  </div>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>pwd</code></pre>
+  </div>
+
+  <p>Now take it all away again:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>cd ~</code></pre>
+  </div>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>rm -r practice</code></pre>
+  </div>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>ls</code></pre>
+  </div>
+
+  <h2 id="windows">Your Windows files</h2>
+
+  <p>
+    If you are on WSL, your Windows drive is inside this same tree, under
+    <code>/mnt/c</code>. Have a look, but do not work there:
+  </p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>ls /mnt/c/Users</code></pre>
+  </div>
+
+  <p>
+    Files under <code>/mnt/c</code> are reached through a translation layer and
+    are much slower to work with. Keep your own work in your home folder —
+    <a href="../01_install_ubuntu/">step 1</a> explains why.
+  </p>
+
+  <div class="callout note">
+    <div class="callout-title">Want to know why it is built this way?</div>
+    <p>
+      <a href="../book/02-files-and-folders/">Chapter 2 of the book</a> explains
+      the ideas behind these commands: why Linux has one tree and no drive
+      letters, what a path really is, and why a deleted file cannot come back.
+    </p>
+  </div>
+
+  <h2 id="ready">Before moving on</h2>
+
+  <p>You should now be able to do all of these without looking them up:</p>
+
+  <ul>
+    <li>Say where you are, and get back home from anywhere</li>
+    <li>List what is in a folder, including the hidden files</li>
+    <li>Make a folder, and a folder inside a folder</li>
+    <li>Create a file, put text in it, and read it back</li>
+    <li>Copy, rename and move things</li>
+    <li>Delete a file, and delete a folder with things inside it</li>
+    <li>Explain what <code>.</code>, <code>..</code>, <code>~</code> and <code>/</code> mean</li>
+  </ul>
+
+  <p>
+    If any of those is still shaky, run through the practice section once more.
+    Everything after this point assumes them.
+  </p>
+
+  <nav class="page-nav">
+    <a href="../01_install_ubuntu/"><span class="dir">Step 1</span><span class="title">← Install Ubuntu</span></a>
+    <a class="next" href="../02_install_cmds/"><span class="dir">Step 2</span><span class="title">Core commands →</span></a>
+  </nav>
+
+</div>
+</main>
+
+<footer class="site-footer">
+  <div class="inner">
+    <span>system_setup — <a href="https://aikaryashala.com">aikaryashala</a></span>
+    <span class="spacer"><a href="https://github.com/aikaryashala/system_setup">Source on GitHub</a></span>
+  </div>
+</footer>
+
+<script src="../assets/site.js"></script>
+</body>
+</html>
