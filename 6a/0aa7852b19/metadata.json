@@ -1,0 +1,39 @@
+{
+  "cli_version": "0.9.0",
+  "checkpoint_id": "6a0aa7852b19",
+  "strategy": "manual-commit",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "CLAUDE.md",
+    "docs/01_5_navigate/index.html",
+    "docs/02_install_cmds/index.html",
+    "docs/03_install_c/index.html",
+    "docs/04_install_py/index.html",
+    "docs/05_5_report/index.html",
+    "docs/05_install_java/index.html",
+    "docs/06_install_more_cmds/index.html",
+    "docs/07_install_binary/index.html",
+    "docs/08_install_uv/index.html",
+    "docs/09_install_maven_gradle/index.html",
+    "docs/10_jq_practice/index.html",
+    "docs/11_clang_options/index.html",
+    "docs/12_python_debugging/index.html"
+  ],
+  "sessions": [
+    {
+      "metadata": "/6a/0aa7852b19/0/metadata.json",
+      "transcript": "/6a/0aa7852b19/0/full.jsonl",
+      "compact_transcript": "/6a/0aa7852b19/0/transcript.jsonl",
+      "content_hash": "/6a/0aa7852b19/0/content_hash.txt",
+      "prompt": "/6a/0aa7852b19/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 833,
+    "cache_creation_tokens": 3888294,
+    "cache_read_tokens": 187182153,
+    "output_tokens": 583839,
+    "api_call_count": 445
+  }
+}
