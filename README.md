@@ -112,7 +112,7 @@ asked. Install any of them at any time.
 │   └── lint.yml                 # shellcheck, PSScriptAnalyzer, link check
 └── docs/                            # ← GitHub Pages root
     ├── index.html                   # landing page
-    ├── assets/                      # shared css + js (no external CDNs)
+    ├── assets/                      # shared css + js + the logo (no external CDNs)
     ├── book/                        # the book - chapter pages, plain English
     ├── examples/                    # downloadable versions of the sample programs
     ├── scripts/                     # every installer, publicly curl-able

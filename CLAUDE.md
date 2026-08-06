@@ -166,7 +166,13 @@ so readers do not need a build file to try something.
   tried and removed as more machinery than the job needs. A link keeps the
   no-external-requests rule absolute, with nothing to maintain.
 - Diagrams are inline SVG using the `.dg-*` classes in `style.css`, so they
-  follow the theme without a second dark-mode copy. No image files.
+  follow the theme without a second dark-mode copy. Do not add image files for
+  diagrams.
+- **`docs/assets/aiklogo.png` is the one image on the site** — the AIKaryashala
+  mark, at the head of every page of the book, inside `<p class="book-logo">`
+  above the breadcrumb. It is the brand file copied in byte-for-byte: do not
+  crop, recolour or re-export it. Its transparent background is what lets one
+  copy serve both themes, so it must stay a PNG with an alpha channel.
 - **Every SVG shape also carries a plain `fill` (and `stroke`) attribute.**
   Presentation attributes lose to any CSS rule, so the stylesheet still themes
   the diagram — but if it is missing, stale in a cache, or the SVG is viewed on

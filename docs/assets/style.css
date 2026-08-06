@@ -733,3 +733,18 @@ td code { white-space: nowrap; }
 @media (max-width: 560px) {
     .toc ul { columns: 1; }
 }
+
+/* ------------------------------------------------------------- book logo */
+
+/* The AIKaryashala mark, at the head of every page of the book. The file has a
+   transparent background, so it sits on the page colour in either theme and
+   needs no second copy for dark mode. */
+
+.book-logo { margin: 0 0 1.5rem; }
+
+.book-logo img {
+    width: 210px;
+    max-width: 62%;
+    height: auto;
+    display: block;
+}
