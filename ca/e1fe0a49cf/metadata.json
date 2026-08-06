@@ -1,0 +1,34 @@
+{
+  "cli_version": "0.9.0",
+  "checkpoint_id": "cae1fe0a49cf",
+  "strategy": "manual-commit",
+  "branch": "main",
+  "checkpoints_count": 2,
+  "files_touched": [
+    "CLAUDE.md",
+    "docs/book/01-running-a-program/index.html",
+    "docs/book/02-files-and-folders/index.html",
+    "docs/book/03-two-systems/index.html",
+    "docs/book/04-the-shell/index.html",
+    "docs/book/05-where-software-comes-from/index.html",
+    "docs/book/06-source-to-program/index.html",
+    "docs/book/07-three-ways-to-run/index.html",
+    "docs/book/08-stopping-time/index.html"
+  ],
+  "sessions": [
+    {
+      "metadata": "/ca/e1fe0a49cf/0/metadata.json",
+      "transcript": "/ca/e1fe0a49cf/0/full.jsonl",
+      "compact_transcript": "/ca/e1fe0a49cf/0/transcript.jsonl",
+      "content_hash": "/ca/e1fe0a49cf/0/content_hash.txt",
+      "prompt": "/ca/e1fe0a49cf/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 824,
+    "cache_creation_tokens": 3875369,
+    "cache_read_tokens": 182819114,
+    "output_tokens": 578803,
+    "api_call_count": 440
+  }
+}
