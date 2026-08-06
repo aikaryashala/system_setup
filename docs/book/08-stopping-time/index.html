@@ -1,0 +1,529 @@
+<!doctype html>
+<html lang="en" data-theme="">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chapter 8 — Stopping time · system_setup</title>
+<meta name="description" content="What a debugger does, taught through lldb and two small C programs. In plain English.">
+<link rel="stylesheet" href="../../assets/style.css">
+<script>
+(function(){try{var t=localStorage.getItem('system-setup-theme');if(t){document.documentElement.setAttribute('data-theme',t);}}catch(e){}}());
+</script>
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <div class="inner">
+    <a class="brand" href="../../"><span class="mark">&gt;_</span> system_setup</a>
+    <nav class="header-nav">
+      <a href="../">Book</a>
+      <a href="../../scripts/">Scripts</a>
+      <a href="https://github.com/aikaryashala/system_setup">GitHub</a>
+      <button class="theme-toggle" type="button" aria-label="Switch theme">☽</button>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+<div class="prose">
+
+  <p class="breadcrumb"><a href="../../">system_setup</a> / <a href="../">The Book</a> / Chapter 8</p>
+
+  <p class="eyebrow">Chapter 8</p>
+  <h1>Stopping time</h1>
+  <p class="lede">
+    A program that goes wrong will not explain itself. A debugger lets you stop
+    it in the middle, look at every value, and walk forward one line at a time.
+    It is the difference between guessing and looking.
+  </p>
+
+  <nav class="toc" aria-label="On this page">
+    <div class="toc-title">On this page</div>
+    <ul>
+      <li><a href="#four">The four ideas</a></li>
+      <li><a href="#first">A first look</a></li>
+      <li><a href="#g">Why <code>-g</code></a></li>
+      <li><a href="#msd">A program with a function</a></li>
+      <li><a href="#into">Stepping into it</a></li>
+      <li><a href="#loop">Watching the loop</a></li>
+      <li><a href="#stack">The call stack</a></li>
+      <li><a href="#finish">Running back out</a></li>
+      <li><a href="#commands">The commands</a></li>
+    </ul>
+  </nav>
+
+  <h2 id="four">Every debugger is four ideas</h2>
+
+  <p>
+    Debuggers look complicated because they have many commands. They are not.
+    Nearly everything you will ever do is one of four things:
+  </p>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Idea</th><th>What it means</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Breakpoint</strong></td><td>Stop here when you reach this line</td></tr>
+        <tr><td><strong>Step</strong></td><td>Move forward one line, then stop again</td></tr>
+        <tr><td><strong>Inspect</strong></td><td>Show me the value of this thing, right now</td></tr>
+        <tr><td><strong>Call stack</strong></td><td>How did the program get to this line?</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    Learn those four and you can use any debugger. The names of the commands
+    change between languages. The four ideas do not.
+  </p>
+
+  <h2 id="first">A first look, with sum.c</h2>
+
+  <p>
+    Start with the program from <a href="../06-source-to-program/">chapter 6</a>.
+    Build it with <code>-g</code> and start the debugger:
+  </p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>clang -g sum.c -o sum</code></pre>
+  </div>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>lldb ./sum</code></pre>
+  </div>
+
+  <p>
+    Line 16 is where the two numbers are added. Stop there, and the program will
+    have read both:
+  </p>
+
+  <div class="codeblock" data-label="inside lldb">
+<pre><code><span class="out">(lldb) </span>b sum.c:16
+<span class="out">(lldb) </span>run</code></pre>
+  </div>
+
+  <p>
+    It asks for the numbers as usual. Type <code>3</code> and <code>4</code>, and
+    the program stops before line 16 runs. Now look at what it holds:
+  </p>
+
+  <div class="codeblock" data-label="inside lldb">
+<pre><code><span class="out">(lldb) </span>frame variable
+<span class="out">(int) num1 = 3</span>
+<span class="out">(int) num2 = 4</span></code></pre>
+  </div>
+
+  <p>Move forward one line, and look again:</p>
+
+  <div class="codeblock" data-label="inside lldb">
+<pre><code><span class="out">(lldb) </span>n
+<span class="out">(lldb) </span>p num1
+<span class="out">(int) 7</span></code></pre>
+  </div>
+
+  <p>
+    You have just watched a variable change. Not guessed, not printed — watched.
+    That is the whole point of a debugger.
+  </p>
+
+  <h2 id="g">Why the <code>-g</code>, at last</h2>
+
+  <p>
+    <a href="../06-source-to-program/">Chapter 6</a> said <code>-g</code> keeps
+    debug information, without saying what that means. Here it is.
+  </p>
+
+  <p>
+    The finished program holds machine instructions. It does not hold your C. The
+    processor has no idea that a certain instruction came from line 16, or that
+    one of its numbers is called <code>num1</code>.
+  </p>
+
+  <p>
+    <code>-g</code> tells clang to <strong>leave a map behind</strong>: this
+    instruction came from that line, this piece of memory is the variable you
+    called <code>num1</code>. The debugger reads the map.
+  </p>
+
+  <div class="callout warn">
+    <div class="callout-title">Without it you get instructions, not your program</div>
+    <p>
+      Build with plain <code>clang sum.c -o sum</code> and the debugger still
+      works — but <code>b sum.c:16</code> has nothing to attach to, and
+      <code>frame variable</code> has no names to show. You are left reading
+      assembly.
+    </p>
+    <p>Compile with <code>-g</code> whenever you might want to debug. It costs nothing while the program runs.</p>
+  </div>
+
+  <h2 id="msd">A program with a function of your own</h2>
+
+  <p>
+    One function is not enough to show what a debugger is for. Here is a second
+    program. It finds the <strong>most significant digit</strong> of a number —
+    the leftmost one — by dividing by ten until only one digit is left. Then it
+    adds the results for two numbers.
+  </p>
+
+  <p>You can <a href="../../examples/msd.c">download it</a>, or type it out:</p>
+
+  <div class="codeblock" data-label="msd.c">
+<pre><code>#include &lt;stdio.h&gt;
+
+int most_significant_digit(int number)
+{
+    while (number &gt;= 10)
+    {
+        number = number / 10;
+    }
+
+    return number;
+}
+
+int main()
+{
+    int num1;
+    int num2;
+    int msd1;
+    int msd2;
+    int total;
+
+    printf("To add the most significant digits of two numbers.\n");
+
+    printf("Enter the first number: ");
+    scanf("%i", &amp;num1);
+
+    printf("Enter the second number: ");
+    scanf("%i", &amp;num2);
+
+    msd1 = most_significant_digit(num1);
+    msd2 = most_significant_digit(num2);
+
+    total = msd1 + msd2;
+
+    printf("Sum of MSDs(Most Significant Digits) of two numbers is %i.\n", total);
+
+    return 0;
+}</code></pre>
+  </div>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>clang -g msd.c -o msd</code></pre>
+  </div>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>./msd
+<span class="out">To add the most significant digits of two numbers.</span>
+<span class="out">Enter the first number: </span>345
+<span class="out">Enter the second number: </span>52
+<span class="out">Sum of MSDs(Most Significant Digits) of two numbers is 8.</span></code></pre>
+  </div>
+
+  <p>
+    3 from 345, 5 from 52, and 8 altogether. It works. Now take it apart and
+    watch it work.
+  </p>
+
+  <h2 id="into">Stepping into your own function</h2>
+
+  <p>
+    A breakpoint does not have to be a line number. Give it a function name and
+    it stops every time that function is entered:
+  </p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>lldb ./msd</code></pre>
+  </div>
+
+  <div class="codeblock" data-label="inside lldb">
+<pre><code><span class="out">(lldb) </span>b most_significant_digit
+<span class="out">(lldb) </span>run</code></pre>
+  </div>
+
+  <p>Type <code>345</code> and <code>52</code>, and it stops:</p>
+
+  <div class="codeblock" data-label="inside lldb">
+<pre><code><span class="out">* thread #1, name = 'msd', stop reason = breakpoint 1.1</span>
+<span class="out">    frame #0: msd`most_significant_digit(number=345) at msd.c:16:5</span>
+<span class="out">   14  	int most_significant_digit(int number)</span>
+<span class="out">   15  	{</span>
+<span class="out">-&gt; 16  	    while (number &gt;= 10)</span>
+<span class="out">   17  	    {</span>
+<span class="out">   18  	        number = number / 10;</span></code></pre>
+  </div>
+
+  <p>Read that carefully. Three useful things are on screen already:</p>
+
+  <ul>
+    <li><code>most_significant_digit(number=345)</code> — the function, and the value it was given</li>
+    <li><code>msd.c:16</code> — exactly where it is</li>
+    <li>the arrow <code>-&gt;</code> marks the line about to run, with the source around it</li>
+  </ul>
+
+  <div class="callout tip">
+    <div class="callout-title"><code>s</code> and <code>n</code> — the difference that matters</div>
+    <p>
+      Stop at line 41, where the function is called the second time, and try
+      both:
+    </p>
+    <ul>
+      <li><code>n</code> (next) runs the whole call and stops on the following line. You never see inside.</li>
+      <li><code>s</code> (step) goes <em>into</em> the function and stops on its first line.</li>
+    </ul>
+    <p>
+      Use <code>n</code> for code you trust, <code>s</code> for code you suspect.
+    </p>
+  </div>
+
+  <div class="codeblock" data-label="inside lldb">
+<pre><code><span class="out">(lldb) </span>b msd.c:41
+<span class="out">(lldb) </span>run
+<span class="out">(lldb) </span>s
+<span class="out">    frame #0: msd`most_significant_digit(number=52) at msd.c:16:5</span></code></pre>
+  </div>
+
+  <p>You are now inside the function, with the second number.</p>
+
+  <h2 id="loop">Watching the loop do its work</h2>
+
+  <p>
+    This is where a debugger earns its keep. Stop at the top of the function and
+    press <code>n</code> repeatedly, printing <code>number</code> as you go:
+  </p>
+
+  <div class="codeblock" data-label="inside lldb">
+<pre><code><span class="out">(lldb) </span>b most_significant_digit
+<span class="out">(lldb) </span>run
+<span class="out">(lldb) </span>p number
+<span class="out">(int) 345</span>
+<span class="out">(lldb) </span>n
+<span class="out">(lldb) </span>n
+<span class="out">(lldb) </span>p number
+<span class="out">(int) 34</span>
+<span class="out">(lldb) </span>n
+<span class="out">(lldb) </span>n
+<span class="out">(lldb) </span>p number
+<span class="out">(int) 3</span></code></pre>
+  </div>
+
+  <p>
+    <strong>345, then 34, then 3.</strong> You are watching the loop divide the
+    number down, one turn at a time. No <code>printf</code> was added. The
+    program was not changed at all.
+  </p>
+
+  <p>
+    If that loop had a mistake — the wrong comparison, a division by the wrong
+    number — you would see it here, in the values, rather than reasoning about it
+    on paper.
+  </p>
+
+  <h2 id="stack">The call stack: how did I get here?</h2>
+
+  <p>
+    When the program stops inside a function, <code>bt</code> shows the chain of
+    calls that led there:
+  </p>
+
+  <div class="codeblock" data-label="inside lldb">
+<pre><code><span class="out">(lldb) </span>bt
+<span class="out">  * frame #0: msd`most_significant_digit(number=345) at msd.c:16:5</span>
+<span class="out">    frame #1: msd`main at msd.c:40:12</span>
+<span class="out">    frame #2: libc.so.6`__libc_start_main + 152</span>
+<span class="out">    frame #3: msd`_start + 48</span></code></pre>
+  </div>
+
+  <p>Read it from the bottom upwards, and it is the story of the program so far:</p>
+
+  <ul>
+    <li><code>_start</code> — where every program begins</li>
+    <li><code>__libc_start_main</code> — the setup code the linker joined on in <a href="../06-source-to-program/">chapter 6</a></li>
+    <li><code>main</code>, at line 40 — your program</li>
+    <li><code>most_significant_digit</code> — where you are now</li>
+  </ul>
+
+  <p>
+    Frame #1 is the useful one. It tells you the call came from
+    <strong>line 40</strong>, so this is the first of the two calls, with
+    <code>num1</code>.
+  </p>
+
+  <div class="callout note">
+    <div class="callout-title">This is what a crash report is</div>
+    <p>
+      When a program crashes and prints a long list of function names, that is a
+      call stack. The same thing Python prints as a
+      <em>Traceback</em>. You are reading one on purpose here, instead of waiting
+      for something to go wrong.
+    </p>
+  </div>
+
+  <h2 id="finish">Running back out</h2>
+
+  <p>
+    You have seen enough of the function and want its answer.
+    <code>finish</code> runs the rest of it and stops the moment it returns:
+  </p>
+
+  <div class="codeblock" data-label="inside lldb">
+<pre><code><span class="out">(lldb) </span>finish
+<span class="out">Return value: (int) $0 = 3</span>
+<span class="out">    frame #0: msd`main at msd.c:40:12</span></code></pre>
+  </div>
+
+  <p>
+    <code>Return value: (int) $0 = 3</code>. The debugger caught the answer on
+    its way out and showed it to you — before it was even stored in
+    <code>msd1</code>.
+  </p>
+
+  <h2 id="uninit">A small surprise worth understanding</h2>
+
+  <p>
+    Stop at line 41, before the second call, and ask for every local variable at
+    once:
+  </p>
+
+  <div class="codeblock" data-label="inside lldb">
+<pre><code><span class="out">(lldb) </span>b msd.c:41
+<span class="out">(lldb) </span>run
+<span class="out">(lldb) </span>frame variable
+<span class="out">(int) num1 = 345</span>
+<span class="out">(int) num2 = 52</span>
+<span class="out">(int) msd1 = 3</span>
+<span class="out">(int) msd2 = 0</span>
+<span class="out">(int) total = -1</span></code></pre>
+  </div>
+
+  <p>
+    <code>num1</code>, <code>num2</code> and <code>msd1</code> hold what you
+    expect. But look at <code>msd2</code> and <code>total</code>. Those lines
+    have not run yet, so nothing has been put in them — and they are not empty.
+    They hold whatever numbers happened to be lying in that memory already.
+  </p>
+
+  <div class="callout warn">
+    <div class="callout-title">This is why an unset variable is dangerous in C</div>
+    <p>
+      <code>total = -1</code> is not a value anybody chose. On another machine,
+      or another day, it might be <code>0</code>, or a huge number. Use a
+      variable before you set it and your program behaves differently each time.
+    </p>
+    <p>
+      <a href="../../11_clang_options/">Step 11</a> shows how to make the
+      compiler warn you about exactly this.
+    </p>
+  </div>
+
+  <h2 id="commands">The commands worth knowing</h2>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Idea</th><th>Command</th><th>Short</th></tr></thead>
+      <tbody>
+        <tr><td rowspan="3">Breakpoint</td><td><code>breakpoint set --name main</code></td><td><code>b main</code></td></tr>
+        <tr><td><code>breakpoint set --file msd.c --line 41</code></td><td><code>b msd.c:41</code></td></tr>
+        <tr><td>start the program</td><td><code>run</code> / <code>r</code></td></tr>
+        <tr><td rowspan="4">Step</td><td>next line, over calls</td><td><code>next</code> / <code>n</code></td></tr>
+        <tr><td>next line, into calls</td><td><code>step</code> / <code>s</code></td></tr>
+        <tr><td>run out of this function</td><td><code>finish</code></td></tr>
+        <tr><td>carry on to the next breakpoint</td><td><code>continue</code> / <code>c</code></td></tr>
+        <tr><td rowspan="2">Inspect</td><td>one value</td><td><code>print number</code> / <code>p number</code></td></tr>
+        <tr><td>every local variable</td><td><code>frame variable</code> / <code>v</code></td></tr>
+        <tr><td>Call stack</td><td>how did I get here</td><td><code>bt</code></td></tr>
+        <tr><td>Leave</td><td>quit the debugger</td><td><code>quit</code> / <code>q</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2 id="why">Why not just add printf?</h2>
+
+  <p>
+    You can find most bugs with <code>printf</code>. People do it every day. But
+    compare the two ways of working.
+  </p>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th></th><th>Adding printf</th><th>Using a debugger</th></tr></thead>
+      <tbody>
+        <tr><td>To ask a new question</td><td>edit, rebuild, run again</td><td>type it at the prompt</td></tr>
+        <tr><td>You see</td><td>only what you thought to print</td><td>anything you like, at any point</td></tr>
+        <tr><td>Your code</td><td>fills with lines to remove later</td><td>never changes</td></tr>
+        <tr><td>Call stack</td><td>you work it out yourself</td><td><code>bt</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    The real difference is the loop. With <code>printf</code>, every question
+    costs an edit and a rebuild. With a debugger the program is already stopped,
+    and you can keep asking until you understand.
+  </p>
+
+  <h2 id="try">Try it</h2>
+
+  <p>Build the program with the map left in:</p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>clang -g msd.c -o msd &amp;&amp; lldb ./msd</code></pre>
+  </div>
+
+  <p>Then, inside lldb, work through these in order:</p>
+
+  <div class="codeblock" data-label="inside lldb">
+<pre><code>b most_significant_digit     <span class="comment"># stop whenever the function is entered</span>
+run                          <span class="comment"># type 345 then 52</span>
+bt                           <span class="comment"># which call is this - line 40 or 41?</span>
+p number                     <span class="comment"># 345</span>
+n                            <span class="comment"># press a few times, printing as you go</span>
+p number                     <span class="comment"># watch it become 34, then 3</span>
+finish                       <span class="comment"># see the return value</span>
+frame variable               <span class="comment"># which locals are set, which are junk?</span>
+c                            <span class="comment"># continue - it stops again for the second number</span>
+bt                           <span class="comment"># now the call came from line 41</span>
+q</code></pre>
+  </div>
+
+  <p>
+    Then try one thing more. Rebuild <em>without</em> <code>-g</code> and repeat
+    the first two commands. Seeing what you lose is the fastest way to remember
+    what <code>-g</code> is for.
+  </p>
+
+  <div class="codeblock" data-label="ubuntu terminal">
+<pre><code><span class="prompt">$ </span>clang msd.c -o msd-nomap &amp;&amp; lldb ./msd-nomap</code></pre>
+  </div>
+
+  <h2 id="learned">You can now explain</h2>
+
+  <ul>
+    <li>The four ideas every debugger is built from</li>
+    <li>What <code>-g</code> actually leaves in the program, and what breaks without it</li>
+    <li>The difference between <code>s</code> and <code>n</code>, and when to use each</li>
+    <li>How to watch a loop change a value, without touching the code</li>
+    <li>How to read a call stack, and which frame tells you where a call came from</li>
+    <li>What <code>finish</code> shows you that you could not otherwise see</li>
+    <li>Why a variable you have not set holds junk rather than zero</li>
+    <li>Why a debugger beats adding <code>printf</code>, and when printf is still fine</li>
+  </ul>
+
+  <nav class="page-nav">
+    <a href="../07-three-ways-to-run/"><span class="dir">Chapter 7</span><span class="title">← Three ways to run code</span></a>
+    <a class="next" href="../../03_install_c/"><span class="dir">Do it</span><span class="title">Step 3: clang and lldb →</span></a>
+  </nav>
+
+</div>
+</main>
+
+<footer class="site-footer">
+  <div class="inner">
+    <span>system_setup — <a href="https://aikaryashala.com">aikaryashala</a></span>
+    <span class="spacer"><a href="https://github.com/aikaryashala/system_setup">Source on GitHub</a></span>
+  </div>
+</footer>
+
+<script src="../../assets/site.js"></script>
+</body>
+</html>
