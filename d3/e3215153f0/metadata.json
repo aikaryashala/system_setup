@@ -1,0 +1,38 @@
+{
+  "cli_version": "0.9.0",
+  "checkpoint_id": "d3e3215153f0",
+  "strategy": "manual-commit",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "CLAUDE.md",
+    "README.md",
+    "docs/assets/aiklogo.png",
+    "docs/assets/style.css",
+    "docs/book/01-running-a-program/index.html",
+    "docs/book/02-files-and-folders/index.html",
+    "docs/book/03-two-systems/index.html",
+    "docs/book/04-the-shell/index.html",
+    "docs/book/05-where-software-comes-from/index.html",
+    "docs/book/06-source-to-program/index.html",
+    "docs/book/07-three-ways-to-run/index.html",
+    "docs/book/08-stopping-time/index.html",
+    "docs/book/index.html"
+  ],
+  "sessions": [
+    {
+      "metadata": "/d3/e3215153f0/0/metadata.json",
+      "transcript": "/d3/e3215153f0/0/full.jsonl",
+      "compact_transcript": "/d3/e3215153f0/0/transcript.jsonl",
+      "content_hash": "/d3/e3215153f0/0/content_hash.txt",
+      "prompt": "/d3/e3215153f0/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 862,
+    "cache_creation_tokens": 4776869,
+    "cache_read_tokens": 199636438,
+    "output_tokens": 593290,
+    "api_call_count": 460
+  }
+}

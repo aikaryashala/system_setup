@@ -1,0 +1,95 @@
+The three roads and watch the video to play are all black colored rectangle boxes and circle instead of play, can you fix them.
+
+---
+
+For the youtube video: Just provide a link when clicked opens in new tab. No need of these diagrams and other things.
+
+---
+
+Keep step-4 to just run Python Program like the sum program that I have given, move all the debugging pdb part and related python code to step-12
+
+---
+
+Update step-1, in case the students already have an ubuntu machine with WSL but forgot it's password. like this: # Reset Ubuntu (WSL) User Password
+
+1. Open **PowerShell** or **Command Prompt**.
+2. Start Ubuntu as the root user:
+   ```powershell
+   wsl -u root
+   ```
+3. Reset your user password:
+   ```bash
+   passwd <username>
+   ```
+   Example:
+   ```bash
+   passwd lokesh
+   ```
+4. Enter the new password twice.
+5. Exit root:
+   ```bash
+   exit
+   ```
+6. Launch Ubuntu normally and log in using the new password.
+
+> **Tip:** If you forgot your username, run:
+>
+> ```bash
+> ls /home
+> ```
+
+---
+
+Keep TOC like thing in step one, so people who forgot password can quickly jump to that section
+
+---
+
+"Forgotten your Ubuntu password" will make the readers connect faster
+
+---
+
+Now coming to chapter 8 and 9 what is your plan in short 3 sentences for each
+
+---
+
+first for chapter 8, don't go into python pdb, since we moved it to later step-12. so based on this update plan for chapter 8
+
+---
+
+First example is good with sum.c. Next example should contain user defined functions, like most_significant_digit function which uses while loop to find the MSD and return it. The main function calls it twice for each number and then adds them and prints the result: Sum of MSDs(Most Significant Digits) of two numbers is 8. // for inputs 345 and 52 as input numbers.
+
+---
+
+move the declaration of msd1, msd2, total and write like the same style as num1 and num2 declaration. in the second program
+
+---
+
+Now chapter 9 what is the plan
+
+---
+
+Remove chapter 9 everywhere. and set the description for the link: https://aikaryashala.com/system_setup/book/ desc: Understanding behind the scenes, what is happening internally and how the whole systems and programs work.
+
+---
+
+in chapter-8 book, the number of lines in the code are less in msd.c file, check the number of lines and from where the function is called second time from main function. Run on the docker and see and fix the line numbers
+
+---
+
+Need step 5.6 where we want to buy a domain from namecheap or bigrock and configure to a repository in github using github pages. For this what can be the plan?
+
+---
+
+add TOC for each chapter if not present
+
+---
+
+similarly for steps
+
+---
+
+yes, add that check to check_links.sh
+
+---
+
+In the book, every page must contain AIKaryashala Logo, use this file as is: [Image #1]
