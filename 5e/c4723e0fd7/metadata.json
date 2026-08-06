@@ -1,0 +1,33 @@
+{
+  "cli_version": "0.9.0",
+  "checkpoint_id": "5ec4723e0fd7",
+  "strategy": "manual-commit",
+  "branch": "main",
+  "checkpoints_count": 3,
+  "files_touched": [
+    "docs/01_install_ubuntu/index.html",
+    "docs/02_install_cmds/index.html",
+    "docs/book/01-running-a-program/index.html",
+    "docs/book/02-files-and-folders/index.html",
+    "docs/book/03-two-systems/index.html",
+    "docs/book/04-the-shell/index.html",
+    "docs/book/05-where-software-comes-from/index.html",
+    "docs/book/index.html"
+  ],
+  "sessions": [
+    {
+      "metadata": "/5e/c4723e0fd7/0/metadata.json",
+      "transcript": "/5e/c4723e0fd7/0/full.jsonl",
+      "compact_transcript": "/5e/c4723e0fd7/0/transcript.jsonl",
+      "content_hash": "/5e/c4723e0fd7/0/content_hash.txt",
+      "prompt": "/5e/c4723e0fd7/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 23,
+    "cache_creation_tokens": 35226,
+    "cache_read_tokens": 7736963,
+    "output_tokens": 31739,
+    "api_call_count": 12
+  }
+}
