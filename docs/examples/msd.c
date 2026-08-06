@@ -1,14 +1,3 @@
-/* msd.c - the second example from
- * https://aikaryashala.com/system_setup/book/08-stopping-time/
- *
- * Adds the most significant digit of two numbers. For 345 and 52 the answer
- * is 3 + 5 = 8.
- *
- *   clang -g msd.c -o msd
- *   ./msd
- *   lldb ./msd
- */
-
 #include <stdio.h>
 
 int most_significant_digit(int number)

@@ -245,26 +245,26 @@ int main()
 
   <div class="codeblock" data-label="inside lldb">
 <pre><code><span class="out">* thread #1, name = 'msd', stop reason = breakpoint 1.1</span>
-<span class="out">    frame #0: msd`most_significant_digit(number=345) at msd.c:16:5</span>
-<span class="out">   14  	int most_significant_digit(int number)</span>
-<span class="out">   15  	{</span>
-<span class="out">-&gt; 16  	    while (number &gt;= 10)</span>
-<span class="out">   17  	    {</span>
-<span class="out">   18  	        number = number / 10;</span></code></pre>
+<span class="out">    frame #0: msd`most_significant_digit(number=345) at msd.c:5:5</span>
+<span class="out">   3   	int most_significant_digit(int number)</span>
+<span class="out">   4   	{</span>
+<span class="out">-&gt; 5   	    while (number &gt;= 10)</span>
+<span class="out">   6   	    {</span>
+<span class="out">   7   	        number = number / 10;</span></code></pre>
   </div>
 
   <p>Read that carefully. Three useful things are on screen already:</p>
 
   <ul>
     <li><code>most_significant_digit(number=345)</code> — the function, and the value it was given</li>
-    <li><code>msd.c:16</code> — exactly where it is</li>
+    <li><code>msd.c:5</code> — exactly where it is</li>
     <li>the arrow <code>-&gt;</code> marks the line about to run, with the source around it</li>
   </ul>
 
   <div class="callout tip">
     <div class="callout-title"><code>s</code> and <code>n</code> — the difference that matters</div>
     <p>
-      Stop at line 41, where the function is called the second time, and try
+      Stop at line 30, where the function is called the second time, and try
       both:
     </p>
     <ul>
@@ -277,10 +277,10 @@ int main()
   </div>
 
   <div class="codeblock" data-label="inside lldb">
-<pre><code><span class="out">(lldb) </span>b msd.c:41
+<pre><code><span class="out">(lldb) </span>b msd.c:30
 <span class="out">(lldb) </span>run
 <span class="out">(lldb) </span>s
-<span class="out">    frame #0: msd`most_significant_digit(number=52) at msd.c:16:5</span></code></pre>
+<span class="out">    frame #0: msd`most_significant_digit(number=52) at msd.c:5:5</span></code></pre>
   </div>
 
   <p>You are now inside the function, with the second number.</p>
@@ -328,8 +328,8 @@ int main()
 
   <div class="codeblock" data-label="inside lldb">
 <pre><code><span class="out">(lldb) </span>bt
-<span class="out">  * frame #0: msd`most_significant_digit(number=345) at msd.c:16:5</span>
-<span class="out">    frame #1: msd`main at msd.c:40:12</span>
+<span class="out">  * frame #0: msd`most_significant_digit(number=345) at msd.c:5:5</span>
+<span class="out">    frame #1: msd`main at msd.c:29:12</span>
 <span class="out">    frame #2: libc.so.6`__libc_start_main + 152</span>
 <span class="out">    frame #3: msd`_start + 48</span></code></pre>
   </div>
@@ -339,13 +339,13 @@ int main()
   <ul>
     <li><code>_start</code> — where every program begins</li>
     <li><code>__libc_start_main</code> — the setup code the linker joined on in <a href="../06-source-to-program/">chapter 6</a></li>
-    <li><code>main</code>, at line 40 — your program</li>
+    <li><code>main</code>, at line 29 — your program</li>
     <li><code>most_significant_digit</code> — where you are now</li>
   </ul>
 
   <p>
     Frame #1 is the useful one. It tells you the call came from
-    <strong>line 40</strong>, so this is the first of the two calls, with
+    <strong>line 29</strong>, so this is the first of the two calls, with
     <code>num1</code>.
   </p>
 
@@ -369,7 +369,7 @@ int main()
   <div class="codeblock" data-label="inside lldb">
 <pre><code><span class="out">(lldb) </span>finish
 <span class="out">Return value: (int) $0 = 3</span>
-<span class="out">    frame #0: msd`main at msd.c:40:12</span></code></pre>
+<span class="out">    frame #0: msd`main at msd.c:29:10</span></code></pre>
   </div>
 
   <p>
@@ -381,12 +381,12 @@ int main()
   <h2 id="uninit">A small surprise worth understanding</h2>
 
   <p>
-    Stop at line 41, before the second call, and ask for every local variable at
+    Stop at line 30, before the second call, and ask for every local variable at
     once:
   </p>
 
   <div class="codeblock" data-label="inside lldb">
-<pre><code><span class="out">(lldb) </span>b msd.c:41
+<pre><code><span class="out">(lldb) </span>b msd.c:30
 <span class="out">(lldb) </span>run
 <span class="out">(lldb) </span>frame variable
 <span class="out">(int) num1 = 345</span>
@@ -423,7 +423,7 @@ int main()
       <thead><tr><th>Idea</th><th>Command</th><th>Short</th></tr></thead>
       <tbody>
         <tr><td rowspan="3">Breakpoint</td><td><code>breakpoint set --name main</code></td><td><code>b main</code></td></tr>
-        <tr><td><code>breakpoint set --file msd.c --line 41</code></td><td><code>b msd.c:41</code></td></tr>
+        <tr><td><code>breakpoint set --file msd.c --line 30</code></td><td><code>b msd.c:30</code></td></tr>
         <tr><td>start the program</td><td><code>run</code> / <code>r</code></td></tr>
         <tr><td rowspan="4">Step</td><td>next line, over calls</td><td><code>next</code> / <code>n</code></td></tr>
         <tr><td>next line, into calls</td><td><code>step</code> / <code>s</code></td></tr>
@@ -475,14 +475,14 @@ int main()
   <div class="codeblock" data-label="inside lldb">
 <pre><code>b most_significant_digit     <span class="comment"># stop whenever the function is entered</span>
 run                          <span class="comment"># type 345 then 52</span>
-bt                           <span class="comment"># which call is this - line 40 or 41?</span>
+bt                           <span class="comment"># which call is this - line 29 or 30?</span>
 p number                     <span class="comment"># 345</span>
 n                            <span class="comment"># press a few times, printing as you go</span>
 p number                     <span class="comment"># watch it become 34, then 3</span>
 finish                       <span class="comment"># see the return value</span>
 frame variable               <span class="comment"># which locals are set, which are junk?</span>
 c                            <span class="comment"># continue - it stops again for the second number</span>
-bt                           <span class="comment"># now the call came from line 41</span>
+bt                           <span class="comment"># now the call came from line 30</span>
 q</code></pre>
   </div>
 
