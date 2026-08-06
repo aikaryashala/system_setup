@@ -1,0 +1,47 @@
+The three roads and watch the video to play are all black colored rectangle boxes and circle instead of play, can you fix them.
+
+---
+
+For the youtube video: Just provide a link when clicked opens in new tab. No need of these diagrams and other things.
+
+---
+
+Keep step-4 to just run Python Program like the sum program that I have given, move all the debugging pdb part and related python code to step-12
+
+---
+
+Update step-1, in case the students already have an ubuntu machine with WSL but forgot it's password. like this: # Reset Ubuntu (WSL) User Password
+
+1. Open **PowerShell** or **Command Prompt**.
+2. Start Ubuntu as the root user:
+   ```powershell
+   wsl -u root
+   ```
+3. Reset your user password:
+   ```bash
+   passwd <username>
+   ```
+   Example:
+   ```bash
+   passwd lokesh
+   ```
+4. Enter the new password twice.
+5. Exit root:
+   ```bash
+   exit
+   ```
+6. Launch Ubuntu normally and log in using the new password.
+
+> **Tip:** If you forgot your username, run:
+>
+> ```bash
+> ls /home
+> ```
+
+---
+
+Keep TOC like thing in step one, so people who forgot password can quickly jump to that section
+
+---
+
+"Forgotten your Ubuntu password" will make the readers connect faster
