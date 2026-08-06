@@ -1,0 +1,31 @@
+{
+  "cli_version": "0.9.0",
+  "checkpoint_id": "0e414ab6595e",
+  "strategy": "manual-commit",
+  "branch": "main",
+  "checkpoints_count": 4,
+  "files_touched": [
+    "docs/03_install_c/index.html",
+    "docs/book/07-three-ways-to-run/index.html",
+    "docs/book/08-stopping-time/index.html",
+    "docs/book/index.html",
+    "docs/examples/msd.c",
+    "docs/scripts/index.html"
+  ],
+  "sessions": [
+    {
+      "metadata": "/0e/414ab6595e/0/metadata.json",
+      "transcript": "/0e/414ab6595e/0/full.jsonl",
+      "compact_transcript": "/0e/414ab6595e/0/transcript.jsonl",
+      "content_hash": "/0e/414ab6595e/0/content_hash.txt",
+      "prompt": "/0e/414ab6595e/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 792,
+    "cache_creation_tokens": 3019063,
+    "cache_read_tokens": 169148754,
+    "output_tokens": 561403,
+    "api_call_count": 423
+  }
+}
