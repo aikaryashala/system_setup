@@ -1,0 +1,9 @@
+I want to brainstrom. Based on the steps 1 to 5.5, I want to give students reading material in book format. What is the best way to give it and what concepts we can cover in the book, so they will understand what we are trying to acheive with the scripts. And the list of commands students must be understanding along with the installed command line tools, want to add the basic commands for file navigation and creating, modifying, deleting directories and files.
+
+---
+
+English, tight is what I prefer. what do you mean by Step 0?, no need of assessment, no PDF.
+
+---
+
+start with Step 1.5 first, then the book
